@@ -1,4 +1,4 @@
-namespace Shopiround.Models
+namespace Shopiround.Models.Models
 {
     public class ErrorViewModel
     {
