@@ -1,1 +1,27 @@
-﻿<h1>Index</h1>
+﻿@model List<Shop>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Shop Name</th>
+            <th scope="col">Owner Name</th>
+            <th scope="col">Shop Location</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var shop in Model)
+            {
+                <tr>
+                    <th scope="row">#</th>
+                    <td>@shop.ShopName</td>
+                    <td>@shop.OwnerName</td>
+                    <td>@shop.Address</td>
+
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>

@@ -22,5 +22,11 @@ namespace Shopiround.DataAccess.Repository
         {
             databaseSet.Add(entity);
         }
+
+        public IEnumerable<T> GetAll()
+        {
+            IQueryable<T> query = databaseSet;
+            return query.ToList();
+        }
     }
 }

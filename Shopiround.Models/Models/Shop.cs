@@ -14,20 +14,29 @@ namespace Shopiround.Models.Models
         public int ShopId { get; set; }
         [DisplayName("Shop Name")]
         public string ShopName { get; set; }
+        [DisplayName("Shop Phone No.")]
         public string ShopPhoneNo { get; set; }
+        [DisplayName("Owner Name")]
         public string OwnerName { get; set; }
-        public string OwnerPhoneNo { get; set; }
         public string Division {  get; set; }
         public string District { get; set; }
         public string Upazila { get; set; }
-        public string Location { get; set; }
+        public string Address { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        //public TimeOnly OpenningTime { get; set; }
-        //public TimeOnly ClosingTime { get; set; }
-        //public string OpenDays { get; set; }
+        public string OpeningTime { get; set; }
+        public string ClosingTime { get; set; }
+        public bool Saturday { get; set; }
+        public bool Sunday { get; set; }
+        public bool Monday { get; set; }
+        public bool Tuesday { get; set; }
+        public bool Wednesday { get; set; }
+        public bool Thursday { get; set; }
+        public bool Friday { get; set; }
+
         [DisplayName("Accept Online Orders?")]
         public bool AcceptOnlineOrders { get; set; }
+        public string ImageURL { get; set; }    
 
     }
 }

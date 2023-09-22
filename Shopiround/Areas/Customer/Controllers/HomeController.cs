@@ -9,12 +9,10 @@ namespace Shopiround.Areas.Customer.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
@@ -25,13 +23,6 @@ namespace Shopiround.Areas.Customer.Controllers
         public IActionResult Privacy()
         {
             return View();
-        }
-        [HttpPost]
-        public IActionResult Privacy(Shop shop)
-        {
-            _unitOfWork.ShopRepository.Add(shop);
-            _unitOfWork.Save();
-            return RedirectToAction("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
