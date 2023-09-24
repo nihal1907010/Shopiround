@@ -12,10 +12,20 @@ namespace Shopiround.DataAccess.Repository
     {
         private readonly ApplicationDbContext applicationDbContext;
         public IShopRepository ShopRepository { get; private set; }
+
+        public IReviewRepository ReviewRepository { get; private set; }
+
+        public IQuestionRepository QuestionRepository { get; private set; }
+
+        public IAnswerRepository AnswerRepository { get; private set; }
+
         public UnitOfWork(ApplicationDbContext applicationDbContext)
         {
             this.applicationDbContext = applicationDbContext;
             ShopRepository = new ShopRepository(applicationDbContext);
+            ReviewRepository = new ReviewRepository(applicationDbContext);
+            QuestionRepository = new QuestionRepository(applicationDbContext);
+            AnswerRepository = new AnswerRepository(applicationDbContext);
         }
 
         public void Save()
