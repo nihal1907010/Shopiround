@@ -4,6 +4,7 @@ using Shopiround.DataAccess.Repository.IRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,6 +28,21 @@ namespace Shopiround.DataAccess.Repository
         {
             IQueryable<T> query = databaseSet;
             return query.ToList();
+        }
+
+        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        {
+            IQueryable<T> values = databaseSet;
+            values = values.Where(filter);
+            if (string.IsNullOrEmpty(includeProperties) == false)
+            {
+                foreach (var prop in
+                    includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    values = values.Include(prop);
+                }
+            }
+            return values.FirstOrDefault();
         }
     }
 }

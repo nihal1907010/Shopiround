@@ -1,0 +1,90 @@
+﻿@model Product
+
+<style>
+    a {
+        text-decoration: none;
+    }
+    #map {
+        height: 250px;
+    }
+
+</style>
+
+<div class="container">
+    <div class="row">
+        <a href="/">@Model.Shop.ShopName</a>
+    </div>
+   <div class="row">
+       @Model.Name
+   </div>
+    <div class="row">
+        <div class="col-6">
+            <span >@Model.Price</span>
+            <span>@Model.DiscountAmount</span>
+        </div>
+        <div class="col-6">
+            <div class="float-end">
+                *****
+            </div>
+            <div class="clearfix"></div> 
+        </div>
+    </div>
+    <div class="row">
+        <img src="@Model.ImageURL" />
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-6">
+            <a href="/">Add to wishlist</a>
+        </div>
+        <div class="col-6">
+            <a href="/">Reserve this item</a>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        @Model.Shop.Address
+    </div>
+    <div class="row">
+        @Model.Description
+    </div>
+    <div class="row p-2 rounded">
+        <div class="col-12" id="map"></div>
+    </div>
+
+
+</div>
+
+<script>
+    var map = L.map('map');
+    var markerUser, markerShop;
+    var latitudeUser, longitudeUser;
+    var latitudeShop = @Model.Shop.Latitude;
+    var longitudeShop = @Model.Shop.Longitude;
+    console.log(`LatitudeShop: ${latitudeShop}, longitude: ${longitudeShop}`);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                latitudeUser = position.coords.latitude;
+                longitudeUser = position.coords.longitude;
+                console.log(`Latitude: ${latitudeUser}, longitude: ${longitudeUser}`);
+
+                markerUser = L.marker([latitudeUser, longitudeUser]).addTo(map);
+            },
+            (error) => {
+                //console.error("Error getting user location:", error);
+            }
+        );
+    } else {
+        //console.error("Geolocation is not supported by this browser.");
+    }
+
+    map.setView([latitudeShop, longitudeShop], 15);
+    markerShop = L.marker([latitudeShop, longitudeShop]).addTo(map);
+</script>

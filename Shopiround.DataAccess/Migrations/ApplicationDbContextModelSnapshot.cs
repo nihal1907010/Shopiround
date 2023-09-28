@@ -21,6 +21,51 @@ namespace Shopiround.DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Shopiround.Models.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Description")
+                        .HasColumnType("int");
+
+                    b.Property<float>("DiscountAmount")
+                        .HasColumnType("real");
+
+                    b.Property<float>("DiscountPercentage")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ImageURL")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopId");
+
+                    b.ToTable("Products");
+                });
+
             modelBuilder.Entity("Shopiround.Models.Models.Shop", b =>
                 {
                     b.Property<int>("ShopId")
@@ -102,6 +147,17 @@ namespace Shopiround.DataAccess.Migrations
                     b.HasKey("ShopId");
 
                     b.ToTable("Shops");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.Models.Product", b =>
+                {
+                    b.HasOne("Shopiround.Models.Models.Shop", "Shop")
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shop");
                 });
 #pragma warning restore 612, 618
         }

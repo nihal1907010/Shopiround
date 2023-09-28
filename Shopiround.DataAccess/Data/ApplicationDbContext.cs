@@ -11,5 +11,6 @@ namespace Shopiround.DataAccess.Data
         }
 
         DbSet<Shop> Shops { get; set; }
+        DbSet<Product> Products { get; set; }
     }
 }

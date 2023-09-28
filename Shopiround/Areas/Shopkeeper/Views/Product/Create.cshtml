@@ -1,0 +1,85 @@
+﻿@model Product
+
+<div class="container w-75 mt-2 p-4 border border-2">
+    <form method="post" enctype="multipart/form-data">
+        <input asp-for="ImageURL" hidden />
+        <div class="row">
+            <div class="col-4">
+                <div class="card h-100 d-flex">
+                    <img id="output" src="~/images/shop/default_shop.png" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <input type="file" name="file" class="form-control" onchange="loadFile(event)">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-8">
+                <div class="form-floating mb-3">
+                    <input class="form-control" asp-for="Name" placeholder="Product Name">
+                    <label asp-for="Name">Product Name</label>
+                </div>
+                <div class="form-floating">
+                    <textarea class="form-control" asp-for="Description" placeholder="Leave a comment here" style=" height: 150px;"></textarea>
+                    <label asp-for="Description">Description</label>
+                </div>
+            </div>
+
+        </div>
+
+        <hr />
+        <div class="row">
+            <div class="col-6">
+                <div class="form-floating mb-3">
+                    <input class="form-control" asp-for="Price" placeholder="Price">
+                    <label asp-for="Price">Price</label>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-floating mb-3">
+                    <input class="form-control" asp-for="DiscountPercentage" placeholder="Discount Percentage">
+                    <label asp-for="DiscountPercentage">Discount Percentage</label>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-floating mb-3">
+                    <input class="form-control" asp-for="DiscountAmount" placeholder="Discount Amount">
+                    <label asp-for="DiscountAmount">Discount Amount</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-floating mb-3">
+                    <input class="form-control" asp-for="Category" placeholder="Category">
+                    <label asp-for="Category">Category</label>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-floating mb-3">
+                    <input class="form-control" asp-for="Quantity" placeholder="Quantity Available">
+                    <label asp-for="Quantity">Quantity Available</label>
+                </div>
+            </div>
+        </div>
+
+        <button id="submit" type="submit" class="btn btn-primary float-end">Submit</button>
+        <div class="clearfix"></div>
+    </form>
+</div>
+
+<script>
+    var loadFile = function (event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('output');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    };
+</script>
+
+
+
