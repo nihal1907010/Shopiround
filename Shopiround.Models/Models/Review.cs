@@ -14,6 +14,7 @@ namespace Shopiround.Models.Models
         public int Id { get; set; }
         [ForeignKey("Product")]
         public int ProductId { get; set; }
+        public Product Product { get; set; }
         public string Text { get; set; }
         public int Rating { get; set; }
         public string Reviewer {  get; set; }

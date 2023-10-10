@@ -5,7 +5,7 @@
 namespace Shopiround.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class _1 : Migration
+    public partial class nihal0 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -69,15 +69,76 @@ namespace Shopiround.DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Question",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Questioner = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SerialNo = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Question", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Question_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Review",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Reviewer = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SerialNo = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Review", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Review_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Products_ShopId",
                 table: "Products",
                 column: "ShopId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Question_ProductId",
+                table: "Question",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_ProductId",
+                table: "Review",
+                column: "ProductId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Question");
+
+            migrationBuilder.DropTable(
+                name: "Review");
+
             migrationBuilder.DropTable(
                 name: "Products");
 

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Shopiround.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossorigin="" />
@@ -27,10 +28,16 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Shopkeeper" asp-controller="Shop" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="Shopkeeper" asp-controller="Shop" asp-action="Index">Shop List</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Shopkeeper" asp-controller="Shop" asp-action="Create">Add Shop</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Shopkeeper" asp-controller="Product" asp-action="Index">Product List</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Shopkeeper" asp-controller="Product" asp-action="Create">Add Product</a>
                         </li>
                     </ul>
                 </div>
@@ -42,12 +49,13 @@
             @RenderBody()
         </main>
     </div>
-
+    <!--
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2023 - Shopiround - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+    -->
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

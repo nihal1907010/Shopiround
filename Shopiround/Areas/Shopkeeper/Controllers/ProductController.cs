@@ -61,7 +61,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         {
             if(Id != null)
             {
-                Product product = unitOfWork.ProductRepository.Get(p=> p.Id == Id, includeProperties: "Shop");
+                Product product = unitOfWork.ProductRepository.Get(p=> p.Id == Id, includeProperties: "Shop,Reviews");
                 return View(product);
             }
             else
@@ -71,6 +71,22 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
             
 
+        }
+        [HttpPost]
+        public ActionResult CreateReview(int ProductId, string ReviewText, int Rating)
+        {
+            Product product = unitOfWork.ProductRepository.Get(p => p.Id == ProductId, includeProperties: "Reviews,Shop");
+            Review review = new Review();
+            review.ProductId = ProductId;
+            review.Text = ReviewText;
+            review.Reviewer = "Nihal";
+            review.SerialNo = 1;
+            review.Rating = Rating;
+
+            unitOfWork.ReviewRepository.Add(review);
+            unitOfWork.Save();
+
+            return Json(new { ReviewText });    
         }
 
 

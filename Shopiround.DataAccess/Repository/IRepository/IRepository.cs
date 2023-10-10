@@ -13,6 +13,7 @@ namespace Shopiround.DataAccess.Repository.IRepository
         void Add(T entity);
 
         T Get(Expression<Func<T, bool>> filter, string? includeProperties = null);
+        void Update(T entity);
 
     }
 

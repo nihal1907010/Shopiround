@@ -36,7 +36,8 @@ namespace Shopiround.Models.Models
 
         [DisplayName("Accept Online Orders?")]
         public bool AcceptOnlineOrders { get; set; }
-        public string ImageURL { get; set; }    
+        public string ImageURL { get; set; }  
+        List<Product> Products { get; set; }
 
     }
 }

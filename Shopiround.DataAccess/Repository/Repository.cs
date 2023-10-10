@@ -24,6 +24,10 @@ namespace Shopiround.DataAccess.Repository
             databaseSet.Add(entity);
         }
 
+        public void Update(T entity)
+        {
+            databaseSet.Update(entity);
+        }
         public IEnumerable<T> GetAll()
         {
             IQueryable<T> query = databaseSet;

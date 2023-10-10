@@ -3,88 +3,252 @@
 <style>
     a {
         text-decoration: none;
+        color: black;
+        text-decoration: underline;
     }
+
     #map {
         height: 250px;
+        width: 100%;
     }
-
+    .starIcon {
+        height: 25px;
+        width: 25px;
+    }
+    .starIcon2 {
+        height: 10px;
+        width: 10px;
+        padding-right: 2px;
+    }
 </style>
-
-<div class="container">
-    <div class="row">
-        <a href="/">@Model.Shop.ShopName</a>
+<div class="row ps-3 text-decoration-underline">
+    @Model.Shop.ShopName
+</div>
+<div class="row fw-bold ps-3">
+    @Model.Name
+</div>
+<div class="row ps-1 pe-2">
+    <div class="col-6">
+        <span class="fw-bold h5">BDT @Model.Price.00</span>
+        <span>-@Model.DiscountAmount.00</span>
     </div>
-   <div class="row">
-       @Model.Name
-   </div>
-    <div class="row">
-        <div class="col-6">
-            <span >@Model.Price</span>
-            <span>@Model.DiscountAmount</span>
-        </div>
-        <div class="col-6">
-            <div class="float-end">
-                *****
+    <div class="col-6">
+        <div class="float-end fw-bold" id="distance">
             </div>
-            <div class="clearfix"></div> 
         </div>
-    </div>
-    <div class="row">
-        <img src="@Model.ImageURL" />
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-6">
-            <a href="/">Add to wishlist</a>
-        </div>
-        <div class="col-6">
-            <a href="/">Reserve this item</a>
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        @Model.Shop.Address
-    </div>
-    <div class="row">
-        @Model.Description
-    </div>
-    <div class="row p-2 rounded">
-        <div class="col-12" id="map"></div>
-    </div>
 
-
+   @*  <div class="col-6">
+        <div class="float-end">
+            <div class="d-flex">
+                @{
+                    float rating = 0;
+                    int cnt = 0;
+                    foreach(var review in Model.Reviews)
+                    {
+                        rating += review.Rating;
+                        ++cnt;
+                    }
+                    rating /= cnt;
+                    for (int i = 1; i <= 5; ++i)
+                    {
+                        if (i <= rating)
+                        {
+                                <div><img class="starIcon2" src="/images/assets/starYellow.png" /></div>
+                        }
+                        else
+                        {
+                                <div><img class="starIcon2" src="/images/assets/startBlack.png" /></div>
+                        }
+                    }
+                }
+                
+            </div>
+            <div>
+            </div>
+            <div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div> *@
+</div>
+<div class="row m-2 border">
+    <img src="@Model.ImageURL" />
+</div>
+<div class="row p-1">
+    <i class="bi bi-shop"> @Model.Shop.Address</i>
 </div>
 
-<script>
-    var map = L.map('map');
-    var markerUser, markerShop;
-    var latitudeUser, longitudeUser;
-    var latitudeShop = @Model.Shop.Latitude;
-    var longitudeShop = @Model.Shop.Longitude;
-    console.log(`LatitudeShop: ${latitudeShop}, longitude: ${longitudeShop}`);
-
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
-
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                latitudeUser = position.coords.latitude;
-                longitudeUser = position.coords.longitude;
-                console.log(`Latitude: ${latitudeUser}, longitude: ${longitudeUser}`);
-
-                markerUser = L.marker([latitudeUser, longitudeUser]).addTo(map);
-            },
-            (error) => {
-                //console.error("Error getting user location:", error);
+<div class="row p-2 align-content-center fs-5 mb-2" style="background-color: #ECEFF1; height: 50px;">
+    <div class="col-6 align-content-center">Location</div>
+    <div class="col-6 align-content-center">
+        <a class="float-end text-decoration-none text-info" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            +
+        </a>
+    </div>
+</div>
+<div class="collapse" id="collapseExample">
+    <div class="card card-body">
+        <div id="map"></div>
+    </div>
+</div>
+<div class="row p-2 align-content-center fs-5 mb-2" style="background-color: #ECEFF1; height: 50px;">
+    <div class="col-6 align-content-center">Description</div>
+    <div class="col-6 align-content-center">
+        <a class="float-end text-decoration-none text-info" data-bs-toggle="collapse" href="#collapseExample2" role="button" aria-expanded="false" aria-controls="collapseExample">
+            +
+        </a>
+    </div>
+</div>
+<div class="collapse" id="collapseExample2">
+    @Model.Description
+</div>
+    <div class="row p-2">
+        <div class="fs-5">Rate this product</div>
+        <div>Tell others what you think</div>
+        <div class="d-flex justify-content-around p-3">
+            <div onclick="writeReview(1)"><img class="starIcon" src="/images/assets/startBlack.png" id="star1"/></div>
+            <div onclick="writeReview(2)"><img class="starIcon" src="/images/assets/startBlack.png" id="star2" /></div>
+            <div onclick="writeReview(3)"><img class="starIcon" src="/images/assets/startBlack.png" id="star3" /></div>
+            <div onclick="writeReview(4)"><img class="starIcon" src="/images/assets/startBlack.png" id="star4" /></div>
+            <div onclick="writeReview(5)"><img class="starIcon" src="/images/assets/startBlack.png" id="star5" /></div>
+            </div>
+        <div class="text-primary text-decoration-none" onclick="writeReview()">Write a review</div>
+        <div id="writeReview"></div>
+    </div>
+    <div class="row p-2 align-content-center fs-5 mb-2" style="background-color: #ECEFF1; height: 50px;">
+        <div class="col-6 align-content-center">Reviews</div>
+        <div class="col-6 align-content-center">
+            <a class="float-end text-decoration-none text-info" data-bs-toggle="collapse" href="#collapseExample1" role="button" aria-expanded="false" aria-controls="collapseExample">
+                +
+            </a>
+        </div>
+    </div>
+    <div class="collapse" id="collapseExample1">
+        @{
+            foreach (var review in Model.Reviews)
+            {
+                    <div class="card card-body">
+                    <div>@review.Reviewer</div>
+                        <div class="d-flex">
+                            @for(int i = 1; i <= 5; ++i)
+                        {
+                            if (@review.Rating >= i)
+                            {
+                                    <div><img class="starIcon2" src="/images/assets/starYellow.png" /></div>
+                            }
+                            else
+                            {
+                                    <div><img class="starIcon2" src="/images/assets/startBlack.png" /></div>
+                            }
+                        }
+                            
+                        </div>
+                    <div>@review.Text</div>
+                    </div>
             }
-        );
-    } else {
-        //console.error("Geolocation is not supported by this browser.");
-    }
+        }
+        
+    </div>
+    </div>
+    </div>
+    <div style="margin-bottom: 70px;"></div>
+    <div style="height: 70px;" class="ps-3 pe-3 d-flex justify-content-between align-items-center border border-2 position-fixed bottom-0 w-100 bg-white">
+        <div class="fw-bold fs-5">BDT @Model.Price.00</div>
+        <div class="fs-5 btn btn-primary rounded-pill ps-3 pe-3">Add to cart</div>
+    </div>
 
-    map.setView([latitudeShop, longitudeShop], 15);
-    markerShop = L.marker([latitudeShop, longitudeShop]).addTo(map);
-</script>
+
+    <script type="text/javascript">
+        var distanceText = document.getElementById("distance");
+
+        var map = L.map('map');
+        var markerUser, markerShop;
+        var latitudeUser, longitudeUser;
+        var latitudeShop = @Model.Shop.Latitude;
+        var longitudeShop = @Model.Shop.Longitude;
+        console.log(`LatitudeShop: ${latitudeShop}, longitude: ${longitudeShop}`);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    latitudeUser = position.coords.latitude;
+                    longitudeUser = position.coords.longitude;
+                    console.log(`Latitude: ${latitudeUser}, longitude: ${longitudeUser}`);
+
+                    markerUser = L.marker([latitudeUser, longitudeUser]).addTo(map);
+                fetch(`https://api.geoapify.com/v1/routing?waypoints=${latitudeShop},${longitudeShop}|${latitudeUser},${longitudeUser}&mode=drive&apiKey=a63091f5968a473c88c4c923004de755`)
+                    .then(response => response.json())
+                    .then(result => { 
+                        var distance = result["features"][0]["properties"]["distance"];
+                        distanceText.innerHTML = distance + "meter";
+                        console.log(distance);
+                    })
+                    .catch(error => console.log('error', error));
+                },
+                (error) => {
+                    //console.error("Error getting user location:", error);
+                }
+            );
+        } else {
+            //console.error("Geolocation is not supported by this browser.");
+        }
+
+        map.setView([latitudeShop, longitudeShop], 15);
+        markerShop = L.marker([latitudeShop, longitudeShop]).addTo(map);
+
+        const myCollapsible = document.getElementById('collapseExample')
+        myCollapsible.addEventListener('shown.bs.collapse', event => {
+            map.invalidateSize(true);
+        })
+
+
+        let reviewBox = document.getElementById("writeReview");
+        var yellow = -1;
+        let star1 = document.getElementById("star1");
+        let star2 = document.getElementById("star2");
+        let star3 = document.getElementById("star3");
+        let star4 = document.getElementById("star4");
+        let star5 = document.getElementById("star5");
+        function writeReview(x) {
+            if (x > yellow) {
+                if (x >= 1) star1.src = "/images/assets/starYellow.png";
+                if (x >= 2) star2.src = "/images/assets/starYellow.png";
+                if (x >= 3) star3.src = "/images/assets/starYellow.png";
+                if (x >= 4) star4.src = "/images/assets/starYellow.png";
+                if (x >= 5) star5.src = "/images/assets/starYellow.png";
+                
+            } else if (x < yellow) {
+                if (x < 1) star1.src = "/images/assets/startBlack.png";
+                if (x < 2) star2.src = "/images/assets/startBlack.png";
+                if (x < 3) star3.src = "/images/assets/startBlack.png";
+                if (x < 4) star4.src = "/images/assets/startBlack.png";
+                if (x < 5) star5.src = "/images/assets/startBlack.png";
+            } 
+            if (yellow == -1) {
+                reviewBox.innerHTML = "<div class='pt-2 form-floating'><textarea id='reviewBox' class='form-control' asp-for='Description' placeholder='Leave a comment here' style='height: 100px;'></textarea><label asp-for='Description'>Description</label></div><div id='btnSave' class='pt-2 pe-2 float-end text-primary text-decoration-none' onclick='postReview()'>Post</div>";
+            }
+            yellow = x;
+        }
+        function postReview() {
+            var productId = @Model.Id;
+            var reviewText = document.getElementById('reviewBox').value;
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("CreateReview")",
+                dataType: "json",
+                data: { ProductId: productId, ReviewText: reviewText, Rating: yellow },
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (req, status, error) {
+                    console.log(status);
+                }
+            });
+        }
+
+    </script>

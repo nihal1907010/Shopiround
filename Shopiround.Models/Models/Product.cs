@@ -13,7 +13,7 @@ namespace Shopiround.Models.Models
         [Key]
         public int Id { get; set; }
         public String Name { get; set; }
-        public int Description { get; set; }
+        public String Description { get; set; }
         public int Quantity { get; set; }
         public float Price { get; set; }
         public String Category { get; set; }
@@ -23,5 +23,7 @@ namespace Shopiround.Models.Models
         [ForeignKey("Shop")]
         public int ShopId { get; set; }
         public Shop Shop { get; set; }
+        public List<Review> Reviews { get; set; }
+        public List<Question> Questions { get; set; }
     }
 }

@@ -10,7 +10,9 @@ namespace Shopiround.Models.Models
     public class Question
     {
         public int Id { get; set; }
+        [ForeignKey("Product")]
         public int ProductId { get; set; }
+        public Product Product { get; set; }
         public string Text { get; set; }
         public string Questioner {  get; set; }
         public int SerialNo { get; set; }

@@ -11,8 +11,8 @@ using Shopiround.DataAccess.Data;
 namespace Shopiround.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230928093702_1")]
-    partial class _1
+    [Migration("20231004132435_nihal0")]
+    partial class nihal0
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,6 +67,67 @@ namespace Shopiround.DataAccess.Migrations
                     b.HasIndex("ShopId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.Models.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Questioner")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SerialNo")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Question");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reviewer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SerialNo")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Review");
                 });
 
             modelBuilder.Entity("Shopiround.Models.Models.Shop", b =>
@@ -161,6 +222,35 @@ namespace Shopiround.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Shop");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.Models.Question", b =>
+                {
+                    b.HasOne("Shopiround.Models.Models.Product", "Product")
+                        .WithMany("Questions")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.Models.Review", b =>
+                {
+                    b.HasOne("Shopiround.Models.Models.Product", "Product")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.Models.Product", b =>
+                {
+                    b.Navigation("Questions");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }
