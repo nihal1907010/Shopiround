@@ -184,11 +184,14 @@
                 fetch(`https://api.geoapify.com/v1/routing?waypoints=${latitudeShop},${longitudeShop}|${latitudeUser},${longitudeUser}&mode=drive&apiKey=a63091f5968a473c88c4c923004de755`)
                     .then(response => response.json())
                     .then(result => { 
+                        console.log(result);
                         var distance = result["features"][0]["properties"]["distance"];
                         distanceText.innerHTML = distance + "meter";
                         console.log(distance);
                     })
                     .catch(error => console.log('error', error));
+                    // ***********
+
                 },
                 (error) => {
                     //console.error("Error getting user location:", error);

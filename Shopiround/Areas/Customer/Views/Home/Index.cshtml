@@ -1,22 +1,122 @@
-﻿<div class="container">
-    <div class="row border border-2 p-2 rounded text-primary">
-        100+ bought in past month
-    </div>
-    <div class="row">
-        <a>Shop name</a>
-    </div>
-    <div class="row">
-        Product name
-    </div>
-    <div class="row">
-        <div class="col-6">
-            product price
+﻿@model IEnumerable<Product>
+
+<div class="container">
+    <div class="form-group">
+        <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            <input type="text" id="Search" placeholder="Search" class="form-control" />
         </div>
-        <div class="col-6">
-            reviews
-        </div>
-    </div>
-    <div class="row">
-        img
     </div>
 </div>
+
+<table class="table table-striped" id="productTable" style="display: none;">
+    <thead>
+        <tr>
+            <th>ProductName</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="Search" data-product-id="@item.Id" data-product-name="@item.Name">
+                <td>
+                    <a href="@Url.Action("SearchResult", "Product", new { area = "Shopkeeper",  name = item.Name })" style="color: Black;">
+                        @item.Name
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    const x = document.getElementById("Search");
+    const y = document.querySelectorAll(".Search");
+    const productTable = document.getElementById("productTable");
+
+    function Contains(text_one, text_two) {
+        return text_one.indexOf(text_two) !== -1;
+    }
+
+    x.addEventListener('keyup', function () {
+        var searchText = x.value.toLowerCase();
+        const matchingRows = [];
+
+        for (let i = 0; i < y.length; i++) {
+            const row = y[i];
+            const text = row.textContent.toLowerCase();
+            if (Contains(text, searchText)) {
+                matchingRows.push(row);
+            }
+        }
+
+        // Show the table and hide all rows
+        productTable.style.display = "table";
+        y.forEach(row => {
+            row.style.display = "none";
+        });
+
+        // Show matching rows
+        matchingRows.forEach(row => {
+            row.style.display = "table-row";
+        });
+
+        // Hide the table if there are no matching rows or if the search input is empty
+        if (matchingRows.length === 0 || searchText === "") {
+            productTable.style.display = "none";
+        }
+    });
+
+    /*
+    y.forEach(row => {
+        row.addEventListener('click', function () {
+            const productId = row.getAttribute('data-product-id');
+            const productName = row.getAttribute('data-product-name');
+            redirectToProductDetail(productId, productName);
+        });
+    });
+
+    function redirectToProductDetail(productId, productName) {
+        console.log(productName);
+        // Make an AJAX request to your ASP.NET controller
+        
+        $.ajax({
+            url: '/Customer/Home/Search',
+            type: 'POST', // Use 'GET' or 'POST' depending on your controller's action
+            data: {productName: productName },
+            success: function () {
+                // Handle the success response or redirect to the detail page if needed.
+            },
+            error: function () {
+                // Handle any error that occurs during the request.
+            }
+        });
+        
+
+        // Construct the URL with query parameters
+        //const url = `Customer/Home/Seach?productName=${productName}`;
+
+        // Redirect to the URL
+        //window.location.href = url;
+
+
+        
+        //var reviewText = document.getElementById('reviewBox').value;
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("Search")",
+            dataType: "json",
+            data: { name : productName},
+            success: function (result) {
+                console.log(result);
+            },
+            error: function (req, status, error) {
+                console.log(status);
+            }
+        });
+
+        
+
+    }*/
+    
+</script>

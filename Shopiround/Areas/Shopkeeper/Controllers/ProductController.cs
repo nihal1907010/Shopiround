@@ -59,19 +59,39 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
         public IActionResult Show(int? Id)
         {
+            
             if(Id != null)
             {
                 Product product = unitOfWork.ProductRepository.Get(p=> p.Id == Id, includeProperties: "Shop,Reviews");
-                return View(product);
+                 return View(product);
             }
             else
             {
                 return NotFound();
             }
-
-            
-
         }
+
+       
+        public IActionResult SearchResult(string name)
+        {
+            if (name != null)
+            {
+                string searchTerm = name;
+                var searchWords = searchTerm.ToLower().Split(' ');
+
+                var matchingProducts = unitOfWork.ProductRepository
+                    .GetAll()
+                    .Where(product => searchWords.Any(word => product.Name.ToLower().Contains(word)))
+                    .ToList();
+               // List<Product> searchedProducts = unitOfWork.ProductRepository.GetAll().Where(j => j.Name.ToLower().Contains(name.ToLower())).ToList();
+                return View(matchingProducts);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         [HttpPost]
         public ActionResult CreateReview(int ProductId, string ReviewText, int Rating)
         {
