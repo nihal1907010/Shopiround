@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shopiround.DataAccess.Data;
+using Newtonsoft.Json;
+using Shopiround.DataAccess.Data;
 using Shopiround.DataAccess.Repository.IRepository;
 using Shopiround.Models.Models;
 using System.Diagnostics;
@@ -10,6 +12,9 @@ namespace Shopiround.Areas.Customer.Controllers
     [Area("Customer")]
     public class HomeController : Controller
     {
+
+        private readonly IUnitOfWork unitOfWork;
+
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         public ApplicationDbContext _context;
@@ -23,7 +28,23 @@ namespace Shopiround.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            return View();
+
+            List<Product> products = unitOfWork.ProductRepository.GetAll().ToList();
+            return View(products);
+        }
+
+
+        [HttpGet]
+        public IActionResult Search(string name)
+        {
+            Console.WriteLine("G");
+
+            if(name!=null)
+            {
+                List<Product> searchedProducts =  unitOfWork.ProductRepository.GetAll().Where(j => j.Name.ToLower().Contains(name.ToLower())).ToList() ;
+                return Json(new { searchedProducts });
+                            }
+            return View("Search");
         }
 
         public IActionResult Privacy()

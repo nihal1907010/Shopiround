@@ -8,13 +8,16 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopiround.DataAccess", "Shopiround.DataAccess\Shopiround.DataAccess.csproj", "{E5FCB43B-C41F-4879-8CF6-86403B9C3E6C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopiround.Models", "Shopiround.Models\Shopiround.Models.csproj", "{E0AEFF3B-17C0-4318-ADF9-2DD0ED582574}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopiround.DataAccess", "Shopiround.DataAccess\Shopiround.DataAccess.csproj", "{E5FCB43B-C41F-4879-8CF6-86403B9C3E6C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopiround.Utility", "Shopiround.Utility\Shopiround.Utility.csproj", "{3F46611D-1A77-4B6B-AEF1-523995790FA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopiround.Models", "Shopiround.Models\Shopiround.Models.csproj", "{E0AEFF3B-17C0-4318-ADF9-2DD0ED582574}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{09B1916F-8F67-45B9-AC6D-E5008421BFC0}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopiround.Utility", "Shopiround.Utility\Shopiround.Utility.csproj", "{3F46611D-1A77-4B6B-AEF1-523995790FA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
