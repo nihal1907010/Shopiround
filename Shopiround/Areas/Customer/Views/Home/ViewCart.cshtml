@@ -1,0 +1,124 @@
+﻿@model List<CartItem>
+
+<style>
+    .productImage {
+        height: 50px;
+        width: 50px;
+    }
+    #map {
+        height: 100%;
+        width: 100%;
+    }
+    i {
+        font-size: 30px;
+    }
+</style>
+<div id="route" class="position-absolute start-0 top-0 w-100 h-100 pt-5 p-2" style="display: none;">
+    <div onclick="cross()" class="d-flex justify-content-end">
+        <i class="bi bi-x-square-fill"></i>
+    </div>
+        <div id="map"></div>
+    </div>
+    <div style="height: 70px;" class="d-flex justify-content-between align-items-center border border-2 w-100 bg-white position-absolute bottom-0">
+        <div class="fw-bold fs-5"></div>
+        <button class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" onclick="checkout()" id="checkoutBtn">Checkout</button>
+    </div>
+    @foreach (var cartItem in Model)
+    {
+        <div class="container border border-1 rounded-5 mt-2">
+            <div class="row">
+                <div class="col-2"><img class="productImage" src="@cartItem.Product.ImageURL" /></div>
+                <div class="col-8">@cartItem.Product.Name</div>
+                <div class="col-2">@cartItem.Product.Price</div>
+            </div>
+        </div>
+    }
+
+<script>
+    var route = document.getElementById("route");
+    function checkout() {
+        route.style.display = "inline-block";
+        map.invalidateSize(true);
+    }
+    function cross() {
+        route.style.display = "none";
+    }
+    var greenIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+    let locations = new Array();
+    var cartItems = @Html.Raw(Json.Serialize(Model));
+    var routeLayer = null;
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    const obj = { lat: lat, lng: lng };
+                    locations.push(obj);
+                    map = L.map('map').setView([lat, lng], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 50,
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    }).addTo(map);
+                L.marker([lat, lng], { icon: greenIcon }).addTo(map);
+                    for (idx in cartItems) {
+                        let location = {
+                            lat: cartItems[idx]["product"]["shop"]["latitude"],
+                            lng: cartItems[idx]["product"]["shop"]["longitude"]
+                        }
+                        locations.push(location);
+                        if (locations.length >= 2) {
+                            calculateAndDisplayRoute();
+                        }
+                        clickedMarker = L.marker(location).addTo(map);
+                    }
+                },
+                (error) => {
+                }
+            );
+        }
+        else {
+            console.error("Geolocation is not supported by this browser.");
+        }
+        function calculateAndDisplayRoute() {
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+            }
+            const apiKey = "65c669784b2d4fe897f94046acc1a94d";
+            const waypointString = locations.map(point => point.lat + ',' + point.lng).join('|');
+            const url = `https://api.geoapify.com/v1/routing?waypoints=${waypointString}&mode=drive&details=instruction_details&apiKey=${apiKey}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(routeResult => {
+                    const routeCoordinates = routeResult.features[0].geometry.coordinates;
+                    const routeGeoJSON = {
+                        "type": "Point",
+                        "properties": {},
+                        "geometry": {
+                            "type": "LineString",
+                            "coordinates": routeCoordinates
+                        }
+                    };
+                    L.geoJSON(routeResult, {
+                        style: (feature) => {
+                            return {
+                                color: "rgba(20, 137, 255, 0.7)",
+                                weight: 5
+                            };
+                        }
+                    }).bindPopup((layer) => {
+                        return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
+                    }).addTo(map);
+                })
+                .catch(error => console.error("Error fetching routing data:", error));
+        }
+
+    
+</script>
+

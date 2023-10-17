@@ -33,7 +33,6 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         [HttpPost]
         public IActionResult Create(Product product, IFormFile? file)
         {
-
             if (file != null)
             {
                 string wwwRootPath = webHostEnvironment.WebRootPath;
@@ -49,7 +48,8 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             {
                 product.ImageURL = @"\images\shop\default_shop.png";
             }
-            product.ShopId = 1;
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
+            product.ShopId = unitOfWork.ShopRepository.Get(s => s.applicationUser == user).ShopId;
             unitOfWork.ProductRepository.Add(product);
             unitOfWork.Save();
 
@@ -87,6 +87,25 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             unitOfWork.Save();
 
             return Json(new { ReviewText });    
+        }
+
+        [HttpPost]
+        public ActionResult CreateCartItem(int ProductId)
+        {
+            Product product = unitOfWork.ProductRepository.Get(p => p.Id == ProductId, includeProperties: "Reviews,Shop");
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "CartItems,Shop");
+            CartItem cartItem = new CartItem
+            {
+                ProductId = ProductId,
+                Product = product,
+                UserId = user.Id,
+                User = user,
+                Quantity = 1
+            };
+            unitOfWork.CartItemRepository.Add(cartItem);
+            unitOfWork.Save();
+
+            return Json(new { added = true });
         }
 
 

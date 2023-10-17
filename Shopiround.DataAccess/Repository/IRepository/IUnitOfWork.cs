@@ -8,11 +8,13 @@ namespace Shopiround.DataAccess.Repository.IRepository
 {
     public interface IUnitOfWork
     {
+        IApplicationUserRepository ApplicationUserRepository { get; }
         IShopRepository ShopRepository { get; }
         IProductRepository ProductRepository { get; }
         IReviewRepository ReviewRepository { get; }
         IQuestionRepository QuestionRepository { get; }
         IAnswerRepository AnswerRepository { get; }
+        ICartItemRepository CartItemRepository { get; }
         void Save();
     }
 }

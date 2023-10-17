@@ -20,14 +20,19 @@ namespace Shopiround.DataAccess.Repository
 
         public IAnswerRepository AnswerRepository { get; private set; }
 
+        public IApplicationUserRepository ApplicationUserRepository { get; private set; }
+        public ICartItemRepository CartItemRepository { get; private set; }
+
         public UnitOfWork(ApplicationDbContext applicationDbContext)
         {
             this.applicationDbContext = applicationDbContext;
+            ApplicationUserRepository = new ApplicationUserRepository(applicationDbContext);
             ShopRepository = new ShopRepository(applicationDbContext);
             ProductRepository = new ProductRepository(applicationDbContext);
             ReviewRepository = new ReviewRepository(applicationDbContext);
             QuestionRepository = new QuestionRepository(applicationDbContext);
             AnswerRepository = new AnswerRepository(applicationDbContext);
+            CartItemRepository = new CartItemRepository(applicationDbContext);
         }
 
         public void Save()

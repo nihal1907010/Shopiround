@@ -127,24 +127,24 @@
         @{
             foreach (var review in Model.Reviews)
             {
-                    <div class="card card-body">
-                    <div>@review.Reviewer</div>
-                        <div class="d-flex">
-                            @for(int i = 1; i <= 5; ++i)
+                        <div class="card card-body">
+                        <div>@review.Reviewer</div>
+                            <div class="d-flex">
+                                @for(int i = 1; i <= 5; ++i)
                         {
                             if (@review.Rating >= i)
                             {
-                                    <div><img class="starIcon2" src="/images/assets/starYellow.png" /></div>
+                                        <div><img class="starIcon2" src="/images/assets/starYellow.png" /></div>
                             }
                             else
                             {
-                                    <div><img class="starIcon2" src="/images/assets/startBlack.png" /></div>
+                                        <div><img class="starIcon2" src="/images/assets/startBlack.png" /></div>
                             }
                         }
-                            
+                                
+                            </div>
+                        <div>@review.Text</div>
                         </div>
-                    <div>@review.Text</div>
-                    </div>
             }
         }
         
@@ -154,12 +154,13 @@
     <div style="margin-bottom: 70px;"></div>
     <div style="height: 70px;" class="ps-3 pe-3 d-flex justify-content-between align-items-center border border-2 position-fixed bottom-0 w-100 bg-white">
         <div class="fw-bold fs-5">BDT @Model.Price.00</div>
-        <div class="fs-5 btn btn-primary rounded-pill ps-3 pe-3">Add to cart</div>
+        <div class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" onclick="addToCart()" id="addToCartBtn">Add to cart</div>
     </div>
 
 
     <script type="text/javascript">
         var distanceText = document.getElementById("distance");
+        var addToCartBtn = document.getElementById("addToCartBtn");
 
         var map = L.map('map');
         var markerUser, markerShop;
@@ -244,6 +245,22 @@
                 data: { ProductId: productId, ReviewText: reviewText, Rating: yellow },
                 success: function (result) {
                     console.log(result);
+                },
+                error: function (req, status, error) {
+                    console.log(status);
+                }
+            });
+        }
+        function addToCart() {
+            var productId = @Model.Id;
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("CreateCartItem")",
+                dataType: "json",
+                data: { ProductId: productId },
+                success: function (result) {
+                    console.log(result);
+                    addToCartBtn.innerHTML = "Product added";
                 },
                 error: function (req, status, error) {
                     console.log(status);

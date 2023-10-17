@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,9 @@ namespace Shopiround.Models.Models
         public bool AcceptOnlineOrders { get; set; }
         public string ImageURL { get; set; }  
         List<Product> Products { get; set; }
+        [ForeignKey("ApplicationUser")]
+        public string ApplicationUserId { get; set; }
+        public ApplicationUser applicationUser { get; set; }
 
     }
 }

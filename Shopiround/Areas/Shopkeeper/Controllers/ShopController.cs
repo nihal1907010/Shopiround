@@ -21,7 +21,12 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         }
         public IActionResult Create()
         {
-            return View();
+            ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
+            var viewModel = new Shop
+            {
+                OwnerName = applicationUser.Name
+            };
+            return View(viewModel);
         }
         [HttpPost]
         public IActionResult Create(Shop shop, IFormFile? file)
@@ -41,7 +46,10 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             {
                 shop.ImageURL = @"\images\shop\default_shop.png";
             }
+            ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
             _unitOfWork.ShopRepository.Add(shop);
+            applicationUser.Shop = shop;
+            _unitOfWork.ApplicationUserRepository.Update(applicationUser);
             _unitOfWork.Save();
             return RedirectToAction("Index");
         }

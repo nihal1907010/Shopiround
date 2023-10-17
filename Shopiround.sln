@@ -5,11 +5,16 @@ VisualStudioVersion = 17.8.34112.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopiround", "Shopiround\Shopiround.csproj", "{EB48B6E4-F763-43D3-A55D-898F520F24DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shopiround.DataAccess", "Shopiround.DataAccess\Shopiround.DataAccess.csproj", "{E5FCB43B-C41F-4879-8CF6-86403B9C3E6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopiround.DataAccess", "Shopiround.DataAccess\Shopiround.DataAccess.csproj", "{E5FCB43B-C41F-4879-8CF6-86403B9C3E6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shopiround.Models", "Shopiround.Models\Shopiround.Models.csproj", "{E0AEFF3B-17C0-4318-ADF9-2DD0ED582574}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopiround.Models", "Shopiround.Models\Shopiround.Models.csproj", "{E0AEFF3B-17C0-4318-ADF9-2DD0ED582574}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shopiround.Utility", "Shopiround.Utility\Shopiround.Utility.csproj", "{3F46611D-1A77-4B6B-AEF1-523995790FA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shopiround.Utility", "Shopiround.Utility\Shopiround.Utility.csproj", "{3F46611D-1A77-4B6B-AEF1-523995790FA0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{09B1916F-8F67-45B9-AC6D-E5008421BFC0}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

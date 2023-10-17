@@ -10,6 +10,7 @@ namespace Shopiround.DataAccess.Repository.IRepository
     public interface IRepository<T> where T : class
     {
         IEnumerable<T> GetAll();
+        IEnumerable<T> GetAllCondition(Expression<Func<T, bool>> filter, string? includeProperties = null);
         void Add(T entity);
 
         T Get(Expression<Func<T, bool>> filter, string? includeProperties = null);

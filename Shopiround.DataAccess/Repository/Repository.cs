@@ -48,5 +48,20 @@ namespace Shopiround.DataAccess.Repository
             }
             return values.FirstOrDefault();
         }
+
+        public IEnumerable<T> GetAllCondition(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        {
+            IQueryable<T> values = databaseSet;
+            values = values.Where(filter);
+            if (string.IsNullOrEmpty(includeProperties) == false)
+            {
+                foreach (var prop in
+                    includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    values = values.Include(prop);
+                }
+            }
+            return values.ToList();
+        }
     }
 }
