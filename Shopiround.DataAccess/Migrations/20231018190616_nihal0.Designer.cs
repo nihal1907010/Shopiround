@@ -12,8 +12,8 @@ using Shopiround.DataAccess.Data;
 namespace Shopiround.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231015133035_1")]
-    partial class _1
+    [Migration("20231018190616_nihal0")]
+    partial class nihal0
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -527,7 +527,7 @@ namespace Shopiround.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("Shopiround.Models.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("CartItems")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -590,6 +590,8 @@ namespace Shopiround.DataAccess.Migrations
 
             modelBuilder.Entity("Shopiround.Models.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("CartItems");
+
                     b.Navigation("Shop")
                         .IsRequired();
                 });

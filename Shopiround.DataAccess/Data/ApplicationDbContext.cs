@@ -19,7 +19,7 @@ namespace Shopiround.DataAccess.Data
             base.OnModelCreating(builder);
         }
         DbSet<Shop> Shops { get; set; }
-        DbSet<Product> Products { get; set; }
+        public DbSet<Product> Products { get; set; }
 
         DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<CartItem> CartItems { get; set; }

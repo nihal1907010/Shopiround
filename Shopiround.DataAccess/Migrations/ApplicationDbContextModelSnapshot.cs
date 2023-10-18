@@ -524,7 +524,7 @@ namespace Shopiround.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("Shopiround.Models.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("CartItems")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -587,6 +587,8 @@ namespace Shopiround.DataAccess.Migrations
 
             modelBuilder.Entity("Shopiround.Models.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("CartItems");
+
                     b.Navigation("Shop")
                         .IsRequired();
                 });

@@ -29,7 +29,8 @@ namespace Shopiround.Areas.Customer.Controllers
         public IActionResult Index()
         {
 
-            List<Product> products = unitOfWork.ProductRepository.GetAll().ToList();
+            List<Product> products = _context.Products.ToList();
+                //unitOfWork.ProductRepository.GetAll().ToList();
             return View(products);
         }
 
