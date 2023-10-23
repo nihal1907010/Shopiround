@@ -15,6 +15,7 @@ namespace Shopiround.DataAccess.Repository.IRepository
 
         T Get(Expression<Func<T, bool>> filter, string? includeProperties = null);
         void Update(T entity);
+        void Remove(T entity);
 
     }
 

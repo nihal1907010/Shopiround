@@ -1,41 +1,116 @@
 ﻿@model List<CartItem>
 
+@{
+    Random rnd = new Random();
+    List<string> randomColors = new List<string>()
+    {
+        "FFEBEE",
+        "FCE4EC",
+        "F3E5F5",
+        "EDE7F6",
+
+        "E8EAF6",
+
+        "E3F2FD",
+        "E1F5FE",
+        "E0F7FA",
+        "E0F2F1",
+        "E8F5E9",
+        "F1F8E9",
+
+        "F9FBE7",
+        "FFFDE7",
+        "FFF3E0",
+        "EFEBE9",
+        "FAFAFA",
+        "ECEFF1"
+    };
+    int len = randomColors.Count;
+}
+
 <style>
     .productImage {
-        height: 50px;
-        width: 50px;
+        height: 30vw;
+        width: 30vw;
     }
+
     #map {
         height: 100%;
         width: 100%;
-    }
-    i {
-        font-size: 30px;
+        overflow: hidden;
     }
 </style>
+
 <div id="route" class="position-absolute start-0 top-0 w-100 h-100 pt-5 p-2" style="display: none;">
     <div onclick="cross()" class="d-flex justify-content-end">
         <i class="bi bi-x-square-fill"></i>
     </div>
-        <div id="map"></div>
+    <div id="map"></div>
+</div>
+<div class="pt-1">
+    <div class="d-flex align-items-center" style="font-size: 1.4rem;float: right; font-weight: 600;">
+        <img src="~/images/assets/cart.png" style="height: 30px" />
+        <div>Shopping Cart</div>
     </div>
-    <div style="height: 70px;" class="d-flex justify-content-between align-items-center border border-2 w-100 bg-white position-absolute bottom-0">
-        <div class="fw-bold fs-5"></div>
-        <button class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" onclick="checkout()" id="checkoutBtn">Checkout</button>
-    </div>
-    @foreach (var cartItem in Model)
-    {
-        <div class="container border border-1 rounded-5 mt-2">
-            <div class="row">
-                <div class="col-2"><img class="productImage" src="@cartItem.Product.ImageURL" /></div>
-                <div class="col-8">@cartItem.Product.Name</div>
-                <div class="col-2">@cartItem.Product.Price</div>
+
+    <div class="clearfix"></div>
+    <hr />
+    <div>
+        @foreach (var cartItem in Model)
+        {
+            <div class="d-flex mb-2 border border-1 p-2 rounded" style="background-color: #F1F5F9;">
+                <div class="me-2 rounded overflow-hidden">
+                    <img class="productImage" src="@cartItem.Product.ImageURL" />
+                </div>
+                <div class="position-relative" style="width: 60vw;">
+                    <div style="width: 100%" class="">
+                        <div style="font-size: 14px;
+                                    line-height: 16px;
+                                    font-weight: 500;
+                                    display: -webkit-box;
+                                    -webkit-box-orient: vertical;
+                                    -webkit-line-clamp: 1;
+                                    overflow: hidden;
+                                                        ">
+                            @cartItem.Product.Name
+                        </div>
+                        <div style="        font-size: 16px;
+line-height: 24px;
+        font-weight: 700;
+    ">
+                            <span id="" style="color: #2A8703">৳@cartItem.Product.Price.00</span>
+                            @*                             BDT @cartItem.Product.Price.00
+                        *@
+                        </div>
+                        <div style="font-size: 13px;
+        line-height: 13px;
+        font-weight: 400;">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <a class="text-black" href="/">@cartItem.Product.Shop.ShopName</a>
+                        </div>
+                    </div>
+                    <div class="d-flex mt-3 position-absolute bottom-0">
+                        <a asp-area="Customer" asp-controller="Home" asp-action="DeleteCartItem" asp-route-id="@cartItem.Id" class="btn btn-light rounded p-1 ps-2 pe-2 border me-2" style="background-color: #E2E8F0; box-shadow: rgba(50, 50, 93, 0.25) 0px 1px 5px -1px, rgba(0, 0, 0, 0.3) 0px 0.5px 3px -1px;">Delete</a>
+                        <a  class="btn btn-light rounded p-1 ps-2 pe-2 border" style="background-color: #E2E8F0; box-shadow: rgba(50, 50, 93, 0.25) 0px 1px 5px -1px, rgba(0, 0, 0, 0.3) 0px 0.5px 3px -1px;">Save for later</a>
+                    </div>
+                </div>
+
             </div>
-        </div>
-    }
+        }
+    </div>
+</div>
+</div>
+<div style="margin-bottom: 60px;"></div>
+<div style="height: 65px;" class="ps-3 pe-3 d-flex justify-content-between align-items-center border border-2 position-fixed bottom-0 w-100 bg-white">
+    <div class="fw-bold fs-5">Total: <span id="totalPrice" style="color: #00796B">৳00.00</span></div>
+    <div style="box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;" class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" onclick="checkout()" id="checkoutBtn">Checkout</div>
+</div>
+
 
 <script>
     var route = document.getElementById("route");
+    var totalPriceSpan = document.getElementById("totalPrice");
+    var totalPrice = 0;
     function checkout() {
         route.style.display = "inline-block";
         map.invalidateSize(true);
@@ -53,72 +128,78 @@
     });
     let locations = new Array();
     var cartItems = @Html.Raw(Json.Serialize(Model));
+    for (idx in cartItems) {
+        totalPrice += cartItems[idx]["product"]["price"];
+    }
+    console.log(totalPrice);
+    totalPriceSpan.innerHTML = "৳" + totalPrice + ".00";
     var routeLayer = null;
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    var lat = position.coords.latitude;
-                    var lng = position.coords.longitude;
-                    const obj = { lat: lat, lng: lng };
-                    locations.push(obj);
-                    map = L.map('map').setView([lat, lng], 13);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 50,
-                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    }).addTo(map);
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+                const obj = { lat: lat, lng: lng };
+                locations.push(obj);
+                map = L.map('map').setView([lat, lng], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 50,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
                 L.marker([lat, lng], { icon: greenIcon }).addTo(map);
-                    for (idx in cartItems) {
-                        let location = {
-                            lat: cartItems[idx]["product"]["shop"]["latitude"],
-                            lng: cartItems[idx]["product"]["shop"]["longitude"]
-                        }
-                        locations.push(location);
-                        if (locations.length >= 2) {
-                            calculateAndDisplayRoute();
-                        }
-                        clickedMarker = L.marker(location).addTo(map);
+                for (idx in cartItems) {
+                    totalPrice += cartItems[idx]["product"]["price"];
+                    let location = {
+                        lat: cartItems[idx]["product"]["shop"]["latitude"],
+                        lng: cartItems[idx]["product"]["shop"]["longitude"]
                     }
-                },
-                (error) => {
+                    locations.push(location);
+                    if (locations.length >= 2) {
+                        calculateAndDisplayRoute();
+                    }
+                    clickedMarker = L.marker(location).addTo(map);
                 }
-            );
-        }
-        else {
-            console.error("Geolocation is not supported by this browser.");
-        }
-        function calculateAndDisplayRoute() {
-            if (routeLayer) {
-                map.removeLayer(routeLayer);
+            },
+            (error) => {
             }
-            const apiKey = "65c669784b2d4fe897f94046acc1a94d";
-            const waypointString = locations.map(point => point.lat + ',' + point.lng).join('|');
-            const url = `https://api.geoapify.com/v1/routing?waypoints=${waypointString}&mode=drive&details=instruction_details&apiKey=${apiKey}`;
-            fetch(url)
-                .then(response => response.json())
-                .then(routeResult => {
-                    const routeCoordinates = routeResult.features[0].geometry.coordinates;
-                    const routeGeoJSON = {
-                        "type": "Point",
-                        "properties": {},
-                        "geometry": {
-                            "type": "LineString",
-                            "coordinates": routeCoordinates
-                        }
-                    };
-                    L.geoJSON(routeResult, {
-                        style: (feature) => {
-                            return {
-                                color: "rgba(20, 137, 255, 0.7)",
-                                weight: 5
-                            };
-                        }
-                    }).bindPopup((layer) => {
-                        return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
-                    }).addTo(map);
-                })
-                .catch(error => console.error("Error fetching routing data:", error));
+        );
+    }
+    else {
+        console.error("Geolocation is not supported by this browser.");
+    }
+    function calculateAndDisplayRoute() {
+        if (routeLayer) {
+            map.removeLayer(routeLayer);
         }
+        const apiKey = "65c669784b2d4fe897f94046acc1a94d";
+        const waypointString = locations.map(point => point.lat + ',' + point.lng).join('|');
+        const url = `https://api.geoapify.com/v1/routing?waypoints=${waypointString}&mode=drive&details=instruction_details&apiKey=${apiKey}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(routeResult => {
+                const routeCoordinates = routeResult.features[0].geometry.coordinates;
+                const routeGeoJSON = {
+                    "type": "Point",
+                    "properties": {},
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": routeCoordinates
+                    }
+                };
+                L.geoJSON(routeResult, {
+                    style: (feature) => {
+                        return {
+                            color: "rgba(20, 137, 255, 0.7)",
+                            weight: 5
+                        };
+                    }
+                }).bindPopup((layer) => {
+                    return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
+                }).addTo(map);
+            })
+            .catch(error => console.error("Error fetching routing data:", error));
+    }
 
-    
+
 </script>
 

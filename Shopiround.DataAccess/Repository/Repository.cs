@@ -63,5 +63,10 @@ namespace Shopiround.DataAccess.Repository
             }
             return values.ToList();
         }
+
+        public void Remove(T entity)
+        {
+            databaseSet.Remove(entity);
+        }
     }
 }
