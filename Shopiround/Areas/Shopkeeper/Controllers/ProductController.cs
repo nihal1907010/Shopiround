@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Shopiround.DataAccess.Repository;
-using Shopiround.DataAccess.Repository.IRepository;
-using Shopiround.Models.Models;
+using Shopiround.Repository;
+using Shopiround.Repository.IRepository;
+using Shopiround.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Shopiround.Areas.Shopkeeper.Controllers
 {

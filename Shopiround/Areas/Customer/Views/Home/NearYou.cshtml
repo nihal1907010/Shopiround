@@ -1,0 +1,131 @@
+﻿@model IEnumerable<Product>
+@{
+    int i = 0;
+}
+<style>
+    .productImage {
+        height: 150px;
+        width: 100%;
+    }
+
+    .productName {
+        font-size: 14px;
+        line-height: 14px;
+        font-weight: 500;
+    }
+
+    .productPrice {
+        font-size: 16px;
+        line-height: 16px;
+        font-weight: 700;
+    }
+
+    .shopInfo {
+        font-size: 12px;
+        line-height: 12px;
+        font-weight: 400;
+    }
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    .cat {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+    }
+</style>
+<div class="mt-2" style="font-size: 1.4rem; float: right; font-weight: 600;"><img src="~/images/assets/shop.png" style="height: 30px" />Products near you</div>
+<div class="clearfix"></div>
+<div id="productsContainer"></div>
+    </div>
+<partial name="_Footer" />
+
+<script>
+    var products = @Html.Raw(Json.Serialize(Model));
+    var productsContainer = document.getElementById("productsContainer");
+    productsContainer.setAttribute("class", "row mt-2");
+    var latitudeUser, longitudeUser;
+    var latitudeShop, longitudeShop;
+    var cnt = 0;
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                latitudeUser = position.coords.latitude;
+                longitudeUser = position.coords.longitude;
+                for (idx in products) {
+                    latitudeShop = products[idx]["shop"]["latitude"];
+                    longitudeShop = products[idx]["shop"]["longitude"];
+                    fetch(`https://api.geoapify.com/v1/routing?waypoints=${latitudeShop},${longitudeShop}|${latitudeUser},${longitudeUser}&mode=drive&apiKey=a63091f5968a473c88c4c923004de755`)
+                        .then(response => response.json())
+                        .then(result => {
+                            var distanceMeter = result["features"][0]["properties"]["distance"];
+                            var distance = distanceMeter;
+                            var unit = "m";
+                            if (distanceMeter >= 1000) {
+                                distance = distanceMeter / 1000;
+                                unit = "km";
+                            }
+                            if (distanceMeter <= 5000) {
+                                pushProduct(cnt, distance, unit);
+                            }
+                            ++cnt;
+                        })
+                        .catch(error => console.log('error', error));
+                }
+            },
+            (error) => {
+                console.error("Error getting user location:", error);
+            }
+        );
+    } else {
+        console.error("Geolocation is not supported by this browser.");
+    }
+    function pushProduct(idx, distance, unit) {
+        var imageContainer = document.createElement("div");
+        imageContainer.setAttribute("class", "border border-2 rounded-3 p-1");
+
+        var image = document.createElement("img");
+        image.setAttribute("class", "productImage");
+        image.setAttribute("src", products[idx]["imageURL"]);
+
+        imageContainer.appendChild(image);
+
+        var infoContainer = document.createElement("div");
+        infoContainer.setAttribute("class", "p-1");
+
+        var name = document.createElement("div");
+        name.setAttribute("class", "productName mt-1");
+        name.innerHTML = products[idx]["name"];
+
+        var price = document.createElement("div");
+        price.setAttribute("class", "productPrice mt-1");
+        price.innerHTML = "BDT " + products[idx]["price"] + ".00";
+
+        var shop = document.createElement("div");
+        shop.setAttribute("class", "shopInfo mt-1");
+        shop.innerHTML = products[idx]["shop"]["shopName"] + "(" + distance + unit + ")";
+
+        infoContainer.appendChild(name);
+        infoContainer.appendChild(price);
+        infoContainer.appendChild(shop);
+
+        var productLink = document.createElement("a");
+        productLink.setAttribute("asp-area", "Shopkeeper");
+        productLink.setAttribute("asp-controller", "Product");
+        productLink.setAttribute("asp-action", "Show");
+        productLink.setAttribute("asp-route-id", products[idx]["id"]);
+
+        productLink.appendChild(imageContainer);
+        productLink.appendChild(infoContainer);
+
+        var productContainer = document.createElement("div");
+        productContainer.setAttribute("class", "col-6 mt-2");
+
+        productContainer.appendChild(productLink);
+
+        productsContainer.appendChild(productContainer);
+    }
+</script>
+

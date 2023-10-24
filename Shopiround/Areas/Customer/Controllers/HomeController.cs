@@ -1,12 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shopiround.DataAccess.Data;
+using Shopiround.Data;
 using Newtonsoft.Json;
-using Shopiround.DataAccess.Data;
-using Shopiround.DataAccess.Repository.IRepository;
-using Shopiround.Models.Models;
+using Shopiround.Data;
+using Shopiround.Repository.IRepository;
+using Shopiround.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
+using System.Collections.Generic;
+using System.IO;
+using System;
+using System.Linq;
 
 namespace Shopiround.Areas.Customer.Controllers
 {
@@ -17,22 +24,21 @@ namespace Shopiround.Areas.Customer.Controllers
         private readonly IUnitOfWork unitOfWork;
 
         private readonly ILogger<HomeController> _logger;
-        private readonly IUnitOfWork _unitOfWork;
         public readonly IWebHostEnvironment _webHostEnvironment;
-        public ApplicationDbContext _context;
+        public ApplicationDbContext context;
 
         public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
-            _unitOfWork = unitOfWork;
-            _context = context;
+            this.unitOfWork = unitOfWork;
+            this.context = context;
             _webHostEnvironment = webHostEnvironment;
         }
-
+        
         public IActionResult Index()
         {
 
-            List<Product> products = _context.Products.Include("Shop").ToList();
+            List<Product> products = context.Products.Include("Shop").ToList();
             string[] filePaths = Directory.GetFiles(Path.Combine(_webHostEnvironment.WebRootPath, "images", "backgrounds"));
             List<string> files = new List<string>();
             foreach (string filePath in filePaths)
@@ -62,7 +68,7 @@ namespace Shopiround.Areas.Customer.Controllers
             int Id = 1;
             if (Id != null)
             {
-                Product product = _unitOfWork.ProductRepository.Get(p => p.Id == Id, includeProperties: "Shop,Reviews");
+                Product product = unitOfWork.ProductRepository.Get(p => p.Id == Id, includeProperties: "Shop,Reviews");
                 return View(product);
             }
             else
@@ -71,30 +77,37 @@ namespace Shopiround.Areas.Customer.Controllers
             }
             return View();
         }
+        [Authorize]
         public IActionResult ViewCart()
         {
             
-            ApplicationUser user = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
             if (user == null)
             {
                 return new RedirectToPageResult("/Identity/Account/Login");
             }
-            List<CartItem> cartItems = _context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
             return View(cartItems);
         }
         [HttpGet]
         public IActionResult DeleteCartItem(int id)
         {
-            CartItem item = _context.CartItems.Find(id);
-            CartItem cartItem = _unitOfWork.CartItemRepository.Get(c => c.Id == id);
+            CartItem item = context.CartItems.Find(id);
+            CartItem cartItem = unitOfWork.CartItemRepository.Get(c => c.Id == id);
 
 
-            ApplicationUser user = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
             
-            _unitOfWork.CartItemRepository.Remove(cartItem);
-            _unitOfWork.Save();
-            List<CartItem> cartItems = _context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            unitOfWork.CartItemRepository.Remove(cartItem);
+            unitOfWork.Save();
+            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
             return View("ViewCart", cartItems);
+        }
+
+        public IActionResult NearYou()
+        {
+            List<Product> products = context.Products.Include("Shop").Include("Reviews").Include("Questions").ToList();
+            return View(products);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -18,8 +18,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using Shopiround.Models.Models;
-using Shopiround.Utility;
+using Shopiround.Models;
+using Shopiround;
 
 namespace Shopiround.Areas.Identity.Pages.Account
 {

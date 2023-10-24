@@ -1,10 +1,16 @@
 using Microsoft.EntityFrameworkCore;
-using Shopiround.DataAccess.Data;
-using Shopiround.DataAccess.Repository;
-using Shopiround.DataAccess.Repository.IRepository;
+using Shopiround.Data;
+using Shopiround.Repository;
+using Shopiround.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
-using Shopiround.Utility;
+using Shopiround;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +22,16 @@ builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Nihal")));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Online")));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = new PathString("/Identity/Account/Login");
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -30,7 +41,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
