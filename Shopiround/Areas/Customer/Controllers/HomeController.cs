@@ -50,18 +50,24 @@ namespace Shopiround.Areas.Customer.Controllers
         }
 
 
-        [HttpGet]
-        public IActionResult Search(string name)
-        {
-            Console.WriteLine("G");
 
-            if(name!=null)
+        public IActionResult Search(string txt)
+        {
+            if (!string.IsNullOrWhiteSpace(txt))
             {
-                List<Product> searchedProducts =  unitOfWork.ProductRepository.GetAll().Where(j => j.Name.ToLower().Contains(name.ToLower())).ToList() ;
-                return Json(new { searchedProducts });
-                            }
+                string searchTerm = txt.ToLower().Replace(" ", ""); // Remove spaces and make it lowercase
+                List<Product> searchedProducts = unitOfWork.ProductRepository
+                    .GetAll()
+                    .Where(j => j.Name.ToLower().Replace(" ", "").Contains(searchTerm))
+                    .ToList();
+
+                // Return the view with the list of products
+                return View("Search", searchedProducts);
+            }
+
             return View("Search");
         }
+
 
         public IActionResult Privacy()
         {

@@ -13,10 +13,7 @@
     <None Remove="Areas\Admin\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Shopiround.DataAccess\Shopiround.DataAccess.csproj" />
-    <ProjectReference Include="..\Shopiround.Models\Shopiround.Models.csproj" />
-  </ItemGroup>
+ 
 
   <ItemGroup>
     <Folder Include="Migrations\" />

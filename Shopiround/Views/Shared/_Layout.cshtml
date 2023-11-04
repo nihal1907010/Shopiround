@@ -78,11 +78,11 @@
             <a class="col-1 me-2" asp-area="Customer" asp-controller="Home" asp-action="Index">
                 <i class="bi bi-radar icon"></i>
             </a>
-            <div class="col-8">
-                <div class="input-group">
-                    <input class="form-control" id="Search" type="text" placeholder="Search">
-                    <button class="btn btn-outline-secondary" type="button"><i class="bi bi-search"></i></button>
-                </div>
+            <div class="col-8">              
+                    <div class="input-group">
+                        <input class="form-control" id="Search" type="text" placeholder="Search">
+                        <button class="btn btn-outline-secondary" type="button" onclick="search()"><i class="bi bi-search"></i></button>
+                    </div>
             </div>
             <a class="col-1 me-2" asp-area="Customer" asp-controller="Home" asp-action="ViewCart">
                 <i class="bi bi-cart icon"></i>
@@ -133,6 +133,26 @@
 
 @*     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
  *@    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        function validateForm() {
+            var searchText = document.getElementById("searchText").value;
+            if (searchText.trim() === "") {
+                alert("Please enter a search term.");
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
+<script>
+    function search() {
+        var txt = $("#Search").val();
+        var url = '@Url.Action("Search", "Home", new { Area = "Customer", txt = "dummy_txt"})'
+        url = url.replace("dummy_txt", txt);
+        window.location.href = url;
+    }
+</script>
 </html>
