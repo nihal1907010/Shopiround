@@ -81,7 +81,7 @@
             <div class="col-8">
                 <div class="input-group">
                     <input class="form-control" id="Search" type="text" placeholder="Search">
-                    <button class="btn btn-outline-secondary" type="button"><i class="bi bi-search"></i></button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="search()"><i class="bi bi-search"></i></button>
                 </div>
             </div>
             <a class="col-1 me-2" asp-area="Customer" asp-controller="Home" asp-action="ViewCart">
@@ -135,4 +135,14 @@
  *@    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+<script>
+    function search() {
+        var txt = $("#Search").val();
+        var url = '@Url.Action("ViewCart", "Home", new { Area = "Customer", txt = "dummy_txt"})'
+        url = url.replace("dummy_txt", txt);
+        window.location.href = url;
+    }
+</script>
 </html>
+
+

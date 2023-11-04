@@ -1,33 +1,4 @@
 ﻿@model List<CartItem>
-
-@{
-    Random rnd = new Random();
-    List<string> randomColors = new List<string>()
-    {
-        "FFEBEE",
-        "FCE4EC",
-        "F3E5F5",
-        "EDE7F6",
-
-        "E8EAF6",
-
-        "E3F2FD",
-        "E1F5FE",
-        "E0F7FA",
-        "E0F2F1",
-        "E8F5E9",
-        "F1F8E9",
-
-        "F9FBE7",
-        "FFFDE7",
-        "FFF3E0",
-        "EFEBE9",
-        "FAFAFA",
-        "ECEFF1"
-    };
-    int len = randomColors.Count;
-}
-
 <style>
     .productImage {
         height: 30vw;
@@ -127,7 +98,9 @@ line-height: 24px;
         shadowSize: [41, 41]
     });
     let locations = new Array();
+    let sortedLocations = new Array();
     var cartItems = @Html.Raw(Json.Serialize(Model));
+    console.log(cartItems);
     for (idx in cartItems) {
         totalPrice += cartItems[idx]["product"]["price"];
     }
@@ -139,26 +112,167 @@ line-height: 24px;
             (position) => {
                 var lat = position.coords.latitude;
                 var lng = position.coords.longitude;
-                const obj = { lat: lat, lng: lng };
-                locations.push(obj);
+                let location = [lng, lat];
+
+                locations.push({ "location": location });
                 map = L.map('map').setView([lat, lng], 13);
+
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 50,
                     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 }).addTo(map);
-                L.marker([lat, lng], { icon: greenIcon }).addTo(map);
                 for (idx in cartItems) {
                     totalPrice += cartItems[idx]["product"]["price"];
-                    let location = {
-                        lat: cartItems[idx]["product"]["shop"]["latitude"],
-                        lng: cartItems[idx]["product"]["shop"]["longitude"]
-                    }
-                    locations.push(location);
-                    if (locations.length >= 2) {
-                        calculateAndDisplayRoute();
-                    }
-                    clickedMarker = L.marker(location).addTo(map);
+                    location = [
+                        cartItems[idx]["product"]["shop"]["longitude"],
+                        cartItems[idx]["product"]["shop"]["latitude"]
+                    ]
+                    locations.push({"location": location});
                 }
+                console.log("Locations: ");
+                console.log(locations);
+                //
+                var routingMatrix = [];
+                const MAX = 1e9;
+                const N = locations.length;
+
+                var memo = [];
+                var last = [];
+                for (var i = 0; i < N; ++i) {
+                    memo[i] = [];
+                    last[i] = [];
+                    for (var j = 0; j < (1 << N); ++j) {
+                        memo[i][j] = 0;
+                        last[i][j] = -1;
+                    }
+                }
+
+                function tsp(i, mask) {
+                    if (mask == ((1 << i) | 1)) {
+                        var _mask = mask & (~(1 << i))
+                        last[i][_mask] = 0;
+                        return routingMatrix[0][i];
+                    }
+                    if (memo[i][mask] != 0) {
+                        return memo[i][mask];
+                    }
+                    var res = MAX;
+                    for (var j = 0; j < N; ++j) {
+                        if ((mask & (1 << j)) && j != i && j != 0) {
+                            var _mask = mask & (~(1 << i))
+                            var temp = tsp(j, _mask) + routingMatrix[j][i];
+                            if (res > temp) {
+                                res = temp;
+                                last[i][_mask] = j;
+                            }
+                        }
+                    }
+                    return memo[i][mask] = res;
+                }
+                const body = {
+                    "mode": "drive",
+                    "sources": locations,
+                    "targets": locations
+                };
+                fetch('https://api.geoapify.com/v1/routematrix?apiKey=65c669784b2d4fe897f94046acc1a94d', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        for (var i = 0; i < N; ++i) {
+                            routingMatrix[i] = [];
+                            for (var j = 0; j < N; ++j) {
+                                routingMatrix[i][j] = res["sources_to_targets"][i][j]["distance"];
+                            }
+                        }
+                        console.log(routingMatrix);
+                        var ans = MAX;
+                        var lastIdx = -1;
+                        for (var i = 0; i < N; ++i) {
+                            var mask = (1 << N) - 1;
+                            var temp = tsp(i, mask) + routingMatrix[i][0];
+                            if (ans > temp) {
+                                ans = temp;
+                                lastIdx = i;
+                            }
+                        }
+                        //console.log(lastIdx);
+                        //console.log(last);
+                        //console.log(ans);
+                        var waypointsIdx = [];
+                        var mask = (1 << N) - 1;
+                        do {
+                            //console.log(lastIdx);
+                            waypointsIdx.push(lastIdx);
+                            if (lastIdx != 0) {
+                                var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]]).addTo(map);
+                                var shopName = cartItems[lastIdx - 1]["product"]["shop"]["shopName"];
+                                new L.Marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], {
+                                    icon: new L.DivIcon({
+                                        className: 'my-div-icon',
+                                        html: `<span class="my-div-span bg-primary text-white fs-6 p-1 rounded">${shopName}</span>`
+                                    })
+                                }).addTo(map);
+                            }
+                            else {
+                                var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], { icon: greenIcon }).addTo(map);
+                                new L.Marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], {
+                                    icon: new L.DivIcon({
+                                        className: 'my-div-icon',
+                                        html: `<span class="my-div-span bg-primary text-white fs-6 p-1 rounded">You</span>`
+                                    })
+                                }).addTo(map);
+                            }
+                            
+                            mask = mask & ~(1 << lastIdx);
+                            lastIdx = last[lastIdx][mask];
+
+
+
+                        } while (mask != 0)
+
+                        waypointsIdx.reverse();
+                        console.log(waypointsIdx);
+                        var waypoints = [];
+                        for (var i = 0; i < N; ++i) {
+                            waypoints += locations[i]["location"][1] + ',' + locations[i]["location"][0];
+                            if (i + 1 != N) waypoints += '|';
+                        }
+                        console.log(waypoints);
+                        fetch(`https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=drive&apiKey=65c669784b2d4fe897f94046acc1a94d`)
+                            .then(response => response.json())
+                            .then(result => {
+                                console.log(result)
+                                //
+                                const turnByTurnMarkerStyle = {
+                                    radius: 5,
+                                    fillColor: "#fff",
+                                    color: "#555",
+                                    weight: 1,
+                                    opacity: 1,
+                                    fillOpacity: 1
+                                }
+                                // Note! GeoJSON uses [longitude, latutude] format for coordinates
+                                L.geoJSON(result, {
+                                    style: (feature) => {
+                                        return {
+                                            color: "rgba(20, 137, 255, 0.7)",
+                                            weight: 5
+                                        };
+                                    }
+                                }).bindPopup((layer) => {
+                                    return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
+                                }).addTo(map);
+                                //
+                            })
+                            .catch(error => console.log('error', error));
+                    });
+                    
+                //
             },
             (error) => {
             }
@@ -167,39 +281,6 @@ line-height: 24px;
     else {
         console.error("Geolocation is not supported by this browser.");
     }
-    function calculateAndDisplayRoute() {
-        if (routeLayer) {
-            map.removeLayer(routeLayer);
-        }
-        const apiKey = "65c669784b2d4fe897f94046acc1a94d";
-        const waypointString = locations.map(point => point.lat + ',' + point.lng).join('|');
-        const url = `https://api.geoapify.com/v1/routing?waypoints=${waypointString}&mode=drive&details=instruction_details&apiKey=${apiKey}`;
-        fetch(url)
-            .then(response => response.json())
-            .then(routeResult => {
-                const routeCoordinates = routeResult.features[0].geometry.coordinates;
-                const routeGeoJSON = {
-                    "type": "Point",
-                    "properties": {},
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": routeCoordinates
-                    }
-                };
-                L.geoJSON(routeResult, {
-                    style: (feature) => {
-                        return {
-                            color: "rgba(20, 137, 255, 0.7)",
-                            weight: 5
-                        };
-                    }
-                }).bindPopup((layer) => {
-                    return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
-                }).addTo(map);
-            })
-            .catch(error => console.error("Error fetching routing data:", error));
-    }
-
-
+    
 </script>
 
