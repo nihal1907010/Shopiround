@@ -13,6 +13,8 @@
     <None Remove="Areas\Admin\**" />
   </ItemGroup>
 
+ 
+
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\product\" />
