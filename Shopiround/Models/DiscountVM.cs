@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shopiround.Models.Models
+namespace Shopiround.Models
 {
     public class DiscountVM
     {

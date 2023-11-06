@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Shopiround.Models.Models;
 
 namespace Shopiround.Areas.Shopkeeper.Controllers
 {
