@@ -1,0 +1,41 @@
+﻿@model List<DiscountVM>
+
+
+<div class="column">
+    @{
+        foreach (var discountVM in Model)
+        {
+            <form method="post">
+                <input asp-for="@discountVM.ID" hidden>
+                <input asp-for="@discountVM.Name" hidden>
+                <div class="row">
+                    <h6>@discountVM.Name</h6>
+                    @discountVM.Price
+
+                    <div class="col-2">
+                        <div class="form-floating mb-3">
+                            <input class="form-control" asp-for="@discountVM.DiscountAmount" placeholder="DiscountAmount">
+                            <label asp-for="@discountVM.DiscountAmount">DiscountAmount</label>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-floating mb-3">
+                            <input class="form-control" asp-for="@discountVM.DiscountParcentage" placeholder="DiscountParcentage">
+                            <label asp-for="@discountVM.DiscountParcentage">DiscountPercentage</label>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <button id="submit" type="submit" class="btn btn-primary float-end">Submit</button>
+                        <div class="clearfix"></div>
+
+                    </div>
+                </div>
+                <br />
+            </form>
+
+        }
+    }
+</div>
+
+
+

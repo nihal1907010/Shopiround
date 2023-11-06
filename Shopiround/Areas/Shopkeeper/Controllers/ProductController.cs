@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Shopiround.Models.Models;
 
 namespace Shopiround.Areas.Shopkeeper.Controllers
 {
@@ -33,6 +34,28 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         public IActionResult Create()
         {
             return View();
+        }
+        [HttpGet]
+        public IActionResult AddDiscount()
+        {
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "CartItems,Shop");
+            Shop shop = user.Shop;
+            List<Product> products = unitOfWork.ProductRepository.GetAllCondition(p => p.ShopId == shop.ShopId).ToList();
+            List<DiscountVM> discountVMs = new List<DiscountVM>();
+
+            foreach (Product product in products)
+            {
+                discountVMs.Add(new DiscountVM
+                {
+                    ID = product.Id,
+                    Name = product.Name,
+                    Price = product.Price,
+                    DiscountAmount = product.DiscountAmount,
+                    DiscountParcentage = product.DiscountPercentage
+                });
+            }
+
+            return View(discountVMs);
         }
 
         [HttpPost]

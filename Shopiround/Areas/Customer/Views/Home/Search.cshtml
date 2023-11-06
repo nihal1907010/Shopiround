@@ -44,7 +44,7 @@
 <partial name="_Footer" />
 
 <script>
-    var products = JSON.parse('@Html.Raw(Json.Serialize(Model))');
+    var products = @Html.Raw(Json.Serialize(Model));
     var productsContainer = document.getElementById("productsContainer");
     productsContainer.setAttribute("class", "row mt-2");
     var latitudeUser, longitudeUser;
