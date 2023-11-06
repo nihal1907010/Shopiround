@@ -49,6 +49,7 @@
     var latitudeUser, longitudeUser;
     var latitudeShop, longitudeShop;
     var cnt = 0;
+    /*
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -83,6 +84,33 @@
     } else {
         console.error("Geolocation is not supported by this browser.");
     }
+    */
+    latitudeUser = 22.8373;
+    longitudeUser = 89.5400;
+
+    for (idx in products) {
+        latitudeShop = products[idx]["shop"]["latitude"];
+        longitudeShop = products[idx]["shop"]["longitude"];
+        fetch(`https://api.geoapify.com/v1/routing?waypoints=${latitudeShop},${longitudeShop}|${latitudeUser},${longitudeUser}&mode=drive&apiKey=a63091f5968a473c88c4c923004de755`)
+            .then(response => response.json())
+            .then(result => {
+                var distanceMeter = result["features"][0]["properties"]["distance"];
+                var distance = distanceMeter;
+                var unit = "m";
+                if (distanceMeter >= 1000) {
+                    distance = distanceMeter / 1000;
+                    unit = "km";
+                }
+                if (distanceMeter <= 5000) {
+                    pushProduct(cnt, distance, unit);
+                }
+                ++cnt;
+            })
+            .catch(error => console.log('error', error));
+    }
+             
+ 
+
     function pushProduct(idx, distance, unit) {
         var imageContainer = document.createElement("div");
         imageContainer.setAttribute("class", "border border-2 rounded-3 p-1");
