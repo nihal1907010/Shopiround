@@ -100,11 +100,10 @@ line-height: 24px;
     let locations = new Array();
     let sortedLocations = new Array();
     var cartItems = @Html.Raw(Json.Serialize(Model));
-    console.log(cartItems);
+    //console.log(cartItems);
     for (idx in cartItems) {
         totalPrice += cartItems[idx]["product"]["price"];
     }
-    console.log(totalPrice);
     totalPriceSpan.innerHTML = "৳" + totalPrice + ".00";
     var routeLayer = null;
     if ("geolocation" in navigator) {
@@ -129,9 +128,6 @@ line-height: 24px;
                     ]
                     locations.push({"location": location});
                 }
-                console.log("Locations: ");
-                console.log(locations);
-                //
                 var routingMatrix = [];
                 const MAX = 1e9;
                 const N = locations.length;
@@ -200,13 +196,10 @@ line-height: 24px;
                                 lastIdx = i;
                             }
                         }
-                        //console.log(lastIdx);
-                        //console.log(last);
-                        //console.log(ans);
+                        console.log(ans);
                         var waypointsIdx = [];
                         var mask = (1 << N) - 1;
                         do {
-                            //console.log(lastIdx);
                             waypointsIdx.push(lastIdx);
                             if (lastIdx != 0) {
                                 var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]]).addTo(map);
@@ -236,17 +229,14 @@ line-height: 24px;
                         } while (mask != 0)
 
                         waypointsIdx.reverse();
-                        console.log(waypointsIdx);
                         var waypoints = [];
                         for (var i = 0; i < N; ++i) {
                             waypoints += locations[i]["location"][1] + ',' + locations[i]["location"][0];
                             if (i + 1 != N) waypoints += '|';
                         }
-                        console.log(waypoints);
                         fetch(`https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=drive&apiKey=65c669784b2d4fe897f94046acc1a94d`)
                             .then(response => response.json())
                             .then(result => {
-                                console.log(result)
                                 //
                                 const turnByTurnMarkerStyle = {
                                     radius: 5,

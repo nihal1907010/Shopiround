@@ -37,60 +37,53 @@
         border-radius: 50%;
     }
 </style>
-<div class="mt-2" style="font-size: 1.4rem; float: right; font-weight: 600;"><img src="~/images/assets/shop.png" style="height: 30px" />Products near you</div>
+<div class="mt-2" style="font-size: 1.4rem; float: right; font-weight: 600;"><img src="~/images/assets/shop.png" style="height: 30px" />Related items</div>
 <div class="clearfix"></div>
 <div id="productsContainer"></div>
     </div>
 <partial name="_Footer" />
 
 <script>
-    var products = JSON.parse('@Html.Raw(Json.Serialize(Model))');
+    var products = @Html.Raw(Json.Serialize(Model));
     var productsContainer = document.getElementById("productsContainer");
     productsContainer.setAttribute("class", "row mt-2");
     var latitudeUser, longitudeUser;
     var latitudeShop, longitudeShop;
     var cnt = 0;
-
+    
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 latitudeUser = position.coords.latitude;
                 longitudeUser = position.coords.longitude;
-
                 // Create an array to store sorted products with distance data
                 var productsWithDistance = [];
 
-                for (var idx in products) {
-                    var shop = products[idx]["shop"];
-                    if (shop && shop["latitude"] && shop["longitude"]) {
-                        latitudeShop = shop["latitude"];
-                        longitudeShop = shop["longitude"];
+                for (idx in products) {
+                    latitudeShop = products[idx]["shop"]["latitude"];
+                    longitudeShop = products[idx]["shop"]["longitude"];
+                    fetch(`https://api.geoapify.com/v1/routing?waypoints=${latitudeShop},${longitudeShop}|${latitudeUser},${longitudeUser}&mode=drive&apiKey=a63091f5968a473c88c4c923004de755`)
+                        .then(response => response.json())
+                        .then(result => {
+                            var distance = result["features"][0]["properties"]["distance"];
 
-                        // Calculate distance
-                        fetch(`https://api.geoapify.com/v1/routing?waypoints=${latitudeShop},${longitudeShop}|${latitudeUser},${longitudeUser}&mode=drive&apiKey=a63091f5968a473c88c4c923004de755`)
-                            .then(response => response.json())
-                            .then(result => {
-                                var distance = result["features"][0]["properties"]["distance"];
+                            // Add product along with its distance to the array
+                            productsWithDistance.push({
+                                product: products[cnt++],
+                                distance: distance,
+                            });
 
-                                // Add product along with its distance to the array
-                                productsWithDistance.push({
-                                    product: products[idx],
-                                    distance: distance,
-                                });
+                            // Check if all products have been processed
+                            if (productsWithDistance.length === products.length) {
 
-                                // Check if all products have been processed
-                                if (productsWithDistance.length === products.length) {
-                                    // Sort the products by distance
-                                    productsWithDistance.sort((a, b) => a.distance - b.distance);
+                                // Sort the products by distance
+                                productsWithDistance.sort((a, b) => a.distance - b.distance);
 
-                                    // Display the sorted products
-                                    displayProducts(productsWithDistance);
-                                }
-                            })
-                            .catch(error => console.log('error', error));
-                    } else {
-                        // Handle the case where shop data is missing
-                    }
+                                // Display the sorted products
+                                displayProducts(productsWithDistance);
+                            }
+                        })
+                        .catch(error => console.log('error', error));
                 }
             },
             (error) => {
@@ -108,7 +101,7 @@
 
             var productLink = document.createElement("a");
             productLink.setAttribute("href", `/Shopkeeper/Product/Show/${item.product.id}`);
-            productLink.setAttribute("style", "color: blue;");
+            //productLink.setAttribute("style", "color: blue;");
 
             var imageContainer = document.createElement("div");
             imageContainer.setAttribute("class", "border border-2 rounded-3 p-1");
@@ -132,7 +125,13 @@
 
             var shop = document.createElement("div");
             shop.setAttribute("class", "shopInfo mt-1");
-            shop.innerText = `${item.product.shop.shopName} (${item.distance} meters)`;
+            var dist = item.distance;
+            var unit = "m";
+            if (dist > 1000) {
+                dist /= 1000;
+                unit = "km";
+            }
+            shop.innerText = `${item.product.shop.shopName} (${dist}${unit})`;
 
             infoContainer.appendChild(name);
             infoContainer.appendChild(price);

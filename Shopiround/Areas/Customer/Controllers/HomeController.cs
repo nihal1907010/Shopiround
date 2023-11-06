@@ -56,13 +56,9 @@ namespace Shopiround.Areas.Customer.Controllers
             if (!string.IsNullOrWhiteSpace(txt))
             {
                 string searchTerm = txt.ToLower().Replace(" ", ""); // Remove spaces and make it lowercase
-                List<Product> searchedProducts = unitOfWork.ProductRepository
-                    .GetAll()
-                    .Where(j => j.Name.ToLower().Replace(" ", "").Contains(searchTerm))
+                List<Product> products = context.Products.Include("Shop").Include("Reviews").Include("Questions").Where(j => j.Name.ToLower().Replace(" ", "").Contains(searchTerm))
                     .ToList();
-
-                // Return the view with the list of products
-                return View("Search", searchedProducts);
+                return View("Search", products);
             }
 
             return View("Search");
@@ -113,6 +109,11 @@ namespace Shopiround.Areas.Customer.Controllers
         public IActionResult NearYou()
         {
             List<Product> products = context.Products.Include("Shop").Include("Reviews").Include("Questions").ToList();
+            return View(products);
+        }
+        public IActionResult OrderOnline()
+        {
+            List<Product> products = context.Products.Include("Shop").Include("Reviews").Include("Questions").Where(p => p.Shop.AcceptOnlineOrders == true).ToList();
             return View(products);
         }
 
