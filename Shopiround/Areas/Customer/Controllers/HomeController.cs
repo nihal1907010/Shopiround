@@ -22,12 +22,14 @@ namespace Shopiround.Areas.Customer.Controllers
     {
 
         private readonly IUnitOfWork unitOfWork;
-
         private readonly ILogger<HomeController> _logger;
         public readonly IWebHostEnvironment _webHostEnvironment;
         public ApplicationDbContext context;
 
-        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+        public HomeController(ILogger<HomeController> logger, 
+                                IUnitOfWork unitOfWork, 
+                                ApplicationDbContext context, 
+                                IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             this.unitOfWork = unitOfWork;
@@ -90,6 +92,21 @@ namespace Shopiround.Areas.Customer.Controllers
             }
             List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
             return View(cartItems);
+        }
+        public IActionResult ViewSaved()
+        {
+            ApplicationUser applicationUser =
+                unitOfWork.ApplicationUserRepository.Get(user => user.UserName == User.Identity.Name,
+                includeProperties: "Shop,SavedItems");
+            if (applicationUser == null)
+            {
+                return new RedirectToPageResult("/Identity/Account/Login");
+            }
+            List<SavedItem> savedItems = context.SavedItems.
+                Include(item => item.Product).
+                ThenInclude(product => product.Shop).
+                Where(item => item.UserId == applicationUser.Id).ToList();
+            return View(savedItems);
         }
         [HttpGet]
         public IActionResult DeleteCartItem(int id)

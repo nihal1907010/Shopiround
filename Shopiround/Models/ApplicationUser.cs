@@ -13,5 +13,6 @@ namespace Shopiround.Models
         public string Name { get; set; }
         public Shop Shop { get; set; }
         public List<CartItem> CartItems { get; set; }
+        public List<SavedItem> SavedItems { get; set; }
     }
 }

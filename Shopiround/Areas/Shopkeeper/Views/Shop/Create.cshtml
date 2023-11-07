@@ -1,5 +1,5 @@
 ﻿@model Shop
-<form class="w-75 mx-auto" method="post" enctype="multipart/form-data">
+<form class="w-100 mx-auto" method="post" enctype="multipart/form-data">
     <input asp-for="Latitude" hidden id="latitude" />
     <input asp-for="Longitude" hidden id="longitude" />
     <input asp-for="ImageURL" hidden />
@@ -34,28 +34,26 @@
         </div>
     </div>
     <hr />
-    <div class="row">
-        <div class="col-6" id="map"></div>
-        <div class="col-6">
-            <div class="h1">Shop Address</div>
-            <div class="mb-3">
+    <div class="h1">Shop Address</div>
+        <div id="map" style="height: 200px;"></div>
+        <div class="row mt-3">
+            <div class="mb-2 col-4">
                 <label asp-for="Division" class="form-label"></label>
                 <input asp-for="Division" class="form-control" />
             </div>
-            <div class="mb-3">
+            <div class="mb-2 col-4">
                 <label asp-for="District" class="form-label"></label>
                 <input asp-for="District" class="form-control" />
             </div>
-            <div class="mb-3">
+            <div class="mb-2 col-4">
                 <label asp-for="Upazila" class="form-label"></label>
                 <input asp-for="Upazila" class="form-control" />
             </div>
-            <div class="mb-3">
+            <div class="mb-2 col-12">
                 <label asp-for="Address" class="form-label"></label>
                 <input asp-for="Address" class="form-control" />
             </div>
         </div>
-    </div>
     <hr />
     <div class="h1">Others</div>
     <div class="row">

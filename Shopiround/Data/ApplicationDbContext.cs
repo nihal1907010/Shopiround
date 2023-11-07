@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Shopiround.Models;
+using Shopiround.Models.Statistics;
 
 namespace Shopiround.Data
 {
@@ -18,10 +19,13 @@ namespace Shopiround.Data
         {
             base.OnModelCreating(builder);
         }
-        DbSet<Shop> Shops { get; set; }
+        public DbSet<Shop> Shops { get; set; }
         public DbSet<Product> Products { get; set; }
-
-        DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<SavedItem> SavedItems { get; set; }
+        public DbSet<KeywordsCount> KeywordsCounts { get; set; }
+        public DbSet<ProductCount> ProductCounts { get; set; }
+
     }
 }

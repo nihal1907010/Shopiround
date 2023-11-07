@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Shopiround.Areas.Shopkeeper.Controllers
 {
@@ -25,9 +26,14 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             List<Shop> shops = _unitOfWork.ShopRepository.GetAll().ToList();
             return View(shops);
         }
+        [Authorize]
         public IActionResult Create()
         {
             ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
+            if (applicationUser == null)
+            {
+                return new RedirectToPageResult("/Identity/Account/Login");
+            }
             var viewModel = new Shop
             {
                 OwnerName = applicationUser.Name
