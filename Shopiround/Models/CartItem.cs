@@ -13,8 +13,11 @@ namespace Shopiround.Models
         [ForeignKey("ApplicationUser")]
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
-        [ForeignKey("Product")]
+
+
         public int ProductId { get; set; }
+
+        [ForeignKey("ProductId")]
         public Product Product { get; set; }
         public int Quantity { get; set; }
     }

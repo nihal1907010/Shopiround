@@ -15,13 +15,17 @@ namespace Shopiround.Data
             
         }
         protected override void OnModelCreating(ModelBuilder builder)
-        {
+        { 
             base.OnModelCreating(builder);
+
+
         }
         DbSet<Shop> Shops { get; set; }
         public DbSet<Product> Products { get; set; }
 
         DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        
+        public DbSet<DiscountDate> DiscountDates { get; set; }
     }
 }
