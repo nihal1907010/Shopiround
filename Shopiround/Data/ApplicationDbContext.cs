@@ -27,7 +27,10 @@ namespace Shopiround.Data
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<SavedItem> SavedItems { get; set; }
         public DbSet<KeywordsCount> KeywordsCounts { get; set; }
-        public DbSet<ProductCount> ProductCounts { get; set; }        
+        public DbSet<ProductCount> ProductCounts { get; set; }
         public DbSet<DiscountDate> DiscountDates { get; set; }
+        public DbSet<PurchaseItem> PurchaseItems { get; set;}
+        public DbSet<Notification> Notifications { get; set; }
+        
     }
 }

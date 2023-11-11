@@ -12,8 +12,13 @@ using Shopiround.Data;
 namespace Shopiround.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
+<<<<<<<< HEAD:Shopiround/Migrations/20231107102946_Initial.Designer.cs
     [Migration("20231107102946_Initial")]
     partial class Initial
+========
+    [Migration("20231111042530_rrrr")]
+    partial class rrrr
+>>>>>>>> 879abda6eb5d1e447ca08fd45badf5039b68548a:Shopiround/Migrations/20231111042530_rrrr.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -239,11 +244,21 @@ namespace Shopiround.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Online")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Reserve")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -256,6 +271,58 @@ namespace Shopiround.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CartItems");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("CartItem");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Shopiround.Models.DiscountDate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("TodayDiscount")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("discountEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("productId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DiscountDates");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Shopiround.Models.DiscountDate", b =>
@@ -553,6 +620,16 @@ namespace Shopiround.Migrations
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
+            modelBuilder.Entity("Shopiround.Models.PurchaseItem", b =>
+                {
+                    b.HasBaseType("Shopiround.Models.CartItem");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasDiscriminator().HasValue("PurchaseItem");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -619,6 +696,17 @@ namespace Shopiround.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.Notification", b =>
+                {
+                    b.HasOne("Shopiround.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

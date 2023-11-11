@@ -198,23 +198,23 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         }
 
         //Discount only for today.
-        public ActionResult HotDeal()
+        public ActionResult FlashSales()
         {
 
             var discountedProducts = applicationDbContext.Products
             .Where(p => applicationDbContext.DiscountDates.Any(d => d.productId == p.Id && d.discountEndDate > DateTime.Now))
             .ToList();
 
-            return View();
+            return View(discountedProducts);
         }
 
-        public ActionResult DailyDeal()
+        public ActionResult DailyDeals()
         {
             var discountedProducts = applicationDbContext.Products
            .Where(p => applicationDbContext.DiscountDates.Any(d => d.productId == p.Id && d.TodayDiscount))
            .ToList();
 
-            return View();
+            return View(discountedProducts);
         }
 
 
