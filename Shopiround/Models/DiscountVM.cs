@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,5 +14,9 @@ namespace Shopiround.Models
         public float Price { get; set; }
         public float DiscountAmount { get; set; }
         public float DiscountParcentage { get; set; }
+        [DisplayName("Total days for discount")]
+        public int TotalDays { get; set; }
+        [DisplayName("Discount for today")]
+        public bool TodayDiscount { get; set; }
     }
 }

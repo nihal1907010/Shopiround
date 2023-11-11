@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shopiround.Data;
 
@@ -11,9 +12,11 @@ using Shopiround.Data;
 namespace Shopiround.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231107043057_arrr")]
+    partial class arrr
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -384,30 +387,6 @@ namespace Shopiround.Migrations
                     b.ToTable("Review");
                 });
 
-            modelBuilder.Entity("Shopiround.Models.SavedItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SavedItems");
-                });
-
             modelBuilder.Entity("Shopiround.Models.Shop", b =>
                 {
                     b.Property<int>("ShopId")
@@ -496,47 +475,6 @@ namespace Shopiround.Migrations
                         .IsUnique();
 
                     b.ToTable("Shops");
-                });
-
-            modelBuilder.Entity("Shopiround.Models.Statistics.KeywordsCount", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Keyword")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("KeywordsCounts");
-                });
-
-            modelBuilder.Entity("Shopiround.Models.Statistics.ProductCount", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductCounts");
                 });
 
             modelBuilder.Entity("Shopiround.Models.ApplicationUser", b =>
@@ -653,25 +591,6 @@ namespace Shopiround.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Shopiround.Models.SavedItem", b =>
-                {
-                    b.HasOne("Shopiround.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Shopiround.Models.ApplicationUser", "User")
-                        .WithMany("SavedItems")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Shopiround.Models.Shop", b =>
                 {
                     b.HasOne("Shopiround.Models.ApplicationUser", "applicationUser")
@@ -681,17 +600,6 @@ namespace Shopiround.Migrations
                         .IsRequired();
 
                     b.Navigation("applicationUser");
-                });
-
-            modelBuilder.Entity("Shopiround.Models.Statistics.ProductCount", b =>
-                {
-                    b.HasOne("Shopiround.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Shopiround.Models.Product", b =>
@@ -704,8 +612,6 @@ namespace Shopiround.Migrations
             modelBuilder.Entity("Shopiround.Models.ApplicationUser", b =>
                 {
                     b.Navigation("CartItems");
-
-                    b.Navigation("SavedItems");
 
                     b.Navigation("Shop")
                         .IsRequired();
