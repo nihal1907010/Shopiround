@@ -12,8 +12,8 @@ using Shopiround.Data;
 namespace Shopiround.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231111042530_rrrr")]
-    partial class rrrr
+    [Migration("20231111050531_a1")]
+    partial class a1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -239,10 +239,6 @@ namespace Shopiround.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("Online")
                         .HasColumnType("bit");
 
@@ -266,10 +262,6 @@ namespace Shopiround.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CartItems");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("CartItem");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Shopiround.Models.DiscountDate", b =>
@@ -364,6 +356,42 @@ namespace Shopiround.Migrations
                     b.HasIndex("ShopId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.PurchaseItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Online")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Reserve")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PurchaseItems");
                 });
 
             modelBuilder.Entity("Shopiround.Models.Question", b =>
@@ -593,16 +621,6 @@ namespace Shopiround.Migrations
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
-            modelBuilder.Entity("Shopiround.Models.PurchaseItem", b =>
-                {
-                    b.HasBaseType("Shopiround.Models.CartItem");
-
-                    b.Property<DateTime>("PurchaseDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasDiscriminator().HasValue("PurchaseItem");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -693,6 +711,25 @@ namespace Shopiround.Migrations
                         .IsRequired();
 
                     b.Navigation("Shop");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.PurchaseItem", b =>
+                {
+                    b.HasOne("Shopiround.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shopiround.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Shopiround.Models.Question", b =>

@@ -8,6 +8,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Shopiround.Data;
+using Shopiround.Repository;
+using Shopiround.Models.Statistics;
+using Microsoft.EntityFrameworkCore;
 
 namespace Shopiround.Areas.Shopkeeper.Controllers
 {
@@ -16,15 +20,53 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         public readonly IWebHostEnvironment _webHostEnvironment;
-        public ShopController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        public ApplicationDbContext context;
+        public ShopController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, ApplicationDbContext context)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            this.context = context;
         }
         public IActionResult Index()
         {
-            List<Shop> shops = _unitOfWork.ShopRepository.GetAll().ToList();
-            return View(shops);
+            var topProductCounts = context.ProductCounts
+            .OrderByDescending(pc => pc.Count)
+            .Take(5).Include("Product")
+            .ToList();
+
+          /*  List<Product> topProducts = new List<Product>();
+
+            foreach (var productCount in topProductCounts)
+            {
+                // Assuming ProductId in ProductCount corresponds to Id in the Product table
+                Product product = _unitOfWork.ProductRepository.Get(p => p.Id == productCount.ProductId, includeProperties: "Shop,Reviews");
+
+                if (product != null)
+                {
+                    topProducts.Add(product);
+                }
+            }*/
+
+            var MostSearchedKeyword = context.KeywordsCounts
+            .OrderByDescending(pc => pc.Count)
+            .Take(5)
+            .ToList();
+
+           
+
+
+            ViewData["ProductCount"] = topProductCounts;
+            ViewData["KeywordCount"] = MostSearchedKeyword;
+
+
+
+           /* ShopkeeperHomeVM shopkeeperHomeVM = new ShopkeeperHomeVM()
+            {
+                MostSearchedKeyword = MostSearchedKeyword,
+                PopularProducts = topProducts
+            };*/
+    
+            return View();
         }
         [Authorize]
         public IActionResult Create()

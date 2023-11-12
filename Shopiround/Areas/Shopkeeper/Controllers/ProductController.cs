@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Shopiround.Data;
+using Shopiround.Models.Statistics;
 
 namespace Shopiround.Areas.Shopkeeper.Controllers
 {
@@ -97,8 +98,6 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             return View(discountVMs);
         }
 
-       
-
         [HttpPost]
         public IActionResult Create(Product product, IFormFile? file)
         {
@@ -128,11 +127,36 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
         public IActionResult Show(int? Id)
         {
-            
-            if(Id != null)
+            if (Id != null)
             {
-                Product product = unitOfWork.ProductRepository.Get(p=> p.Id == Id, includeProperties: "Shop,Reviews");
-                 return View(product);
+                Product product = unitOfWork.ProductRepository.Get(p => p.Id == Id, includeProperties: "Shop,Reviews");
+
+                if (product != null)
+                {
+                    ProductCount productCount = applicationDbContext.ProductCounts.FirstOrDefault(a => a.ProductId == Id);
+                    if(productCount != null)
+                    {
+                        productCount.Count++;
+                        applicationDbContext.ProductCounts.Update(productCount);
+                        
+                    }
+                    else
+                    {
+                        ProductCount productCount1 = new ProductCount()
+                        {
+                            ProductId = (int)Id,
+                            Count = 1
+                        };
+                        applicationDbContext.ProductCounts.Add(productCount1);
+                    }
+                    applicationDbContext.SaveChanges();
+
+                    return View(product);
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
             else
             {
@@ -140,7 +164,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             }
         }
 
-       
+
         public IActionResult SearchResult(string name)
         {
             if (name != null)
