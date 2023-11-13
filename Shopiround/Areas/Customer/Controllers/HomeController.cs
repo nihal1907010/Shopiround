@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 using System.Linq;
+using Shopiround.Models.Statistics;
 
 namespace Shopiround.Areas.Customer.Controllers
 {
@@ -56,6 +57,28 @@ namespace Shopiround.Areas.Customer.Controllers
             if (!string.IsNullOrWhiteSpace(txt))
             {
                 string searchTerm = txt.ToLower().Replace(" ", ""); // Remove spaces and make it lowercase
+
+                KeywordsCount keywordsCount = context.KeywordsCounts.FirstOrDefault(a => a.Keyword == txt);
+
+                    if(keywordsCount != null)
+                    {
+
+                    keywordsCount.Count++;
+                    context.KeywordsCounts.Update(keywordsCount);
+                        
+                    }
+                    else
+                    {
+                        KeywordsCount keywordsCount1 = new KeywordsCount()
+                        {
+                            Keyword = txt,
+                            Count = 1
+                        };
+                    context.KeywordsCounts.Add(keywordsCount1);
+                    }
+                    context.SaveChanges();
+
+
                 List<Product> products = context.Products.Include("Shop").Include("Reviews").Include("Questions").Where(j => j.Name.ToLower().Replace(" ", "").Contains(searchTerm))
                     .ToList();
                 return View("Search", products);

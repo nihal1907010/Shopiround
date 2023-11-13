@@ -12,8 +12,13 @@ using Shopiround.Data;
 namespace Shopiround.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
+<<<<<<<< HEAD:Shopiround/Migrations/20231111043845_FinalDatabase.Designer.cs
     [Migration("20231111043845_FinalDatabase")]
     partial class FinalDatabase
+========
+    [Migration("20231111050531_a1")]
+    partial class a1
+>>>>>>>> 793e6df1ad731a6e4b43e480963e98ce1f3aadae:Shopiround/Migrations/20231111050531_a1.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

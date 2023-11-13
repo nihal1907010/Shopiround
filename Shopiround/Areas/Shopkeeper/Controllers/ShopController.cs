@@ -8,6 +8,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Shopiround.Data;
+using Shopiround.Repository;
+using Shopiround.Models.Statistics;
+using Microsoft.EntityFrameworkCore;
 
 namespace Shopiround.Areas.Shopkeeper.Controllers
 {
@@ -16,15 +20,51 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         public readonly IWebHostEnvironment _webHostEnvironment;
-        public ShopController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        public ApplicationDbContext context;
+        public ShopController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, ApplicationDbContext context)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            this.context = context;
         }
         public IActionResult Index()
         {
-            List<Shop> shops = _unitOfWork.ShopRepository.GetAll().ToList();
-            return View(shops);
+            var topProductCounts = context.ProductCounts
+            .OrderByDescending(pc => pc.Count)
+            .Take(5).Include("Product")
+            .ToList();
+
+            var MostSearchedKeyword = context.KeywordsCounts
+            .OrderByDescending(pc => pc.Count)
+            .Take(5)
+            .ToList();
+
+            ViewData["ProductCount"] = topProductCounts;
+            ViewData["KeywordCount"] = MostSearchedKeyword;
+
+            return View();
+        }
+
+        public IActionResult ShowAllPopularProduct()
+        {
+            var topProductCounts = context.ProductCounts
+            .OrderByDescending(pc => pc.Count)
+            .Include("Product")
+            .ToList();
+
+            ViewData["ProductCount"] = topProductCounts;
+
+            return View();
+        }
+        public IActionResult ShowAllKeywords()
+        {
+            var MostSearchedKeyword = context.KeywordsCounts
+            .OrderByDescending(pc => pc.Count)
+            .ToList();
+
+            ViewData["KeywordCount"] = MostSearchedKeyword;
+
+            return View();
         }
         [Authorize]
         public IActionResult Create()
