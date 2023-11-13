@@ -34,38 +34,36 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             .Take(5).Include("Product")
             .ToList();
 
-          /*  List<Product> topProducts = new List<Product>();
-
-            foreach (var productCount in topProductCounts)
-            {
-                // Assuming ProductId in ProductCount corresponds to Id in the Product table
-                Product product = _unitOfWork.ProductRepository.Get(p => p.Id == productCount.ProductId, includeProperties: "Shop,Reviews");
-
-                if (product != null)
-                {
-                    topProducts.Add(product);
-                }
-            }*/
-
             var MostSearchedKeyword = context.KeywordsCounts
             .OrderByDescending(pc => pc.Count)
             .Take(5)
             .ToList();
 
-           
-
-
             ViewData["ProductCount"] = topProductCounts;
             ViewData["KeywordCount"] = MostSearchedKeyword;
 
+            return View();
+        }
 
+        public IActionResult ShowAllPopularProduct()
+        {
+            var topProductCounts = context.ProductCounts
+            .OrderByDescending(pc => pc.Count)
+            .Include("Product")
+            .ToList();
 
-           /* ShopkeeperHomeVM shopkeeperHomeVM = new ShopkeeperHomeVM()
-            {
-                MostSearchedKeyword = MostSearchedKeyword,
-                PopularProducts = topProducts
-            };*/
-    
+            ViewData["ProductCount"] = topProductCounts;
+
+            return View();
+        }
+        public IActionResult ShowAllKeywords()
+        {
+            var MostSearchedKeyword = context.KeywordsCounts
+            .OrderByDescending(pc => pc.Count)
+            .ToList();
+
+            ViewData["KeywordCount"] = MostSearchedKeyword;
+
             return View();
         }
         [Authorize]

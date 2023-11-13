@@ -164,6 +164,14 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             }
         }
 
+        public IActionResult ShowAllProducts()
+        {
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "CartItems,Shop");
+            Shop shop = user.Shop;
+            List<Product> products = unitOfWork.ProductRepository.GetAllCondition(p => p.ShopId == shop.ShopId).ToList();
+            return View(products);
+        }
+
 
         public IActionResult SearchResult(string name)
         {

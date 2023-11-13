@@ -1,0 +1,27 @@
+﻿@using Shopiround.Models.Statistics;
+@{
+    int i = 0;
+    int no_key = 1;
+    List<KeywordsCount> keywords = ViewData["KeywordCount"] as List<KeywordsCount>;
+}
+
+<div style="font-size: 1.4rem; float: right; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px" />Popular Keywords</div>
+<div class="clearfix"></div>
+<div class="row mt-2">
+
+    @foreach (var keyword in keywords)
+    {
+        <div class="card" style="height: 2rem; width: 100%;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="margin-right: 2px;">@no_key )</div>
+                <div style="margin-left: 2px; margin-right: 2px;">@keyword.Keyword</div>
+                <div>Search Count: @keyword.Count</div>
+            </div>
+        </div>
+
+        no_key++;
+    }
+    <a style="font-size: 1rem; float: right; font-weight: 600;" href="@Url.Action("ShowAllPopularProduct", "Shop", new { area = "Shopkeeper"})">See more</a>
+</div>
+
+<partial name="_Footer" />
