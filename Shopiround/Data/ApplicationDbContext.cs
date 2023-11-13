@@ -31,6 +31,8 @@ namespace Shopiround.Data
         public DbSet<DiscountDate> DiscountDates { get; set; }
         public DbSet<PurchaseItem> PurchaseItems { get; set;}
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Message> Message { get; set; }
+        public DbSet<LastMessage> LastMessages { get; set; }
         
     }
 }

@@ -1,0 +1,100 @@
+﻿@model MessageVM
+@{
+    ViewData["Title"] = "Chat";
+}
+<style>
+    .bubble {
+        max-width: calc(100% - 67px);
+        overflow-wrap: break-word;
+    }
+</style>
+<div class="container">
+    <div>
+        <label>Your Name:</label>
+        <input type="text" id="displayName" />
+    </div>
+
+    <div class="mt-5">
+        <input type="text" id="message" />
+        <input type="button" id="sendMessage" value="Send" />
+    </div>
+
+    <div class="mt-3">
+        <div id="messages"></div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.12/signalr.min.js" integrity="sha512-rQm2bvVuqEjdaJKcVj/+bx+FnccQCHZpBIMQRJkyDACamQ12m6XuFb2aHQYgdTEnnHNIsAMeh1hODKwm2Uvy5A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    var senderId = "@Model.SenderId";
+    var receiverId = "@Model.ReceiverId";
+
+    var messagesDiv = document.getElementById("messages");
+
+    var connection = new signalR.HubConnectionBuilder().withUrl("/Chat").build();
+
+    connection.start().catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    document.getElementById("sendMessage").addEventListener("click", function (event) {
+        var user = document.getElementById("displayName").value;
+        var message = document.getElementById("message").value;
+
+        var messageDiv = document.createElement("div");
+        messageDiv.setAttribute("class", "message mb-2");
+
+        var outerContainerDiv = document.createElement("div");
+        outerContainerDiv.setAttribute("class", "outer-container");
+
+        var innerContainerDiv = document.createElement("div");
+        innerContainerDiv.setAttribute("class", "inner-container d-flex flex-row-reverse");
+
+        var sendBubbleDiv = document.createElement("div");
+        sendBubbleDiv.setAttribute("class", "bubble bg-primary p-2 rounded rounded-4 text-white");
+
+        messageDiv.appendChild(outerContainerDiv);
+        outerContainerDiv.appendChild(innerContainerDiv);
+
+        innerContainerDiv.appendChild(sendBubbleDiv);
+        sendBubbleDiv.innerHTML = `${message}`;
+        messagesDiv.appendChild(messageDiv);
+        console.log("1");
+
+        connection.invoke("SendMessage", senderId, receiverId, message).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        event.preventDefault();
+    });
+
+    connection.on("ReceiveMessage", function (user, message) {
+        var messageDiv = document.createElement("div");
+        messageDiv.setAttribute("class", "message mb-2");
+
+        var outerContainerDiv = document.createElement("div");
+        outerContainerDiv.setAttribute("class", "outer-container");
+
+        var innerContainerDiv = document.createElement("div");
+        innerContainerDiv.setAttribute("class", "inner-container d-flex");
+
+        var receivedBubbleDiv = document.createElement("div");
+        receivedBubbleDiv.setAttribute("class", "bubble bg-secondary p-2 rounded rounded-4 text-white");
+
+        messageDiv.appendChild(outerContainerDiv);
+        outerContainerDiv.appendChild(innerContainerDiv);
+
+        innerContainerDiv.appendChild(receivedBubbleDiv);
+        receivedBubbleDiv.innerHTML = `${message}`;
+        messagesDiv.appendChild(messageDiv);
+
+        /*
+        var encodedMsg = user + ": " + message;
+        var li = document.createElement("li");
+
+        li.textContent = encodedMsg;
+        document.getElementById("discussion").appendChild(li);
+        */
+
+    });
+</script>

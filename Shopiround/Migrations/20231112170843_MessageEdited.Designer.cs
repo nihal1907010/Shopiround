@@ -12,13 +12,8 @@ using Shopiround.Data;
 namespace Shopiround.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:Shopiround/Migrations/20231107102946_Initial.Designer.cs
-    [Migration("20231107102946_Initial")]
-    partial class Initial
-========
-    [Migration("20231111042530_rrrr")]
-    partial class rrrr
->>>>>>>> 879abda6eb5d1e447ca08fd45badf5039b68548a:Shopiround/Migrations/20231111042530_rrrr.Designer.cs
+    [Migration("20231112170843_MessageEdited")]
+    partial class MessageEdited
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -244,10 +239,6 @@ namespace Shopiround.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("Online")
                         .HasColumnType("bit");
 
@@ -271,10 +262,6 @@ namespace Shopiround.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CartItems");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("CartItem");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Shopiround.Models.DiscountDate", b =>
@@ -297,6 +284,65 @@ namespace Shopiround.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DiscountDates");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.LastMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.ToTable("LastMessages");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("MessageText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("SeenTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("SendTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("Shopiround.Models.Notification", b =>
@@ -323,28 +369,6 @@ namespace Shopiround.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("Shopiround.Models.DiscountDate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("TodayDiscount")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("discountEndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("productId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DiscountDates");
                 });
 
             modelBuilder.Entity("Shopiround.Models.Product", b =>
@@ -391,6 +415,42 @@ namespace Shopiround.Migrations
                     b.HasIndex("ShopId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.PurchaseItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Online")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Reserve")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PurchaseItems");
                 });
 
             modelBuilder.Entity("Shopiround.Models.Question", b =>
@@ -620,16 +680,6 @@ namespace Shopiround.Migrations
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
-            modelBuilder.Entity("Shopiround.Models.PurchaseItem", b =>
-                {
-                    b.HasBaseType("Shopiround.Models.CartItem");
-
-                    b.Property<DateTime>("PurchaseDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasDiscriminator().HasValue("PurchaseItem");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -700,6 +750,44 @@ namespace Shopiround.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Shopiround.Models.LastMessage", b =>
+                {
+                    b.HasOne("Shopiround.Models.Message", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shopiround.Models.ApplicationUser", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+
+                    b.Navigation("Receiver");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.Message", b =>
+                {
+                    b.HasOne("Shopiround.Models.ApplicationUser", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shopiround.Models.ApplicationUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("Shopiround.Models.Notification", b =>
                 {
                     b.HasOne("Shopiround.Models.ApplicationUser", "User")
@@ -720,6 +808,25 @@ namespace Shopiround.Migrations
                         .IsRequired();
 
                     b.Navigation("Shop");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.PurchaseItem", b =>
+                {
+                    b.HasOne("Shopiround.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shopiround.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Shopiround.Models.Question", b =>

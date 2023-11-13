@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shopiround.Data;
 using Newtonsoft.Json;
-using Shopiround.Data;
 using Shopiround.Repository.IRepository;
 using Shopiround.Models;
 using System.Diagnostics;
@@ -39,7 +38,6 @@ namespace Shopiround.Areas.Customer.Controllers
         
         public IActionResult Index()
         {
-
             List<Product> products = context.Products.Include("Shop").ToList();
             string[] filePaths = Directory.GetFiles(Path.Combine(_webHostEnvironment.WebRootPath, "images", "backgrounds"));
             List<string> files = new List<string>();
@@ -79,12 +77,22 @@ namespace Shopiround.Areas.Customer.Controllers
             {
                 return NotFound();
             }
-            return View();
         }
         [Authorize]
         public IActionResult ViewCart()
         {
             
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
+            if (user == null)
+            {
+                return new RedirectToPageResult("/Identity/Account/Login");
+            }
+            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            return View(cartItems);
+        }
+
+        public IActionResult ShowRoute()
+        {
             ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
             if (user == null)
             {
