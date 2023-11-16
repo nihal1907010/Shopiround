@@ -1,0 +1,138 @@
+﻿@model Shop
+<form class="w-100 mx-auto" method="post" enctype="multipart/form-data">
+    <input asp-for="Latitude" hidden id="latitude" />
+    <input asp-for="Longitude" hidden id="longitude" />
+    <input asp-for="ImageURL" hidden />
+    <div class="row">
+        <div class="col-8">
+            <div class="h1">
+                Basic Information
+            </div>
+            <div class="mb-3">
+                <label asp-for="ShopName" class="form-label"></label>
+                <input asp-for="ShopName" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="OwnerName" class="form-label"></label>
+                <input asp-for="OwnerName" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="ShopPhoneNo" class="form-label"></label>
+                <input asp-for="ShopPhoneNo" class="form-control" />
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card h-100 d-flex">
+                <img id="output" src="~/images/shop/default_shop.png" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        <input type="file" name="file" class="form-control" onchange="loadFile(event)">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="h1">Shop Address</div>
+    <div id="map" style="height: 200px;"></div>
+    <div class="row mt-3">
+        <div class="mb-2 col-4">
+            <label asp-for="Division" class="form-label"></label>
+            <input asp-for="Division" class="form-control" />
+        </div>
+        <div class="mb-2 col-4">
+            <label asp-for="District" class="form-label"></label>
+            <input asp-for="District" class="form-control" />
+        </div>
+        <div class="mb-2 col-4">
+            <label asp-for="Upazila" class="form-label"></label>
+            <input asp-for="Upazila" class="form-control" />
+        </div>
+        <div class="mb-2 col-12">
+            <label asp-for="Address" class="form-label"></label>
+            <input asp-for="Address" class="form-control" />
+        </div>
+    </div>
+    <hr />
+    <div class="h1">Others</div>
+    <div class="row">
+        <div class="col-8">
+            <div class="h5"><u>Openning Time</u></div>
+            <select asp-for="OpeningTime" class="form-select mb-3" aria-label="Default select example">
+                <option selected disabled>Select openning Time</option>
+                @{
+                    for (int i = 1; i <= 12; ++i)
+                    {
+                        string time = i + ":00 AM";
+                        if (i < 10) time = "0" + time;
+                        <option value="@i">@time</option>
+                    }
+                    for (int i = 1; i <= 12; ++i)
+                    {
+                        string time = i + ":00 PM";
+                        if (i < 10) time = "0" + time;
+                        <option value="@i">@time</option>
+                    }
+                }
+            </select>
+            <div class="h5"><u>Closing Time</u></div>
+            <select asp-for="ClosingTime" class="form-select mb-3" aria-label="Default select example">
+                <option selected disabled>Select closing Time</option>
+                @{
+                    for (int i = 1; i <= 12; ++i)
+                    {
+                        string time = i + ":00 AM";
+                        if (i < 10) time = "0" + time;
+                        <option value="@i">@time</option>
+                    }
+                    for (int i = 1; i <= 12; ++i)
+                    {
+                        string time = i + ":00 PM";
+                        if (i < 10) time = "0" + time;
+                        <option value="@i">@time</option>
+                    }
+                }
+            </select>
+            <div class="form-check form-switch mb-3">
+                <input asp-for="AcceptOnlineOrders" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="AcceptOnlineOrders" class="form-check-label" for="flexSwitchCheckDefault"></label>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="container border-start">
+                <div class="h4"><u>Open Days</u></div>
+                <div class="form-check">
+                    <input asp-for="Saturday" class="form-check-input" type="checkbox" checked>
+                    <label asp-for="Saturday" class="form-check-label"></label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="Sunday" class="form-check-input" type="checkbox" checked>
+                    <label asp-for="Sunday" class="form-check-label"></label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="Monday" class="form-check-input" type="checkbox" checked>
+                    <label asp-for="Monday" class="form-check-label"></label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="Tuesday" class="form-check-input" type="checkbox" checked>
+                    <label asp-for="Tuesday" class="form-check-label"></label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="Wednesday" class="form-check-input" type="checkbox" checked>
+                    <label asp-for="Wednesday" class="form-check-label"></label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="Thursday" class="form-check-input" type="checkbox" checked>
+                    <label asp-for="Thursday" class="form-check-label"></label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="Friday" class="form-check-input" type="checkbox" checked>
+                    <label asp-for="Friday" class="form-check-label"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+</form>

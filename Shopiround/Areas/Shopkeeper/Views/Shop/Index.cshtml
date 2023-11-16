@@ -30,7 +30,7 @@
         </div>
         <div>Show all product</div>
     </a>
-    <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" >
+    <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Shop" asp-action="Profile">
         <div>
             <img class="cat" src="~/images/assets/nearYou.png" />
         </div>
@@ -74,41 +74,37 @@
 
 
 
-    <div style="font-size: 1.4rem; float: right; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px"/>Trending Products</div>
+    <div style="font-size: 1.4rem; float: left; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px"/>Trending Products</div>
     <div class="clearfix"></div>
     <div class="row mt-2">
+    <table class="table">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Name</th>
+            <th>Search Count</th>
+        </tr>
+    </thead>
         @foreach (var item in popularProducts)
         {
-            string distanceId = "distance" + i.ToString();
-            <div class="col-6 Search mt-2" data-product-id="@item.Id" data-product-name="@item.Product.Name">
-                <a href="@Url.Action("Show", "Product", new { area = "Shopkeeper",  Id = item.Id })">
-                    <div class="border border-2 rounded-3 p-1">
-                    <div style="display: flex;">
-                        <div>@no_product)</div>
-                        <img class="productImage" src="@item.Product.ImageURL" />
-                    </div>
-                        
-                        <div class="p-1">
-                        <div class="productName mt-1">@item.Product.Name</div>
-                        <div class="productPrice mt-1">BDT @item.Product.Price.00</div>
-                            
-
-                        <div></div>
-                    </div>
-                    </div>
-                    
-                </a>
-            </div>
-            ++i;
-        }
+            
+        <tr>
+            <td>@no_key )</td>
+                <td> <a href="@Url.Action("Show", "Product", new { area = "Shopkeeper",  Id = item.Id })">@item.Product.Name </a></td>
+            <td>@item.Count</td>
+        </tr>
+        
+        no_key++;
+       }
+        </table>
 
     <a style="font-size: 1rem; float: right; font-weight: 600;" href="@Url.Action("ShowAllPopularProduct", "Shop", new { area = "Shopkeeper"})">See more</a>
-
+    <div class="clearfix"></div>
 
 </div>
 
 <hr />
-<div style="font-size: 1.4rem; float: right; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px" />Popular Keywords</div>
+<div style="font-size: 1.4rem; float: left; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px" />Popular Keywords</div>
 <div class="clearfix"></div>
 <div class="row mt-2">
     
@@ -125,6 +121,7 @@
         no_key++;
     }
     <a style="font-size: 1rem; float: right; font-weight: 600;" href="@Url.Action("ShowAllKeywords", "Shop", new { area = "Shopkeeper"})">See more</a>
+    <div class="clearfix"></div>
     </div>
 
 <partial name="_Footer" />
