@@ -97,12 +97,12 @@
         {
             
         <tr>
-            <td>@no_key )</td>
+                <td>@no_product )</td>
                 <td> <a href="@Url.Action("Show", "Product", new { area = "Shopkeeper",  Id = item.Id })">@item.Product.Name </a></td>
             <td>@item.Count</td>
         </tr>
         
-        no_key++;
+            no_product++;
        }
         </table>
 
@@ -120,18 +120,26 @@
 <div class="clearfix"></div>
 <div class="row mt-2">
     
-    @foreach (var keyword in keywords)
-    {
-        <div class="card" style="height: 2rem; width: 100%;">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div style="margin-right: 2px;">@no_key )</div>
-                <div style="margin-left: 2px; margin-right: 2px;">@keyword.Keyword</div>
-                <div>Search Count: @keyword.Count</div>
-            </div>
-        </div>
-
-        no_key++;
-    }
+    <table class="table">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Keyword</th>
+                <th>Search Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var keyword in keywords)
+            {
+                <tr>
+                    <td>@no_key</td>
+                    <td>@keyword.Keyword</td>
+                    <td>@keyword.Count</td>
+                </tr>
+                no_key++;
+            }
+        </tbody>
+    </table>
     
     </div>
 

@@ -49,6 +49,18 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         {
             var topProductCounts = context.ProductCounts
             .OrderByDescending(pc => pc.Count)
+            .Include("Product").Include("Shop")
+            .ToList();
+
+            ViewData["ProductCount"] = topProductCounts;
+
+            return View();
+        }
+
+        public IActionResult CustomerPopularProduct()
+        {
+            var topProductCounts = context.ProductCounts
+            .OrderByDescending(pc => pc.Count)
             .Include("Product")
             .ToList();
 
