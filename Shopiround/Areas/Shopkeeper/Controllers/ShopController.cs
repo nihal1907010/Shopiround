@@ -49,6 +49,18 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         {
             var topProductCounts = context.ProductCounts
             .OrderByDescending(pc => pc.Count)
+            .Include("Product").Include("Shop")
+            .ToList();
+
+            ViewData["ProductCount"] = topProductCounts;
+
+            return View();
+        }
+
+        public IActionResult CustomerPopularProduct()
+        {
+            var topProductCounts = context.ProductCounts
+            .OrderByDescending(pc => pc.Count)
             .Include("Product")
             .ToList();
 
@@ -105,5 +117,21 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             _unitOfWork.Save();
             return RedirectToAction("Index");
         }
+
+        public IActionResult Profile()
+        {
+            ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop");
+            Shop shop = applicationUser.Shop;
+            List<Product> products = context.Products.Where(p => p.ShopId == shop.ShopId).ToList();
+
+            ShopProfile shopProfile = new ShopProfile
+            { 
+                shop = shop,
+                products = products
+            };
+
+            return View(shopProfile);
+        }
+
     }
 }

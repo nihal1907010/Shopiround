@@ -8,34 +8,38 @@
     List<ProductCount> popularProducts = ViewData["ProductCount"] as List<ProductCount>;
 }
 
-<div class="mt-3 mb-3 d-flex justify-content-between align-items-center">
+<div class="row">
+    <div class="col-6 col-md-3">
     <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Product" asp-action="Create">
         <div>
-            <i class="bi bi-plus-circle"> </i>
+            <img class="cat" src="~/images/assets/AddProduct.png" />
         </div>
         <div>Add Product</div>
     </a>
-    <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Product" asp-action="AddDiscount">
-        <div>
-            <i class="bi bi-plus-circle"> </i>
-        </div>
-        <div>Add Discount</div>
-    </a>
-</div>
+        <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Product" asp-action="ShowAllProducts">
+            <div>
+                <img class="cat" src="~/images/assets/ShowProduct.png" />
+            </div>
+            <div>Show all product</div>
+        </a>
+    
+    </div>
 
-<div class="mt-3 mb-3 d-flex justify-content-between align-items-center">
-    <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Product" asp-action="ShowAllProducts">
+    <div class="col-6 col-md-3">
+    
+        <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Product" asp-action="AddDiscount">
+            <div>
+                <img class="cat" src="~/images/assets/AddDiscount.png" />
+            </div>
+            <div>Add Discount</div>
+        </a>
+    <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Shop" asp-action="Profile">
         <div>
-            <img class="cat" src="~/images/assets/flashSales.png" />
+            <img class="cat" src="~/images/assets/Message.png" />
         </div>
-        <div>Show all product</div>
+        <div>Message</div>
     </a>
-    <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" >
-        <div>
-            <img class="cat" src="~/images/assets/nearYou.png" />
-        </div>
-        <div>Near you</div>
-    </a>
+    </div>
 </div>
 
 <hr />
@@ -74,57 +78,69 @@
 
 
 
-    <div style="font-size: 1.4rem; float: right; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px"/>Trending Products</div>
+    
+<div style="display: flex; justify-content: space-between;">
+    <div style="font-size: 1.4rem; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px; vertical-align: middle;" />Trending Products</div>
+    <a style="font-size: 1rem; float: right; font-weight: 600;" href="@Url.Action("ShowAllPopularProduct", "Shop", new { area = "Shopkeeper"})">See more</a>
+</div>
     <div class="clearfix"></div>
     <div class="row mt-2">
+    <table class="table">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Name</th>
+            <th>Search Count</th>
+        </tr>
+    </thead>
         @foreach (var item in popularProducts)
         {
-            string distanceId = "distance" + i.ToString();
-            <div class="col-6 Search mt-2" data-product-id="@item.Id" data-product-name="@item.Product.Name">
-                <a href="@Url.Action("Show", "Product", new { area = "Shopkeeper",  Id = item.Id })">
-                    <div class="border border-2 rounded-3 p-1">
-                    <div style="display: flex;">
-                        <div>@no_product)</div>
-                        <img class="productImage" src="@item.Product.ImageURL" />
-                    </div>
-                        
-                        <div class="p-1">
-                        <div class="productName mt-1">@item.Product.Name</div>
-                        <div class="productPrice mt-1">BDT @item.Product.Price.00</div>
-                            
-
-                        <div></div>
-                    </div>
-                    </div>
-                    
-                </a>
-            </div>
-            ++i;
-        }
+            
+        <tr>
+                <td>@no_product )</td>
+                <td> <a href="@Url.Action("Show", "Product", new { area = "Shopkeeper",  Id = item.Id })">@item.Product.Name </a></td>
+            <td>@item.Count</td>
+        </tr>
+        
+            no_product++;
+       }
+        </table>
 
     <a style="font-size: 1rem; float: right; font-weight: 600;" href="@Url.Action("ShowAllPopularProduct", "Shop", new { area = "Shopkeeper"})">See more</a>
-
+    <div class="clearfix"></div>
 
 </div>
 
 <hr />
-<div style="font-size: 1.4rem; float: right; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px" />Popular Keywords</div>
+<div style="display: flex; justify-content: space-between;">
+    <div style="font-size: 1.4rem; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px; vertical-align: middle;" />Popular Keywords</div>
+    <a style="font-size: 1rem; font-weight: 600;" href="@Url.Action("ShowAllKeywords", "Shop", new { area = "Shopkeeper"})">See more</a>
+</div>
+
 <div class="clearfix"></div>
 <div class="row mt-2">
     
-    @foreach (var keyword in keywords)
-    {
-        <div class="card" style="height: 2rem; width: 100%;">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div style="margin-right: 2px;">@no_key )</div>
-                <div style="margin-left: 2px; margin-right: 2px;">@keyword.Keyword</div>
-                <div>Search Count: @keyword.Count</div>
-            </div>
-        </div>
-
-        no_key++;
-    }
-    <a style="font-size: 1rem; float: right; font-weight: 600;" href="@Url.Action("ShowAllKeywords", "Shop", new { area = "Shopkeeper"})">See more</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Keyword</th>
+                <th>Search Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var keyword in keywords)
+            {
+                <tr>
+                    <td>@no_key</td>
+                    <td>@keyword.Keyword</td>
+                    <td>@keyword.Count</td>
+                </tr>
+                no_key++;
+            }
+        </tbody>
+    </table>
+    
     </div>
 
 <partial name="_Footer" />

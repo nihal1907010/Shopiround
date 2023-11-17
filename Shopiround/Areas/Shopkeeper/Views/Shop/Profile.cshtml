@@ -1,0 +1,207 @@
+﻿@model ShopProfile
+@{
+    int i = 0;
+}
+<style>
+    .productImage {
+        height: 150px;
+        width: 100%;
+    }
+
+    .productName {
+        font-size: 14px;
+        line-height: 14px;
+        font-weight: 500;
+    }
+
+    .productPrice {
+        font-size: 16px;
+        line-height: 16px;
+        font-weight: 700;
+    }
+
+    .shopInfo {
+        font-size: 12px;
+        line-height: 12px;
+        font-weight: 400;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    .cat {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+    }
+</style>
+
+<form class="w-100 mx-auto" method="post" enctype="multipart/form-data">
+
+    <div class="row">
+        <div class="col-8">
+            <div class="h1">
+                Shop Information
+            </div>
+            <hr />
+            <div class="mb-3">
+                <div style="display: flex">
+                    <h3>@Model.shop.ShopName</h3>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div style="display: flex">
+                    <div>Owner Name:</div>
+                    <div>@Model.shop.OwnerName</div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div style="display: flex">
+                    <div>Contact Number:</div>
+                    <div>@Model.shop.ShopPhoneNo</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card h-100 d-flex">
+                <img id="output" src="~/images/shop/@Model.shop.ImageURL" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="h1">Shop Address</div>
+    <div id="map" style="height: 200px;"></div>
+    <div class="row ">
+ @*        <div class="mb-2 col-4">
+            @Model.shop.Division
+        </div>
+        <div class="mb-2 col-4">
+            @Model.shop.District
+        </div>
+        <div class="mb-2 col-4">
+            @Model.shop.Upazila
+        </div> *@
+        <div class="mb-2 col-12">
+            @Model.shop.Address
+        </div>
+    </div>
+    <hr />
+    <div class="h1">Others</div>
+    <div class="row">
+        <div class="col-8">
+            <div class="h5"><u>Openning Time : @Model.shop.OpeningTime </u></div>
+            <div></div>
+            
+            <div class="h5"><u>Closing Time : @Model.shop.OpeningTime</u></div>
+            
+        </div>
+        <div class="col-4">
+            <div class="container border-start">
+                <div class="h4"><u>Open Days</u></div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @(Model.shop.Saturday == true ? "checked disabled" : "disabled")>
+                    <label class="form-check-label">Saturday</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @(Model.shop.Saturday == true ? "checked disabled" : "disabled")>
+                    <label class="form-check-label">Sunday</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @(Model.shop.Saturday == true ? "checked disabled" : "disabled")>
+                    <label class="form-check-label">Monday</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @(Model.shop.Saturday == true ? "checked disabled" : "disabled")>
+                    <label class="form-check-label">Tuesday</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @(Model.shop.Saturday == true ? "checked disabled" : "disabled")>
+                    <label class="form-check-label">Wednesday</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @(Model.shop.Saturday == true ? "checked disabled" : "disabled")>
+                    <label class="form-check-label">Thursday</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @(Model.shop.Saturday == true ? "checked disabled" : "disabled")>
+                    <label class="form-check-label">Friday</label>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="h1">
+        Products
+    </div>
+    <hr />
+    <div class="row mt-2">
+        @foreach (var item in Model.products)
+        {
+            string distanceId = "distance" + i.ToString();
+            <div class="col-6 Search mt-2" data-product-id="@item.Id" data-product-name="@item.Name">
+                <a href="@Url.Action("Show", "Product", new { area = "Shopkeeper",  Id = item.Id })">
+                    <div class="border border-2 rounded-3 p-1">
+                        <img class="productImage" src="@item.ImageURL" />
+                    </div>
+                    <div class="p-1">
+                        <div class="productName mt-1">@item.Name</div>
+                        <div class="productPrice mt-1">BDT @item.Price.00</div>
+                        <div> <span id="@distanceId"></span></div>
+                        <div></div>
+                    </div>
+                </a>
+            </div>
+            ++i;
+        }
+    </div>
+</form>
+
+<script>
+    var products = @Html.Raw(Json.Serialize(Model));
+    var latitudeUser, longitudeUser;
+    var latitudeShop, longitudeShop;
+    var cnt = 0;
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                latitudeUser = position.coords.latitude;
+                longitudeUser = position.coords.longitude;
+                console.log(`Latitude: ${latitudeUser}, longitude: ${longitudeUser}`);
+                for (idx in products) {
+
+                    latitudeShop = products[idx]["shop"]["latitude"];
+                    longitudeShop = products[idx]["shop"]["longitude"];
+                    console.log(idx);
+                    fetch(`https://api.geoapify.com/v1/routing?waypoints=${latitudeShop},${longitudeShop}|${latitudeUser},${longitudeUser}&mode=drive&apiKey=a63091f5968a473c88c4c923004de755`)
+                        .then(response => response.json())
+                        .then(result => {
+
+                            var distance = result["features"][0]["properties"]["distance"];
+                            var unit = "m";
+                            if (distance >= 1000) {
+                                distance /= 1000;
+                                unit = "km";
+                            }
+                            var distanceText = document.getElementById("distance" + cnt);
+                            distanceText.innerHTML = "(" + distance + unit + ")";
+                            console.log(distance);
+                            ++cnt;
+                        })
+                        .catch(error => console.log('error', error));
+
+                }
+
+
+            },
+            (error) => {
+                console.error("Error getting user location:", error);
+            }
+        );
+    } else {
+        console.error("Geolocation is not supported by this browser.");
+    }
+</script>
