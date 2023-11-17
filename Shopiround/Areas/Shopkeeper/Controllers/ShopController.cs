@@ -108,12 +108,12 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
         public IActionResult Profile()
         {
-            ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
+            ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop");
             Shop shop = applicationUser.Shop;
             List<Product> products = context.Products.Where(p => p.ShopId == shop.ShopId).ToList();
 
-            ShopProfile shopProfile = new ShopProfile()
-            {
+            ShopProfile shopProfile = new ShopProfile
+            { 
                 shop = shop,
                 products = products
             };
