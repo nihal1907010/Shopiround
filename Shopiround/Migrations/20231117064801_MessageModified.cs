@@ -6,11 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Shopiround.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:Shopiround/Migrations/20231111043845_FinalDatabase.cs
-    public partial class FinalDatabase : Migration
-========
-    public partial class a1 : Migration
->>>>>>>> 793e6df1ad731a6e4b43e480963e98ce1f3aadae:Shopiround/Migrations/20231111050531_a1.cs
+    public partial class MessageModified : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -213,27 +209,6 @@ namespace Shopiround.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notifications",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notifications_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Shops",
                 columns: table => new
                 {
@@ -329,6 +304,42 @@ namespace Shopiround.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Message",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    MessageText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SendTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SeenTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Message", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Message_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Message_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Message_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductCounts",
                 columns: table => new
                 {
@@ -345,11 +356,7 @@ namespace Shopiround.Migrations
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
-<<<<<<<< HEAD:Shopiround/Migrations/20231111043845_FinalDatabase.cs
-                        onDelete: ReferentialAction.Cascade);
-========
                         onDelete: ReferentialAction.NoAction);
->>>>>>>> 793e6df1ad731a6e4b43e480963e98ce1f3aadae:Shopiround/Migrations/20231111050531_a1.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -454,27 +461,27 @@ namespace Shopiround.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SavedItems",
+                name: "LastMessages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false)
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MessageId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SavedItems", x => x.Id);
+                    table.PrimaryKey("PK_LastMessages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SavedItems_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_LastMessages_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
-                        name: "FK_SavedItems_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
+                        name: "FK_LastMessages_Message_MessageId",
+                        column: x => x.MessageId,
+                        principalTable: "Message",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
@@ -527,6 +534,31 @@ namespace Shopiround.Migrations
                 name: "IX_CartItems_UserId",
                 table: "CartItems",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LastMessages_MessageId",
+                table: "LastMessages",
+                column: "MessageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LastMessages_ReceiverId",
+                table: "LastMessages",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Message_ProductId",
+                table: "Message",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Message_ReceiverId",
+                table: "Message",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Message_SenderId",
+                table: "Message",
+                column: "SenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
@@ -608,6 +640,9 @@ namespace Shopiround.Migrations
                 name: "KeywordsCounts");
 
             migrationBuilder.DropTable(
+                name: "LastMessages");
+
+            migrationBuilder.DropTable(
                 name: "Notifications");
 
             migrationBuilder.DropTable(
@@ -627,6 +662,9 @@ namespace Shopiround.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Message");
 
             migrationBuilder.DropTable(
                 name: "Products");

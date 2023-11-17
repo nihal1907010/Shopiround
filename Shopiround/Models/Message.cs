@@ -12,6 +12,9 @@ namespace Shopiround.Models
         [ForeignKey("ApplicationUser")]
         public string ReceiverId { get; set; }
         public ApplicationUser Receiver { get; set; }
+        [ForeignKey("Product")]
+        public int ProductId { get; set; }
+        public Product Product { get; set; }
         public string MessageText {  get; set; }
         public DateTime SendTime { get; set; }
         public DateTime? SeenTime { get; set; }

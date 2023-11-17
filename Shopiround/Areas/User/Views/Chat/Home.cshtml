@@ -3,44 +3,100 @@
     ViewData["Title"] = "Chat";
 }
 <style>
+    * {
+        font-size: 18px;
+    }
+    .productImage {
+        height: 30vw;
+        width: 30vw;
+    }
+
+    #messages::-webkit-scrollbar {
+        display: none;
+    }
+    #messages {
+        height: -webkit-calc(100vh - 280px);
+        overflow: scroll;
+        display: flex;
+        flex-direction: column-reverse;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
     .bubble {
         max-width: calc(100% - 67px);
         overflow-wrap: break-word;
     }
+    #messageBox {
+        background-color: #EEEEEE;
+    }
+    #messageBox:focus, #messageBox:focus {
+        outline: none;
+    }
+
 </style>
-<div class="container">
-    <div>
-        <label>Your Name:</label>
-        <input type="text" id="displayName" />
+<div class="d-flex mb-2 border border-1 p-2 rounded" style="background-color: #F1F5F9;">
+    <div class="me-2 rounded overflow-hidden">
+        <img class="productImage" src="@Model.Product.ImageURL" />
     </div>
-
-    <div class="mt-5">
-        <input type="text" id="message" />
-        <input type="button" id="sendMessage" value="Send" />
+    <div class="position-relative" style="width: 60vw;">
+        <div style="width: 100%" class="">
+            <div style="font-size: 14px;
+                                    line-height: 16px;
+                                    font-weight: 500;
+                                    display: -webkit-box;
+                                    -webkit-box-orient: vertical;
+                                    -webkit-line-clamp: 1;
+                                    overflow: hidden;
+                                                        ">
+            @Model.Product.Name
+            </div>
+            <div style="        font-size: 16px;
+line-height: 24px;
+        font-weight: 700;
+    ">
+                <span id="" style="color: #2A8703">৳@Model.Product.Price.00</span>
+            </div>
+            <div style="font-size: 13px;
+        line-height: 13px;
+        font-weight: 400;">
+                <i class="bi bi-geo-alt-fill"></i>
+                <a class="text-black" href="/">@Model.Product.Shop.ShopName</a>
+            </div>
+        </div>
+        <div class="d-flex mt-3 position-absolute bottom-0">
+            <a asp-area="Customer" asp-controller="Home" asp-action="DeleteCartItem" asp-route-id="" class="btn btn-light rounded p-1 ps-2 pe-2 border me-2" style="background-color: #E2E8F0; box-shadow: rgba(50, 50, 93, 0.25) 0px 1px 5px -1px, rgba(0, 0, 0, 0.3) 0px 0.5px 3px -1px;">Add to cart</a>
+            <a class="btn btn-light rounded p-1 ps-2 pe-2 border" style="background-color: #E2E8F0; box-shadow: rgba(50, 50, 93, 0.25) 0px 1px 5px -1px, rgba(0, 0, 0, 0.3) 0px 0.5px 3px -1px;">Save for later</a>
+        </div>
     </div>
-
-    <div class="mt-3">
-        <div id="messages"></div>
-    </div>
+</div>
+<div id="messages" class=""></div>
+</div>
+<div class="d-flex position-fixed w-100" style="bottom: 15px;">
+    <input class="ms-2 rounded-pill flex-fill me-2 ps-2" type="text" id="messageBox">
+    <div class="me-2" id="sendMessage" value="Send"><img src="/images/assets/send.png" height="40px"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.12/signalr.min.js" integrity="sha512-rQm2bvVuqEjdaJKcVj/+bx+FnccQCHZpBIMQRJkyDACamQ12m6XuFb2aHQYgdTEnnHNIsAMeh1hODKwm2Uvy5A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     var senderId = "@Model.SenderId";
     var receiverId = "@Model.ReceiverId";
-
+    var productId = "@Model.Product.Id";
+    var oldMessages = @Html.Raw(Json.Serialize(@Model.OldMessages));
     var messagesDiv = document.getElementById("messages");
 
     var connection = new signalR.HubConnectionBuilder().withUrl("/Chat").build();
+    console.log(oldMessages);
+    for (var idx in oldMessages) {
+        console.log(oldMessages[idx]);
+        if (oldMessages[idx]["senderId"] == senderId) {
+            addSendMessage(oldMessages[idx]["messageText"]);
+        } 
+        if (oldMessages[idx]["senderId"] == receiverId) {
+            addReceivedMessage(oldMessages[idx]["messageText"]);
+        }
+    }
 
-    connection.start().catch(function (err) {
-        return console.error(err.toString());
-    });
-
-    document.getElementById("sendMessage").addEventListener("click", function (event) {
-        var user = document.getElementById("displayName").value;
-        var message = document.getElementById("message").value;
-
+    function addSendMessage(message) {
         var messageDiv = document.createElement("div");
         messageDiv.setAttribute("class", "message mb-2");
 
@@ -58,17 +114,9 @@
 
         innerContainerDiv.appendChild(sendBubbleDiv);
         sendBubbleDiv.innerHTML = `${message}`;
-        messagesDiv.appendChild(messageDiv);
-        console.log("1");
-
-        connection.invoke("SendMessage", senderId, receiverId, message).catch(function (err) {
-            return console.error(err.toString());
-        });
-
-        event.preventDefault();
-    });
-
-    connection.on("ReceiveMessage", function (user, message) {
+        messagesDiv.prepend(messageDiv);
+    }
+    function addReceivedMessage(message) {
         var messageDiv = document.createElement("div");
         messageDiv.setAttribute("class", "message mb-2");
 
@@ -86,15 +134,28 @@
 
         innerContainerDiv.appendChild(receivedBubbleDiv);
         receivedBubbleDiv.innerHTML = `${message}`;
-        messagesDiv.appendChild(messageDiv);
+        messagesDiv.prepend(messageDiv);
+    }
 
-        /*
-        var encodedMsg = user + ": " + message;
-        var li = document.createElement("li");
 
-        li.textContent = encodedMsg;
-        document.getElementById("discussion").appendChild(li);
-        */
+    connection.start().catch(function (err) {
+        return console.error(err.toString());
+    });
 
+    document.getElementById("sendMessage").addEventListener("click", function (event) {
+        var message = document.getElementById("messageBox").value;
+        document.getElementById("messageBox").value = "";
+        addSendMessage(message);
+
+        connection.invoke("SendMessage", senderId, receiverId, productId, message).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        event.preventDefault();
+    });
+
+    connection.on("ReceiveMessage", function (user, message) {
+        console.log(user + " " + message);
+        addReceivedMessage(message);
     });
 </script>

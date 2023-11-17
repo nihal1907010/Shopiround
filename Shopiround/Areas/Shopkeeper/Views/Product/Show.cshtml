@@ -36,7 +36,6 @@
         <div class="float-end fw-bold" id="distance">
             </div>
         </div>
-
    @*  <div class="col-6">
         <div class="float-end">
             <div class="d-flex">
@@ -152,7 +151,7 @@
     </div>
     <div style="margin-bottom: 70px;"></div>
     <div style="height: 70px;" class="ps-3 pe-3 d-flex justify-content-between align-items-center border border-2 position-fixed bottom-0 w-100 bg-white">
-        <a asp-area="User" asp-controller="Chat" asp-action="Home" asp-route-ownerId="@Model.Shop.ApplicationUserId">Message</a>
+        <a asp-area="User" asp-controller="Chat" asp-action="Home" asp-route-ownerId="@Model.Shop.ApplicationUserId" asp-route-productId="@Model.Id">Message</a>
         <div class="fw-bold fs-5">BDT @Model.Price.00</div>
         <div class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" onclick="addToCart()" id="addToCartBtn">Add to cart</div>
     </div>

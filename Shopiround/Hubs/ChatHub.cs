@@ -21,12 +21,13 @@ namespace Shopiround.Hubs
             var user2 = Context.UserIdentifier;
             return base.OnConnectedAsync();
         }
-        public async Task SendMessage(string senderId, string receiverId, string messageTxt)
+        public async Task SendMessage(string senderId, string receiverId, string productId, string messageTxt)
         {
             applicationDbContext.Message.Add(new Message
             {
                 SenderId = senderId,
                 ReceiverId = receiverId,
+                ProductId = int.Parse(productId),
                 MessageText = messageTxt,
                 SendTime = DateTime.Now
             });
