@@ -12,13 +12,13 @@
     <div class="col-6 col-md-3">
     <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Product" asp-action="Create">
         <div>
-            <img class="cat" src="~/images/assets/AddProduct.png" />
+            <img class="cat" src="~/images/assets/box.png" />
         </div>
         <div>Add Product</div>
     </a>
         <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Product" asp-action="ShowAllProducts">
             <div>
-                <img class="cat" src="~/images/assets/ShowProduct.png" />
+                <img class="cat" src="~/images/assets/products.png" />
             </div>
             <div>Show all product</div>
         </a>
@@ -29,13 +29,13 @@
     
         <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Product" asp-action="AddDiscount">
             <div>
-                <img class="cat" src="~/images/assets/AddDiscount.png" />
+                <img class="cat" src="~/images/assets/wishlist.png" />
             </div>
             <div>Add Discount</div>
         </a>
     <a class="d-flex flex-column justify-content-center align-items-center mx-auto text-center" asp-area="Shopkeeper" asp-controller="Shop" asp-action="Profile">
         <div>
-            <img class="cat" src="~/images/assets/Message.png" />
+            <img class="cat" src="~/images/assets/chat.png" />
         </div>
         <div>Message</div>
     </a>
@@ -81,7 +81,12 @@
     
 <div style="display: flex; justify-content: space-between;">
     <div style="font-size: 1.4rem; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px; vertical-align: middle;" />Trending Products</div>
-    <a style="font-size: 1rem; float: right; font-weight: 600;" href="@Url.Action("ShowAllPopularProduct", "Shop", new { area = "Shopkeeper"})">See more</a>
+    <a style="font-size: 1rem; float: right; font-weight: 600;" href="@Url.Action("ShowAllPopularProduct", "Shop", new { area = "Shopkeeper"})">
+        <div>
+            <img class="cat" src="~/images/assets/right-arrow.png" />
+        </div>
+        <div>Message</div>
+        </a>
 </div>
     <div class="clearfix"></div>
     <div class="row mt-2">
@@ -106,7 +111,6 @@
        }
         </table>
 
-    <a style="font-size: 1rem; float: right; font-weight: 600;" href="@Url.Action("ShowAllPopularProduct", "Shop", new { area = "Shopkeeper"})">See more</a>
     <div class="clearfix"></div>
 
 </div>
@@ -114,7 +118,12 @@
 <hr />
 <div style="display: flex; justify-content: space-between;">
     <div style="font-size: 1.4rem; font-weight: 600;"><img src="~/images/assets/item.png" style="height: 30px; vertical-align: middle;" />Popular Keywords</div>
-    <a style="font-size: 1rem; font-weight: 600;" href="@Url.Action("ShowAllKeywords", "Shop", new { area = "Shopkeeper"})">See more</a>
+    <a style="font-size: 1rem; font-weight: 600;" href="@Url.Action("ShowAllKeywords", "Shop", new { area = "Shopkeeper"})">
+        <div>
+            <img class="cat" src="~/images/assets/right-arrow.png" />
+        </div>
+        <div>Message</div>
+    </a>
 </div>
 
 <div class="clearfix"></div>
