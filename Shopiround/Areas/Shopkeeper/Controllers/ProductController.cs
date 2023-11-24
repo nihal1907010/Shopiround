@@ -53,6 +53,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                 {
                     ID = product.Id,
                     Name = product.Name,
+                    ImageURL = product.ImageURL,
                     Price = product.Price,
                     DiscountAmount = product.DiscountAmount,
                     DiscountParcentage = product.DiscountPercentage

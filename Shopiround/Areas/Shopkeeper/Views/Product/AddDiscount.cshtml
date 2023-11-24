@@ -3,53 +3,77 @@
 <form class="w-75 mx-auto" method="post">
 
 
-<div class="column">
-    @{
-        foreach (var discountVM in Model)
-        {
-            <form method="post">
-                <input asp-for="@discountVM.ID" hidden>
-                <input asp-for="@discountVM.Name" hidden>
-                <div class="row">
-                    <h6>@discountVM.Name</h6>
-                    @discountVM.Price
+    <div class="column">
+        @{
+            foreach (var discountVM in Model)
+            {
+                <div class="border border-3 rounded rounded-3">
 
-                    <div class="col-2">
-                        <div class="form-floating mb-3">
-                            <input class="form-control" asp-for="@discountVM.DiscountAmount" placeholder="DiscountAmount">
-                            <label asp-for="@discountVM.DiscountAmount">DiscountAmount</label>
+                    <form method="post">
+                        <input asp-for="@discountVM.ID" hidden>
+                        <input asp-for="@discountVM.Name" hidden>
+                        <div class="row">
+                            <div action="col-4">
+                                <img src="@discountVM.ImageURL" style="height:70px;"/>
+                            </div>
+                            <div class="col-8">
+                                <div class="row">
+
+                                    <div>@discountVM.Name</div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div>@discountVM.Price</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div>
+                                                <input class="form-control" asp-for="@discountVM.DiscountAmount">
+                                                <label asp-for="@discountVM.DiscountAmount"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div>
+                                                <input class="form-control" asp-for="@discountVM.DiscountParcentage" placeholder="DiscountParcentage">
+                                                <label asp-for="@discountVM.DiscountParcentage">DiscountPercentage</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2">
+                                            <div class="form-check form-switch mb-3">
+                                                <input asp-for="@discountVM.TodayDiscount" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                                                <label asp-for="@discountVM.TodayDiscount" class="form-check-label" for="flexSwitchCheckDefault"></label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-5">
+                                            <div class="mb-3">
+                                                <label asp-for="@discountVM.TotalDays" class="form-label"></label>
+                                                <input asp-for="@discountVM.TotalDays" class="form-control" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-5 d-flex align-items-end">
+                                            <div class="col-2">
+                                                <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
                         </div>
-                    </div>
-                    <div class="col-2">
-                        <div class="form-floating mb-3">
-                            <input class="form-control" asp-for="@discountVM.DiscountParcentage" placeholder="DiscountParcentage">
-                            <label asp-for="@discountVM.DiscountParcentage">DiscountPercentage</label>
-                        </div>
-                    </div>
-                    
 
-                    <div class="form-check form-switch mb-3">
-                        <input asp-for="@discountVM.TodayDiscount" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                        <label asp-for="@discountVM.TodayDiscount" class="form-check-label" for="flexSwitchCheckDefault"></label>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="@discountVM.TotalDays" class="form-label"></label>
-                        <input asp-for="@discountVM.TotalDays" class="form-control" />
-                    </div>
-
-                    <div class="col-2">
-                        <button id="submit" type="submit" class="btn btn-primary float-end">Submit</button>
-                        <div class="clearfix"></div>
-                    </div>
-
+                    </form>
                 </div>
-                <br />
-            </form>
 
+
+            }
         }
-    }
-</div>
+    </div>
 </form>
 
 

@@ -11,12 +11,13 @@ namespace Shopiround.Models
     {
         public int ID { get; set; }
         public string Name { get; set; }
+        public String ImageURL { get; set; }
         public float Price { get; set; }
         public float DiscountAmount { get; set; }
         public float DiscountParcentage { get; set; }
-        [DisplayName("Total days for discount")]
+        
         public int TotalDays { get; set; }
-        [DisplayName("Discount for today")]
+        
         public bool TodayDiscount { get; set; }
     }
 }
