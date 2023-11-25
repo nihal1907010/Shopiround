@@ -222,7 +222,28 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                 Product = product,
                 UserId = user.Id,
                 User = user,
-                Quantity = 1
+                Quantity = 1,
+                Online = false
+            };
+            unitOfWork.CartItemRepository.Add(cartItem);
+            unitOfWork.Save();
+
+            return Json(new { added = true });
+        }
+
+        [HttpPost]
+        public ActionResult OnlineCartItem(int ProductId)
+        {
+            Product product = unitOfWork.ProductRepository.Get(p => p.Id == ProductId, includeProperties: "Reviews,Shop");
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "CartItems,Shop");
+            CartItem cartItem = new CartItem
+            {
+                ProductId = ProductId,
+                Product = product,
+                UserId = user.Id,
+                User = user,
+                Quantity = 1,
+                Online = true
             };
             unitOfWork.CartItemRepository.Add(cartItem);
             unitOfWork.Save();

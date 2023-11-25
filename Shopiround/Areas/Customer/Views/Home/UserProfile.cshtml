@@ -1,0 +1,113 @@
+﻿@model UserProfile
+
+
+<div class="container w-75 mt-2 p-4 border border-2">
+    <form method="post" enctype="multipart/form-data">
+        <input asp-for="ImageURL" hidden />
+        @if (Model != null)
+        {
+            <div class="row">
+                <div class="col-4">
+                    <div class="card h-100 d-flex">
+                        <img id="output" src="@(!string.IsNullOrEmpty(Model.ImageURL) ? Model.ImageURL : "~/images/User/DefaultUserProfileImg.png")" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+                        <div class="card-body">
+                            <div class="input-group mb-3">
+                                <input type="file" name="file" class="form-control" onchange="loadFile(event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row m-2 border">
+                    <img src="@Model.ImageURL" />
+                </div>
+                <div class="row fw-bold ps-3">
+                    <label asp-for="Name">Name:</label>
+                    <input asp-for="Name" type="text" id="nameInput" value="@(!string.IsNullOrEmpty(Model.Name) ? Model.Name : "Default Name")" />
+                </div>
+                <div class="row fw-bold ps-3">
+                    <label asp-for="Email">Email:</label>
+                    <input asp-for="Email" type="email" id="emailInput" value="@(!string.IsNullOrEmpty(Model.Email) ? Model.Email : "Default Email")" />
+                </div>
+                <div class="row fw-bold ps-3">
+                    <label asp-for="MobileNo">Mobile Number:</label>
+                    <input asp-for="MobileNo" type="tel" id="mobileInput" value="@(!string.IsNullOrEmpty(Model.MobileNo) ? Model.MobileNo : "Default Mobile Number")" />
+                </div>
+                <div class="row fw-bold ps-3">
+                    <label asp-for="Address">Address:</label>
+                    <input asp-for="Address" type="text" id="addressInput" value="@(!string.IsNullOrEmpty(Model.Address) ? Model.Address : "Default Address")" />
+                </div>
+
+                <div class="row fw-bold ps-3" id="submitButton" style="display: none;">
+                    <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+
+        }
+        else
+        {
+            <div class="col-4">
+                <div class="card h-100 d-flex">
+                    <img id="output" src="~/images/User/DefaultUserProfileImg.png" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <input type="file" name="file" class="form-control" onchange="loadFile(event)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row fw-bold ps-3">
+                <label asp-for="Name">Name:</label>
+                <input asp-for="Name" type="text" id="nameInput" value="" />
+            </div>
+            <div class="row fw-bold ps-3">
+                <label asp-for="Email">Email:</label>
+                <input asp-for="Email" type="email" id="emailInput" value="" />
+            </div>
+            <div class="row fw-bold ps-3">
+                <label asp-for="MobileNo">Mobile Number:</label>
+                <input asp-for="MobileNo" type="tel" id="mobileInput" value="" />
+            </div>
+            <div class="row fw-bold ps-3">
+                <label asp-for="Address">Address:</label>
+                <input asp-for="Address" type="text" id="addressInput" value="" />
+            </div>
+
+            <div class="row fw-bold ps-3 mt-3" id="submitButton" style="display: none;">
+                <button type="submit" id="saveButton" class="btn btn-primary">Save changes</button>
+            </div>
+        }
+
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('input[type="text"], input[type="email"], input[type="tel"]').on('input', function () {
+            // Show the button when any input field is changed
+            $('#submitButton').show();
+        });
+
+        // If there's already content in the inputs (e.g., when editing), show the button
+        $('input[type="text"], input[type="email"], input[type="tel"]').each(function () {
+            if ($(this).val() !== "") {
+                $('#submitButton').show();
+                return false; // Break the loop once any field has a value
+            }
+        });
+    });
+
+    var loadFile = function (event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('output');
+            output.src = reader.result;
+
+            // Show the button when an image is selected
+            $('#submitButton').show();
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    };
+</script>
+
+
