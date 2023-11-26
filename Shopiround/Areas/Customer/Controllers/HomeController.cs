@@ -164,6 +164,32 @@ namespace Shopiround.Areas.Customer.Controllers
             List<Product> products = context.Products.Include("Shop").Include("Reviews").Include("Questions").Where(p => p.Shop.AcceptOnlineOrders == true).ToList();
             return View(products);
         }
+        [Authorize]
+        public IActionResult DoneOfflineShopping()
+        {
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
+            if (user == null)
+            {
+                return new RedirectToPageResult("/Identity/Account/Login");
+            }
+            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            foreach (CartItem cartItem in cartItems)
+            {
+                PurchaseItem purchaseItem = new PurchaseItem
+                {
+                    UserId = cartItem.UserId,
+                    ProductId = cartItem.ProductId,
+                    Quantity = cartItem.Quantity,
+                    Online = cartItem.Online,
+                    Reserve = cartItem.Reserve,
+                    PurchaseDate = DateTime.Now
+                };
+                context.PurchaseItems.Add(purchaseItem);
+            }
+            context.CartItems.RemoveRange(cartItems);
+            context.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

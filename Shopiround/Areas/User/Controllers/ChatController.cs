@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Shopiround.Data;
 using Shopiround.Models;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Shopiround.Areas.User.Controllers
@@ -32,6 +34,17 @@ namespace Shopiround.Areas.User.Controllers
                 OldMessages = applicationDbContext.Message.Where(m => m.SenderId == applicationUser.Id || m.ReceiverId == ownerId).ToList()
             };
             return View(messageVM);
+        }
+        public IActionResult HomeShop()
+        {
+            ApplicationUser applicationUser =
+                applicationDbContext.ApplicationUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            if (applicationUser == null)
+            {
+                return new RedirectToPageResult("/Identity/Account/Login");
+            }
+            List<Message> messages = applicationDbContext.Message.OrderBy(m => m.SendTime).Where(m => m.ReceiverId == applicationUser.Id).Include(m => m.Receiver).Include(m => m.Product).ToList();
+            return View(messages);
         }
     }
 }
