@@ -14,6 +14,7 @@ using System.IO;
 using System;
 using System.Linq;
 using Shopiround.Models.Statistics;
+using Microsoft.AspNetCore.Http;
 
 namespace Shopiround.Areas.Customer.Controllers
 {
@@ -49,6 +50,77 @@ namespace Shopiround.Areas.Customer.Controllers
             ViewBag.backgrounds = files;
             return View(products);
         }
+
+        public IActionResult UserProfile()
+        {
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
+            UserProfile userProfile = context.UserProfiles.FirstOrDefault(u => u.userId == user.Id);
+
+
+            return View(userProfile);
+           
+            
+        }
+
+        [HttpPost]
+        public IActionResult UserProfile(UserProfile userProfile, IFormFile? file)
+        {
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
+            userProfile.userId = user.Id;
+
+            // Check if the user profile already exists in the database
+            UserProfile existingProfile = context.UserProfiles.FirstOrDefault(u => u.userId == userProfile.userId);
+
+            if (existingProfile != null)
+            {
+                // If the profile exists, update it
+                if (file != null)
+                {
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string productPath = Path.Combine(wwwRootPath, @"images\product");
+                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    existingProfile.ImageURL = @"\images\User\" + fileName;
+                }
+                // Update other properties if needed
+                existingProfile.Name = userProfile.Name;
+                existingProfile.Email = userProfile.Email;
+                existingProfile.MobileNo = userProfile.MobileNo;
+                existingProfile.Address = userProfile.Address;
+
+                context.UserProfiles.Update(existingProfile);
+            }
+            else
+            {
+                // If the profile doesn't exist, add a new one
+                if (file != null)
+                {
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string productPath = Path.Combine(wwwRootPath, @"images\product");
+                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    userProfile.ImageURL = @"\images\User\" + fileName;
+                }
+                else
+                {
+                    userProfile.ImageURL = @"\images\shop\default_shop.png";
+                }
+
+                context.UserProfiles.Add(userProfile);
+            }
+
+            context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+
 
 
 
