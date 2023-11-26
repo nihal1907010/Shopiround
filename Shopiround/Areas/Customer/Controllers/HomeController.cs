@@ -50,12 +50,15 @@ namespace Shopiround.Areas.Customer.Controllers
             ViewBag.backgrounds = files;
             return View(products);
         }
-
+        [Authorize]
         public IActionResult UserProfile()
         {
             ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
+            if (user == null)
+            {
+                return new RedirectToPageResult("/Identity/Account/Login");
+            }
             UserProfile userProfile = context.UserProfiles.FirstOrDefault(u => u.userId == user.Id);
-
 
             return View(userProfile);
            

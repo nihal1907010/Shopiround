@@ -19,19 +19,19 @@
             DateTime dateTime = message.SendTime;
             string dateOnly = dateTime.ToString("MMM d, yyyy");
             string timeOnly = dateTime.ToString("h:mm tt");
-            <div class="row mt-1 pt-2 pb-2 border rounded" id="card">
+            <a asp-area="User" asp-controller="Chat" asp-action="Home" asp-route-ownerId="@message.SenderId" asp-route-productId="@message.ProductId" class="row mt-1 pt-2 pb-2 border rounded" id="card">
                 <div class="col-2">
                     <img id="productImage" src="@message.Product.ImageURL" />
                 </div>
                 <div class="col-7 d-flex flex-column justify-content-center">
                     <div class="row text">@message.Product.Name</div>
-                    <div class="row text">@message.Receiver.Name</div>
+                    <div class="row text">@message.Sender.Name</div>
                 </div>
                 <div class="col-3 d-flex flex-column justify-content-center">
                     <div class="row">@timeOnly</div>
                     <div class="row">@dateOnly</div>
                 </div>
-            </div>
+            </a>
         }
     }
 </div>
