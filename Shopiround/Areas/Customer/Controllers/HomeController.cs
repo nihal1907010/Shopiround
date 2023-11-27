@@ -40,6 +40,7 @@ namespace Shopiround.Areas.Customer.Controllers
         
         public IActionResult Index()
         {
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
             List<Product> products = context.Products.Include("Shop").ToList();
             string[] filePaths = Directory.GetFiles(Path.Combine(_webHostEnvironment.WebRootPath, "images", "backgrounds"));
             List<string> files = new List<string>();
@@ -48,6 +49,7 @@ namespace Shopiround.Areas.Customer.Controllers
                 files.Add(Path.GetRelativePath(_webHostEnvironment.WebRootPath, filePath));
             }
             ViewBag.backgrounds = files;
+            ViewBag.user = user;
             return View(products);
         }
         [Authorize]

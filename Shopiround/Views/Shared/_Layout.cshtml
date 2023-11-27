@@ -43,19 +43,39 @@
         }
     </style>
 </head>
+@{
+    ApplicationUser user = ViewBag.user;
+}
 <body>
+    
     <div class="offcanvas offcanvas-start w-75" tabindex="-1" id="offcanvasWithBackdrop" aria-labelledby="offcanvasWithBackdropLabel">
         <div class="offcanvas-header">
             <div id="offcanvasScrollingLabel"></div>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body text-muted mt-4">
-            <div class="d-flex align-items-center justify-content-center mb-5">
-                <a class="col-1 me-3" asp-area="Customer" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-radar icon"></i>
-                </a>
-                <a style="box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;" class="fs-6 btn btn-primary rounded-pill ps-3 pe-3" asp-area="Identity" asp-page="/Account/Register">Sign in or create account</a>
-            </div>
+            @{
+                if (user != null)
+                {
+                    <div class="d-flex align-items-center justify-content-center mb-5">
+                        <a class="col-1 me-3" asp-area="Customer" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-radar icon"></i>
+                        </a>
+                        <div>@user.Name</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center mb-5">
+                        <a class="col-1 me-3" asp-area="Customer" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-radar icon"></i>
+                        </a>
+                        <a style="box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;" class="fs-6 btn btn-primary rounded-pill ps-3 pe-3" asp-area="Identity" asp-page="/Account/Register">Sign in or create account</a>
+                    </div>
+                }
+            }
+            
+            
             <hr />
             <div class="ps-2">
                 <a class="mt-3 d-block text-muted" asp-area="Customer" asp-controller="Home" asp-action="ViewCart"><i class="bi bi-card-checklist me-2"></i>Purchase History</a>
