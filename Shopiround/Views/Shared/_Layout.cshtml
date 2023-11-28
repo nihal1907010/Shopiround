@@ -74,11 +74,9 @@
                     </div>
                 }
             }
-            
-            
             <hr />
             <div class="ps-2">
-                <a class="mt-3 d-block text-muted" asp-area="Customer" asp-controller="Home" asp-action="ViewCart"><i class="bi bi-card-checklist me-2"></i>Purchase History</a>
+                <a class="mt-3 d-block text-muted" asp-area="Customer" asp-controller="Home" asp-action="PurchasedItems"><i class="bi bi-card-checklist me-2"></i>Purchase History</a>
                 <a class="mt-3 d-block text-muted" asp-area="Customer" asp-controller="Home" asp-action="ViewCart"><i class="bi bi-bag me-2"></i>My Items</a>
                 <a class="mt-3 d-block text-muted" asp-area="Customer" asp-controller="Home" asp-action="ViewCart"><i class="bi bi-person me-2"></i>Account</a>
             </div>
@@ -88,7 +86,7 @@
             </div>
             <hr />
             <div class="ps-2">
-                <div class="mt-3"><i class="bi bi-heart me-2"></i>Saved Items</div>
+                <a class="mt-3" asp-area="Customer" asp-controller="Home" asp-action="ViewCart" asp-route-online="@true"><i class="bi bi-heart me-2"></i>Online Cart</a>
                 <div class="mt-3"><i class="bi bi-box-arrow-in-down-right me-2"></i>Reserve Items</div>
             </div>
             <hr />
@@ -116,38 +114,6 @@
             </a>
         </div>
     </div>
-        
-    @* <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Shopiround</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Shopkeeper" asp-controller="Shop" asp-action="Index">Shop List</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Shopkeeper" asp-controller="Shop" asp-action="Create">Add Shop</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Shopkeeper" asp-controller="Product" asp-action="Index">Product List</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Shopkeeper" asp-controller="Product" asp-action="Create">Add Product</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="ViewCart">View Cart</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-    </header> *@
     <div class="container" style="margin-top: 75px;">
         <main role="main" class="pb-3">
             @RenderBody()
