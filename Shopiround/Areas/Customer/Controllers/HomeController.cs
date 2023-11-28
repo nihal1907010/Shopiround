@@ -21,7 +21,6 @@ namespace Shopiround.Areas.Customer.Controllers
     [Area("Customer")]
     public class HomeController : Controller
     {
-
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<HomeController> _logger;
         public readonly IWebHostEnvironment _webHostEnvironment;
@@ -63,8 +62,6 @@ namespace Shopiround.Areas.Customer.Controllers
             UserProfile userProfile = context.UserProfiles.FirstOrDefault(u => u.userId == user.Id);
 
             return View(userProfile);
-           
-            
         }
 
         [HttpPost]
@@ -83,7 +80,7 @@ namespace Shopiround.Areas.Customer.Controllers
                 {
                     string wwwRootPath = _webHostEnvironment.WebRootPath;
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string productPath = Path.Combine(wwwRootPath, @"images\product");
+                    string productPath = Path.Combine(wwwRootPath, @"images\User");
                     using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
@@ -105,7 +102,7 @@ namespace Shopiround.Areas.Customer.Controllers
                 {
                     string wwwRootPath = _webHostEnvironment.WebRootPath;
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string productPath = Path.Combine(wwwRootPath, @"images\product");
+                    string productPath = Path.Combine(wwwRootPath, @"images\User");
                     using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                     {
                         file.CopyTo(fileStream);

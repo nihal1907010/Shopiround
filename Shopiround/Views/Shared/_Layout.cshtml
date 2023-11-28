@@ -61,7 +61,7 @@
                         <a class="col-1 me-3" asp-area="Customer" asp-controller="Home" asp-action="Index">
                             <i class="bi bi-radar icon"></i>
                         </a>
-                        <div>@user.Name</div>
+                        <a asp-area="Customer" asp-controller="Home" asp-action="UserProfile">@user.Name</a>
                     </div>
                 }
                 else
