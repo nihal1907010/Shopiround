@@ -1,0 +1,269 @@
+﻿@model List<PurchaseItem>
+<style>
+    .productImage {
+        height: 30vw;
+        width: 30vw;
+    }
+
+</style>
+<div class="pt-1">
+    <div class="d-flex align-items-center" style="font-size: 1.4rem;float: right; font-weight: 600;">
+        <img src="~/images/assets/cart.png" style="height: 30px" />
+        <div>Shopping Cart</div>
+    </div>
+
+    <div class="clearfix"></div>
+    <hr />
+    <div>
+        @foreach (var cartItem in Model)
+        {
+            <div class="d-flex mb-2 border border-1 p-2 rounded" style="background-color: #F1F5F9;">
+                <div class="me-2 rounded overflow-hidden">
+                    <img class="productImage" src="@cartItem.Product.ImageURL" />
+                </div>
+                <div class="position-relative" style="width: 60vw;">
+                    <div style="width: 100%" class="">
+                        <div style="font-size: 14px;
+                                    line-height: 16px;
+                                    font-weight: 500;
+                                    display: -webkit-box;
+                                    -webkit-box-orient: vertical;
+                                    -webkit-line-clamp: 1;
+                                    overflow: hidden;
+                                                        ">
+                            @cartItem.Product.Name
+                        </div>
+                        <div style="        font-size: 16px;
+line-height: 24px;
+        font-weight: 700;
+    ">
+                            <span id="" style="color: #2A8703">৳@cartItem.Product.Price.00</span>
+                            @*                             BDT @cartItem.Product.Price.00
+                        *@
+                        </div>
+                        <div style="font-size: 13px;
+        line-height: 13px;
+        font-weight: 400;">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <a class="text-black" href="/">@cartItem.Product.Shop.ShopName</a>
+                        </div>
+                    </div>
+                    <div class="d-flex mt-3 position-absolute bottom-0">
+                        <a asp-area="Customer" asp-controller="Home" asp-action="DeleteCartItem" asp-route-id="@cartItem.Id" class="btn btn-light rounded p-1 ps-2 pe-2 border me-2" style="background-color: #E2E8F0; box-shadow: rgba(50, 50, 93, 0.25) 0px 1px 5px -1px, rgba(0, 0, 0, 0.3) 0px 0.5px 3px -1px;">Delete</a>
+                        <a class="btn btn-light rounded p-1 ps-2 pe-2 border" style="background-color: #E2E8F0; box-shadow: rgba(50, 50, 93, 0.25) 0px 1px 5px -1px, rgba(0, 0, 0, 0.3) 0px 0.5px 3px -1px;">Save for later</a>
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+</div>
+</div>
+<div style="margin-bottom: 60px;"></div>
+<div style="height: 65px;" class="ps-3 pe-3 d-flex justify-content-between align-items-center border border-2 position-fixed bottom-0 w-100 bg-white">
+    <div class="fw-bold fs-5">Total: <span id="totalPrice" style="color: #00796B">৳00.00</span></div>
+    <a asp-area="Customer" asp-controller="Home" asp-action="ShowRoute" style="box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;" class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" id="checkoutBtn">Checkout</a>
+</div>
+
+
+<script>
+    var route = document.getElementById("route");
+    var totalPriceSpan = document.getElementById("totalPrice");
+    var map = L.map('map');
+    var totalPrice = 0;
+    function checkout() {
+        route.style.display = "inline-block";
+        map.invalidateSize(true);
+    }
+    function cross() {
+        route.style.display = "none";
+    }
+    var greenIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+    var userLat, userLng;
+    let locations = new Array();
+    let sortedLocations = new Array();
+    var cartItems = @Html.Raw(Json.Serialize(Model));
+    var result;
+    for (idx in cartItems) {
+        totalPrice += cartItems[idx]["product"]["price"];
+    }
+    totalPriceSpan.innerHTML = "৳" + totalPrice + ".00";
+    var routeLayer = null;
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+
+                userLat = lat, userLng = lng;
+
+                let location = [lng, lat];
+
+                locations.push({ "location": location });
+                map.setView([lat, lng], 17);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 50,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
+                for (idx in cartItems) {
+                    totalPrice += cartItems[idx]["product"]["price"];
+                    location = [
+                        cartItems[idx]["product"]["shop"]["longitude"],
+                        cartItems[idx]["product"]["shop"]["latitude"]
+                    ]
+                    locations.push({ "location": location });
+                }
+                var routingMatrix = [];
+                const MAX = 1e9;
+                const N = locations.length;
+
+                var memo = [];
+                var last = [];
+                for (var i = 0; i < N; ++i) {
+                    memo[i] = [];
+                    last[i] = [];
+                    for (var j = 0; j < (1 << N); ++j) {
+                        memo[i][j] = 0;
+                        last[i][j] = -1;
+                    }
+                }
+
+                function tsp(i, mask) {
+                    if (mask == ((1 << i) | 1)) {
+                        var _mask = mask & (~(1 << i))
+                        last[i][_mask] = 0;
+                        return routingMatrix[0][i];
+                    }
+                    if (memo[i][mask] != 0) {
+                        return memo[i][mask];
+                    }
+                    var res = MAX;
+                    for (var j = 0; j < N; ++j) {
+                        if ((mask & (1 << j)) && j != i && j != 0) {
+                            var _mask = mask & (~(1 << i))
+                            var temp = tsp(j, _mask) + routingMatrix[j][i];
+                            if (res > temp) {
+                                res = temp;
+                                last[i][_mask] = j;
+                            }
+                        }
+                    }
+                    return memo[i][mask] = res;
+                }
+                const body = {
+                    "mode": "drive",
+                    "sources": locations,
+                    "targets": locations
+                };
+                fetch('https://api.geoapify.com/v1/routematrix?apiKey=65c669784b2d4fe897f94046acc1a94d', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        for (var i = 0; i < N; ++i) {
+                            routingMatrix[i] = [];
+                            for (var j = 0; j < N; ++j) {
+                                routingMatrix[i][j] = res["sources_to_targets"][i][j]["distance"];
+                            }
+                        }
+                        var ans = MAX;
+                        var lastIdx = -1;
+                        for (var i = 0; i < N; ++i) {
+                            var mask = (1 << N) - 1;
+                            var temp = tsp(i, mask) + routingMatrix[i][0];
+                            if (ans > temp) {
+                                ans = temp;
+                                lastIdx = i;
+                            }
+                        }
+                        var waypointsIdx = [];
+                        var mask = (1 << N) - 1;
+                        do {
+                            waypointsIdx.push(lastIdx);
+                            if (lastIdx != 0) {
+                                var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]]).addTo(map);
+                                var shopName = cartItems[lastIdx - 1]["product"]["shop"]["shopName"];
+                                new L.Marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], {
+                                    icon: new L.DivIcon({
+                                        className: 'my-div-icon',
+                                        html: `<span class="my-div-span bg-primary text-white fs-6 p-1 rounded">${shopName}</span>`
+                                    })
+                                }).addTo(map);
+                            }
+                            else {
+                                var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], { icon: greenIcon }).addTo(map);
+                                new L.Marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], {
+                                    icon: new L.DivIcon({
+                                        className: 'my-div-icon',
+                                        html: `<span class="my-div-span bg-primary text-white fs-6 p-1 rounded">Start</span>`
+                                    })
+                                }).addTo(map);
+                            }
+
+                            mask = mask & ~(1 << lastIdx);
+                            lastIdx = last[lastIdx][mask];
+
+
+
+                        } while (mask != 0)
+
+                        waypointsIdx.reverse();
+                        var waypoints = [];
+                        for (var i = 0; i < N; ++i) {
+                            waypoints += locations[i]["location"][1] + ',' + locations[i]["location"][0];
+                            if (i + 1 != N) waypoints += '|';
+                        }
+                        fetch(`https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=drive&apiKey=65c669784b2d4fe897f94046acc1a94d`)
+                            .then(response => response.json())
+                            .then(result => {
+                                //
+                                const turnByTurnMarkerStyle = {
+                                    radius: 5,
+                                    fillColor: "#fff",
+                                    color: "#555",
+                                    weight: 1,
+                                    opacity: 1,
+                                    fillOpacity: 1
+                                }
+                                // Note! GeoJSON uses [longitude, latutude] format for coordinates
+                                L.geoJSON(result, {
+                                    style: (feature) => {
+                                        return {
+                                            color: "rgba(20, 137, 255, 0.7)",
+                                            weight: 5
+                                        };
+                                    }
+                                }).bindPopup((layer) => {
+                                    return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
+                                }).addTo(map);
+                                //
+                                route.style.display = "inline-block";
+                                map.invalidateSize(true);
+                            })
+                            .catch(error => console.log('error', error));
+                    });
+
+                //
+            },
+            (error) => {
+            }
+        );
+    }
+    else {
+        console.error("Geolocation is not supported by this browser.");
+    }
+</script>
+

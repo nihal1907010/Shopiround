@@ -179,7 +179,7 @@ namespace Shopiround.Areas.Customer.Controllers
             }
         }
         [Authorize]
-        public IActionResult ViewCart()
+        public IActionResult ViewCart(Boolean online = false)
         {
             
             ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
@@ -187,8 +187,22 @@ namespace Shopiround.Areas.Customer.Controllers
             {
                 return new RedirectToPageResult("/Identity/Account/Login");
             }
-            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            List<CartItem> cartItems = context.CartItems.Where(c => c.Online == online).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            ViewBag.online = online;
             return View(cartItems);
+        }
+
+        [Authorize]
+        public IActionResult PurchasedItems()
+        {
+
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
+            if (user == null)
+            {
+                return new RedirectToPageResult("/Identity/Account/Login");
+            }
+            List<PurchaseItem> purchaseItems = context.PurchaseItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            return View(purchaseItems);
         }
 
         public IActionResult ShowRoute()

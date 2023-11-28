@@ -12,8 +12,8 @@ using Shopiround.Data;
 namespace Shopiround.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231125145722_rafi")]
-    partial class rafi
+    [Migration("20231128004546_Final")]
+    partial class Final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
