@@ -1,81 +1,109 @@
 ﻿@model UserProfile
 
-
-<div class="container w-75 mt-2 p-4 border border-2">
+<div class="container">
     <form method="post" enctype="multipart/form-data">
         <input asp-for="ImageURL" hidden />
         @if (Model != null)
         {
-            <div class="row">
-                <div class="col-4">
-                    <div class="card h-100 d-flex">
-                        <img id="output" src="@(!string.IsNullOrEmpty(Model.ImageURL) ? Model.ImageURL : "~/images/User/DefaultUserProfileImg.png")" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
-                        <div class="card-body">
-                            <div class="input-group mb-3">
-                                <input type="file" name="file" class="form-control" onchange="loadFile(event)">
-                            </div>
+            <div class="d-flex justify-content-center">
+                <div class="w-50 card d-flex">
+                    <img id="output" src="@Model.ImageURL" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+                    <div class="card-body">
+                        <div class="input-group mb-1 d-flex justify-content-center">
+                            <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden>
+                            <div class="btn btn-primary rounded w-100" onclick="upload()">Select Photo</div>
                         </div>
                     </div>
                 </div>
-
-                <div class="row m-2 border">
-                    <img src="@Model.ImageURL" />
-                </div>
-                <div class="row fw-bold ps-3">
-                    <label asp-for="Name">Name:</label>
-                    <input asp-for="Name" type="text" id="nameInput" value="@(!string.IsNullOrEmpty(Model.Name) ? Model.Name : "Default Name")" />
-                </div>
-                <div class="row fw-bold ps-3">
-                    <label asp-for="Email">Email:</label>
-                    <input asp-for="Email" type="email" id="emailInput" value="@(!string.IsNullOrEmpty(Model.Email) ? Model.Email : "Default Email")" />
-                </div>
-                <div class="row fw-bold ps-3">
-                    <label asp-for="MobileNo">Mobile Number:</label>
-                    <input asp-for="MobileNo" type="tel" id="mobileInput" value="@(!string.IsNullOrEmpty(Model.MobileNo) ? Model.MobileNo : "Default Mobile Number")" />
-                </div>
-                <div class="row fw-bold ps-3">
-                    <label asp-for="Address">Address:</label>
-                    <input asp-for="Address" type="text" id="addressInput" value="@(!string.IsNullOrEmpty(Model.Address) ? Model.Address : "Default Address")" />
-                </div>
-
-                <div class="row fw-bold ps-3" id="submitButton" style="display: none;">
-                    <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
-                </div>
             </div>
-
+            <hr />
+            <h3>User Information</h3>
+            <div class="form-floating mt-3 mb-3">
+                <input type="text" class="form-control" asp-for="Name" type="text" id="nameInput" placeholder="name@example.com" value="@Model.Name">
+                <label for="floatingInput">Name</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" asp-for="Email" type="text" id="emailInput" placeholder="name@example.com" value="@Model.Email">
+                <label for="floatingInput">Email</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" asp-for="MobileNo" type="text" id="mobileInput" placeholder="name@example.com" value="@Model.MobileNo">
+                <label for="floatingInput">Mobile Number</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" asp-for="Address" type="text" id="addressInput" placeholder="name@example.com" value="@Model.Address">
+                <label for="floatingInput">Address</label>
+            </div>
+            <div class="row fw-bold mt-3" id="submitButton" style="display: none;">
+                <button type="submit" id="saveButton" class="btn btn-primary">Save changes</button>
+            </div>
         }
         else
         {
-            <div class="col-4">
-                <div class="card h-100 d-flex">
-                    <img id="output" src="~/images/User/DefaultUserProfileImg.png" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+            <div class="d-flex justify-content-center">
+                <div class="w-50 card d-flex">
+                    <img id="output" src="~/images/shop/default_shop.png" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
                     <div class="card-body">
-                        <div class="input-group mb-3">
-                            <input type="file" name="file" class="form-control" onchange="loadFile(event)">
+                        <div class="input-group mb-1 d-flex justify-content-center">
+                            <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden>
+                            <div class="btn btn-primary rounded w-100" onclick="upload()">Select Photo</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row fw-bold ps-3">
-                <label asp-for="Name">Name:</label>
-                <input asp-for="Name" type="text" id="nameInput" value="" />
+            <hr />
+            <h3>User Information</h3>
+            <div class="form-floating mt-3 mb-3">
+                <input type="text" class="form-control" asp-for="Name" type="text" id="nameInput" placeholder="name@example.com" value="">
+                <label for="floatingInput">Name</label>
             </div>
-            <div class="row fw-bold ps-3">
-                <label asp-for="Email">Email:</label>
-                <input asp-for="Email" type="email" id="emailInput" value="" />
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" asp-for="Email" type="text" id="emailInput" placeholder="name@example.com" value="">
+                <label for="floatingInput">Email</label>
             </div>
-            <div class="row fw-bold ps-3">
-                <label asp-for="MobileNo">Mobile Number:</label>
-                <input asp-for="MobileNo" type="tel" id="mobileInput" value="" />
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" asp-for="MobileNo" type="text" id="mobileInput" placeholder="name@example.com" value="">
+                <label for="floatingInput">Mobile Number</label>
             </div>
-            <div class="row fw-bold ps-3">
-                <label asp-for="Address">Address:</label>
-                <input asp-for="Address" type="text" id="addressInput" value="" />
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" asp-for="Address" type="text" id="addressInput" placeholder="name@example.com" value="">
+                <label for="floatingInput">Address</label>
             </div>
-
-            <div class="row fw-bold ps-3 mt-3" id="submitButton" style="display: none;">
+            <div class="row fw-bold mt-3" id="submitButton" style="display: none;">
                 <button type="submit" id="saveButton" class="btn btn-primary">Save changes</button>
             </div>
+
+@*             <div class="d-flex justify-content-center">
+                <div class="w-50 card d-flex">
+                    <img id="output" src="~/images/shop/default_shop.png" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+                    <div class="card-body">
+                        <div class="input-group mb-1 d-flex justify-content-center">
+                            <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden>
+                            <div class="btn btn-primary rounded w-100" onclick="upload()">Select Profile Photo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row fw-bold">
+                <label class="form-label" asp-for="Name"></label>
+                <input class="form-control" asp-for="Name" type="text" id="nameInput" value="" placeholder="Name"/>
+            </div>
+            <div class="row fw-bold">
+                <label class="form-label" asp-for="Email"></label>
+                <input class="form-control" asp-for="Email" type="email" id="emailInput" value="" />
+            </div>
+            <div class="row fw-bold">
+                <label class="form-label" asp-for="MobileNo">Mobile Number:</label>
+                <input class="form-control" asp-for="MobileNo" type="tel" id="mobileInput" value="" />
+            </div>
+            <div class="row fw-bold">
+                <label class="form-label" asp-for="Address">Address:</label>
+                <input class="form-control" asp-for="Address" type="text" id="addressInput" value="" />
+            </div>
+            <div class="row fw-bold mt-3" id="submitButton" style="display: none;">
+                <button type="submit" id="saveButton" class="btn btn-primary">Save changes</button>
+            </div> *@
         }
 
     </form>
@@ -108,6 +136,11 @@
         };
         reader.readAsDataURL(event.target.files[0]);
     };
+
+    var imageUploadButton = document.getElementById("imageInput");
+    function upload() {
+        imageUploadButton.click();
+    }
 </script>
 
 

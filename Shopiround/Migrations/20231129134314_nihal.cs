@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Shopiround.Migrations
 {
     /// <inheritdoc />
-    public partial class Final : Migration
+    public partial class nihal : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -90,9 +90,9 @@ namespace Shopiround.Migrations
                     userId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MobileNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    MobileNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -302,7 +302,8 @@ namespace Shopiround.Migrations
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Online = table.Column<bool>(type: "bit", nullable: false),
-                    Reserve = table.Column<bool>(type: "bit", nullable: false)
+                    Reserve = table.Column<bool>(type: "bit", nullable: false),
+                    OrderPlaced = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

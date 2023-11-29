@@ -1,0 +1,35 @@
+﻿@model List<OnlineOrderVM>
+<style>
+    #card {
+        background-color: #E0F2F1;
+    }
+
+    #productImage {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+    }
+
+    .text {
+        margin-left: 1px;
+    }
+</style>
+<div class="container">
+    @{
+        foreach (var order in Model)
+        {
+            <a asp-area="Shopkeeper" asp-controller="Shop" asp-action="OnlineOrder" asp-route-userId="@order.User.userId" class="row mt-1 pt-2 pb-2 border rounded" id="card">
+                <div class="col-2">
+                    <img id="productImage" src="@order.User.ImageURL" />
+                </div>
+                <div class="col-7 d-flex flex-column justify-content-center">
+                    <div class="row text">@order.User.Name</div>
+                </div>
+                <div class="col-3 d-flex flex-column justify-content-center">
+                    <div class="row">@order.TotalOrders</div>
+                    <div class="row">@order.TotalPrice</div>
+                </div>
+            </a>
+        }
+    }
+</div>
