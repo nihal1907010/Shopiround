@@ -39,7 +39,6 @@ namespace Shopiround.Areas.Customer.Controllers
         
         public IActionResult Index()
         {
-            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
             List<Product> products = context.Products.Include("Shop").ToList();
             string[] filePaths = Directory.GetFiles(Path.Combine(_webHostEnvironment.WebRootPath, "images", "backgrounds"));
             List<string> files = new List<string>();
@@ -47,8 +46,19 @@ namespace Shopiround.Areas.Customer.Controllers
             {
                 files.Add(Path.GetRelativePath(_webHostEnvironment.WebRootPath, filePath));
             }
+
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+
+
             ViewBag.backgrounds = files;
             ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(products);
         }
         [Authorize]
@@ -188,6 +198,58 @@ namespace Shopiround.Areas.Customer.Controllers
             ViewBag.online = online;
             return View(cartItems);
         }
+        [Authorize]
+        public IActionResult OnlineCart()
+        {
+            ApplicationUser applicationUser = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            if (applicationUser == null)
+            {
+                return new RedirectToPageResult("/Identity/Account/Login");
+            }
+            List<CartItem> cartItems = context.CartItems.Where(c => c.Online && c.OrderPlaced == false).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == applicationUser.Id).ToList();
+            return View(cartItems);
+        }
+        public IActionResult PlaceOrder()
+        {
+            LocationVM locationVM = new LocationVM();
+            return View(locationVM);
+        }
+        [HttpPost]
+        public IActionResult PlaceOrder(LocationVM locationVM)
+        {
+            ApplicationUser applicationUser = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            if (applicationUser == null)
+            {
+                return new RedirectToPageResult("/Identity/Account/Login");
+            }
+            List<CartItem> cartItems = context.CartItems.Where(c => c.Online && c.OrderPlaced == false).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == applicationUser.Id).ToList();
+            List<DeliveryInformation> deliveryInformation = new List<DeliveryInformation>();
+            foreach(CartItem cartItem in cartItems)
+            {
+                deliveryInformation.Add(new DeliveryInformation
+                {
+                    cartItemId = cartItem.Id,
+                    Latitude = locationVM.Latitude,
+                    Longitude = locationVM.Longitude
+                });
+                cartItem.OrderPlaced = true;
+            }
+            context.CartItems.UpdateRange(cartItems);
+            context.DeliveryInformation.AddRange(deliveryInformation);
+            context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        [Authorize]
+        public IActionResult OnlineOrders()
+        {
+            ApplicationUser applicationUser = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            if (applicationUser == null)
+            {
+                return new RedirectToPageResult("/Identity/Account/Login");
+            }
+            List<CartItem> cartItems = context.CartItems.Where(c => c.Online).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == applicationUser.Id && c.OrderPlaced).ToList();
+            return View(cartItems);
+        }
 
         [Authorize]
         public IActionResult PurchasedItems()
@@ -253,14 +315,17 @@ namespace Shopiround.Areas.Customer.Controllers
             return View(products);
         }
         [Authorize]
-        public IActionResult DoneOfflineShopping()
+        public IActionResult DoneOfflineShopping(string onlinexxx = "false", string userId = null)
         {
-            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
+            if (userId == null) userId = User.Identity.Name;
+            Boolean onlinex = false;
+            if (onlinexxx == "true") onlinex = true;
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == userId, includeProperties: "Shop,CartItems");
             if (user == null)
             {
                 return new RedirectToPageResult("/Identity/Account/Login");
             }
-            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id && c.Online == onlinex).ToList();
             foreach (CartItem cartItem in cartItems)
             {
                 PurchaseItem purchaseItem = new PurchaseItem

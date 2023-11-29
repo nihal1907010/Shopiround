@@ -133,5 +133,51 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             return View(shopProfile);
         }
 
+        public IActionResult OnlineOrdersHome()
+        {
+            ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop");
+            List<Product> products = context.Products.Where(p => p.ShopId == applicationUser.Shop.ShopId).ToList();
+            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).Include(c => c.User).Where(c => products.Contains(c.Product) && c.Online).ToList();
+            List<OnlineOrderVM> onlineOrders = (from cart in cartItems
+                    group cart by cart.UserId into g
+                    select new OnlineOrderVM
+                    {
+                        User = context.UserProfiles.Where(u => u.userId == g.Key).First(),
+                        TotalOrders = g.Count(),
+                        TotalPrice = (int)g.Sum(c => c.Product.Price)
+                    }).ToList();
+            onlineOrders.Reverse();
+            return View(onlineOrders);
+        }
+        [Authorize]
+        public IActionResult DoneOnlineShopping(string userId)
+        {
+            ApplicationUser user = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == userId, includeProperties: "Shop,CartItems");
+            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == userId && c.Online).ToList();
+            foreach (CartItem cartItem in cartItems)
+            {
+                PurchaseItem purchaseItem = new PurchaseItem
+                {
+                    UserId = cartItem.UserId,
+                    ProductId = cartItem.ProductId,
+                    Quantity = cartItem.Quantity,
+                    Online = cartItem.Online,
+                    Reserve = cartItem.Reserve,
+                    PurchaseDate = DateTime.Now
+                };
+                context.PurchaseItems.Add(purchaseItem);
+            }
+            context.CartItems.RemoveRange(cartItems);
+            context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult OnlineOrder(string userId)
+        {
+            List<CartItem> cartItems = context.CartItems.Where(c => c.Online).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == userId).ToList();
+            ViewBag.userId = userId;
+            return View(cartItems);
+        }
+
     }
 }

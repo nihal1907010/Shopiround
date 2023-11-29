@@ -20,5 +20,6 @@ namespace Shopiround.Models
         public int Quantity { get; set; }
         public bool Online { get; set; }
         public bool Reserve { get; set; }
+        public bool OrderPlaced { get; set; }
     }
 }

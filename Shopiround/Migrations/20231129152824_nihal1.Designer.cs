@@ -12,8 +12,8 @@ using Shopiround.Data;
 namespace Shopiround.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231127215744_Final")]
-    partial class Final
+    [Migration("20231129152824_nihal1")]
+    partial class nihal1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -242,6 +242,9 @@ namespace Shopiround.Migrations
                     b.Property<bool>("Online")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("OrderPlaced")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
@@ -262,6 +265,30 @@ namespace Shopiround.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CartItems");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.DeliveryInformation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<int>("cartItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("cartItemId");
+
+                    b.ToTable("DeliveryInformation");
                 });
 
             modelBuilder.Entity("Shopiround.Models.DiscountDate", b =>
@@ -683,7 +710,6 @@ namespace Shopiround.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -691,11 +717,9 @@ namespace Shopiround.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageURL")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MobileNo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -790,6 +814,17 @@ namespace Shopiround.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Shopiround.Models.DeliveryInformation", b =>
+                {
+                    b.HasOne("Shopiround.Models.CartItem", "CartItem")
+                        .WithMany()
+                        .HasForeignKey("cartItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CartItem");
                 });
 
             modelBuilder.Entity("Shopiround.Models.LastMessage", b =>

@@ -12,8 +12,8 @@ using Shopiround.Data;
 namespace Shopiround.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231128004546_Final")]
-    partial class Final
+    [Migration("20231129134314_nihal")]
+    partial class nihal
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -240,6 +240,9 @@ namespace Shopiround.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("Online")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("OrderPlaced")
                         .HasColumnType("bit");
 
                     b.Property<int>("ProductId")
@@ -683,7 +686,6 @@ namespace Shopiround.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -691,11 +693,9 @@ namespace Shopiround.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageURL")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MobileNo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")

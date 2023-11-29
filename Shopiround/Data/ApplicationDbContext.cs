@@ -21,6 +21,10 @@ namespace Shopiround.Data
 
 
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
         public DbSet<Shop> Shops { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
@@ -34,6 +38,7 @@ namespace Shopiround.Data
         public DbSet<Message> Message { get; set; }
         public DbSet<LastMessage> LastMessages { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<DeliveryInformation> DeliveryInformation { get; set; }
         
     }
 }
