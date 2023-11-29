@@ -117,6 +117,15 @@
         
     </div>
     </div>
+<div class="position-relative ml-auto" style="width: 100px;">
+    <div class="input-group">
+        <input type="number" class="form-control" id="quantity" placeholder="Your Input" onchange="qunatityCheck(@Model.Id, @Model.Quantity)" style="width: calc(100% - 72px);" value="1" />
+        <div class="input-group-append" style="width: 72px;">
+            <button class="btn btn-outline-secondary" type="button" onclick="decrementQuantity(@Model.Quantity)">-</button>
+            <button class="btn btn-outline-secondary" type="button" onclick="incrementQuantity(@Model.Quantity)">+</button>
+        </div>
+    </div>
+</div>
     <div style="margin-bottom: 70px;"></div>
     <div style="height: 70px;" class="ps-3 pe-3 d-flex justify-content-between align-items-center border border-2 position-fixed bottom-0 w-100 bg-white">
         <a asp-area="User" asp-controller="Chat" asp-action="Home" asp-route-ownerId="@Model.Shop.ApplicationUserId" asp-route-productId="@Model.Id">Message</a>
@@ -225,11 +234,12 @@
         }
         function addToCart() {
             var productId = @Model.Id;
+        var quantity = document.getElementById('quantity').value;
             $.ajax({
                 type: "POST",
                 url: "@Url.Action("CreateCartItem")",
                 dataType: "json",
-                data: { ProductId: productId },
+            data: { ProductId: productId, Quantity: quantity },
                 success: function (result) {
                     console.log(result);
                     addToCartBtn.innerHTML = "Product added";
@@ -238,7 +248,8 @@
                     console.log(status);
                 }
             });
-        }function addToOnlineCart() {
+        }
+        function addToOnlineCart() {
             var productId = @Model.Id;
             $.ajax({
                 type: "POST",
@@ -254,5 +265,46 @@
                 }
             });
         }
+
+    function qunatityCheck(itemId, available) {
+        var quantity = document.getElementById('quantity');
+
+        if (quantity.value > available) {
+            quantity.value = available;
+        }
+        else if (quantity.value < 1) {
+            quantity.value = 1;
+        }
+
+    }
+
+    function incrementQuantity(available) {
+        var inputField = document.getElementById('quantity');
+        var currentValue = parseInt(inputField.value);
+        if (!isNaN(currentValue)) {
+            if (currentValue < available) {
+                inputField.value = currentValue + 1;
+
+            }
+
+        } else {
+            inputField.value = 1; // Set default value if current value is NaN or empty
+
+        }
+    }
+
+    function decrementQuantity(available) {
+        var inputField = document.getElementById('quantity');
+        var currentValue = parseInt(inputField.value);
+        if (!isNaN(currentValue) && currentValue > 1) {
+            if (currentValue > 1) {
+                inputField.value = currentValue - 1;
+            }
+
+        } else {
+            inputField.value = 1; // Set default value if current value is NaN, empty, or less than 1
+
+        }
+    }
 
     </script>

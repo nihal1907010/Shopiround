@@ -192,6 +192,28 @@ namespace Shopiround.Areas.Customer.Controllers
             return View(cartItems);
         }
 
+        [HttpPost]
+        public ActionResult UpdateCart(int ProductId, int Quantity, bool online = false)
+        {
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
+            List<CartItem> cartItems = context.CartItems.Where(c => c.Online == online)
+                .Include(c => c.Product)
+                .ThenInclude(s => s.Shop)
+                .Where(c => c.UserId == user.Id)
+                .ToList();
+
+            // Find the specific CartItem that matches the given ProductId
+            CartItem cartItemToUpdate = cartItems.FirstOrDefault(c => c.Product.Id == ProductId);
+
+            if (cartItemToUpdate != null)
+            {
+                cartItemToUpdate.Quantity = Quantity; 
+                context.SaveChanges();
+            }
+
+            return Json(new { added = true });
+        }
+
         [Authorize]
         public IActionResult PurchasedItems()
         {
@@ -263,7 +285,21 @@ namespace Shopiround.Areas.Customer.Controllers
             {
                 return new RedirectToPageResult("/Identity/Account/Login");
             }
+            List<Product> products = context.Products.ToList();
             List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+
+            //update quantity of product table
+            foreach (var cartItem in cartItems)
+            {
+                Product matchingProduct = products.FirstOrDefault(p => p.Id == cartItem.ProductId);
+
+                if (matchingProduct != null)
+                {
+                    int a = matchingProduct.Quantity;
+                    matchingProduct.Quantity = a - cartItem.Quantity;
+                    context.SaveChanges();
+                }
+            }
             foreach (CartItem cartItem in cartItems)
             {
                 PurchaseItem purchaseItem = new PurchaseItem
