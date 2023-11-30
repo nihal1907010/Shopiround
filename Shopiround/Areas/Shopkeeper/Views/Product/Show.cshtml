@@ -1,4 +1,8 @@
 ﻿@model Product
+@{
+    var CartCount = ViewBag.CartCount;
+    var AlreadyInCart = ViewBag.AlreadyInCart;
+}
 
 <style>
     a {
@@ -38,21 +42,10 @@
         <div class="float-end fw-bold" id="distance">
         </div>
     </div>
-
 </div>
 <div class="row m-2 border">
     <img src="@Model.ImageURL" />
 </div>
-@* <div class="position-relative ml-auto" style="width: 100px;">
-    <div class="input-group">
-        <input type="number" class="form-control" id="quantity" placeholder="Your Input" onchange="qunatityCheck(@Model.Id, @Model.Quantity)" style="width: calc(100% - 72px);" value="1" />
-        <div class="input-group-append" style="width: 72px;">
-            <button class="btn btn-outline-secondary" type="button" onclick="decrementQuantity(@Model.Quantity)">-</button>
-            <button class="btn btn-outline-secondary" type="button" onclick="incrementQuantity(@Model.Quantity)">+</button>
-        </div>
-    </div>
-</div> *@
-
 <div class="d-flex justify-content-center align-items-center">
     <div class="border border-3 me-1" onclick="decQ()">
         <img src="/images/assets/minus.png" style="height: 40px;"/>
@@ -118,24 +111,24 @@
     @{
         foreach (var review in Model.Reviews)
         {
-                    <div class="card card-body">
-                        <div>@review.Reviewer</div>
-                        <div class="d-flex">
-                            @for (int i = 1; i <= 5; ++i)
+                            <div class="card card-body">
+                                <div>@review.Reviewer</div>
+                                <div class="d-flex">
+                                    @for (int i = 1; i <= 5; ++i)
                     {
                         if (@review.Rating >= i)
                         {
-                                    <div><img class="starIcon2" src="/images/assets/starYellow.png" /></div>
+                                            <div><img class="starIcon2" src="/images/assets/starYellow.png" /></div>
                         }
                         else
                         {
-                                    <div><img class="starIcon2" src="/images/assets/startBlack.png" /></div>
+                                            <div><img class="starIcon2" src="/images/assets/startBlack.png" /></div>
                         }
                     }
 
-                        </div>
-                        <div>@review.Text</div>
-                    </div>
+                                </div>
+                                <div>@review.Text</div>
+                            </div>
         }
     }
 
@@ -146,19 +139,34 @@
     <a asp-area="User" asp-controller="Chat" asp-action="Home" asp-route-ownerId="@Model.Shop.ApplicationUserId" asp-route-productId="@Model.Id">Message</a>
     <div id="totalPrice" class="fw-bold fs-5">BDT @Model.Price.00</div>
     <div class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" onclick="addToCart()" id="addToCartBtn">Add to cart</div>
-    <div class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" onclick="addToOnlineCart()" id="addToOnlineCartBtn">Online cart</div>
+    @if (Model.Shop.AcceptOnlineOrders)
+    {
+        <div class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" onclick="addToOnlineCart()" id="addToOnlineCartBtn">Online cart</div>
+    }
 </div>
 
 
 <script type="text/javascript">
-    var distanceText = document.getElementById("distance");
-    var addToCartBtn = document.getElementById("addToCartBtn");
-    var addToOnlineCartBtn = document.getElementById("addToOnlineCartBtn");
 
     var quantityDiv = document.getElementById("quantity");
+    var x = "@AlreadyInCart";
+    
+
+    if (x == "True") {
+        quantityDiv.value = @CartCount;
+        var addToCartBtn = document.getElementById("addToCartBtn");
+        addToCartBtn.innerHTML = "Update Cart";
+    }
+
+
+    var distanceText = document.getElementById("distance");
+    
+    var addToOnlineCartBtn = document.getElementById("addToOnlineCartBtn");
+
+    
     var totalPriceDiv = document.getElementById("totalPrice");
     var quantityAvailable = @Model.Quantity;
-    var quantityOrdered = 1;
+    var quantityOrdered = @CartCount;
     var price = @Model.Price;
 
     function incQ() {
@@ -282,13 +290,20 @@
             data: { ProductId: productId, Quantity: quantity },
             success: function (result) {
                 console.log(result);
-                addToCartBtn.innerHTML = "Product added";
+                disbaleCartBtn();
             },
             error: function (req, status, error) {
                 console.log(status);
             }
         });
     }
+
+    function disbaleCartBtn() { 
+        var addToCartBtn = document.getElementById("addToCartBtn");
+        addToCartBtn.innerHTML = "Product added";
+        button.disabled = true;
+    }
+
     function addToOnlineCart() {
         var productId = @Model.Id;
         $.ajax({

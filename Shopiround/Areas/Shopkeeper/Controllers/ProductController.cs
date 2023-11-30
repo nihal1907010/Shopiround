@@ -134,6 +134,24 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             if (Id != null)
             {
                 Product product = unitOfWork.ProductRepository.Get(p => p.Id == Id, includeProperties: "Shop,Reviews");
+                ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
+                Boolean AlreadyInCart = false;
+                int cartCount = 0;
+
+                var cart = applicationDbContext.CartItems.Where(a => a.UserId == user.Id && a.ProductId == product.Id).FirstOrDefault();
+                if (cart != null)
+                {
+                    AlreadyInCart = true;
+                    cartCount = cart.Quantity;
+                } else
+                {
+                    AlreadyInCart = false;
+                    cartCount = 1;
+                }
+
+                ViewBag.CartCount = cartCount;
+                ViewBag.AlreadyInCart = AlreadyInCart;
+               
 
                 if (product != null)
                 {
@@ -142,7 +160,6 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                     {
                         productCount.Count++;
                         applicationDbContext.ProductCounts.Update(productCount);
-                        
                     }
                     else
                     {
@@ -217,8 +234,12 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         [HttpPost]
         public ActionResult CreateCartItem(int ProductId, int Quantity)
         {
-            Product product = unitOfWork.ProductRepository.Get(p => p.Id == ProductId, includeProperties: "Reviews,Shop");
-            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "CartItems,Shop");
+            Product product = unitOfWork.ProductRepository.Get(p => p.Id == ProductId);
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
+
+            var cart = applicationDbContext.CartItems.Where(a => a.UserId == user.Id && a.ProductId == product.Id).FirstOrDefault();
+            unitOfWork.CartItemRepository.Remove(cart);
+
             CartItem cartItem = new CartItem
             {
                 ProductId = ProductId,

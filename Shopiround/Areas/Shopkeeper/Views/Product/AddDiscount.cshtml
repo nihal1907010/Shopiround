@@ -1,5 +1,8 @@
 ﻿@model List<DiscountVM>
 <div class="container">
+
+    <input type="text" id="searchBox" placeholder="Search by product name" class="form-control mb-3">
+
     @{
         foreach (var discountVM in Model)
         {
@@ -57,6 +60,23 @@
         }
     }
 </div>
+
+
+<script>
+    document.getElementById('searchBox').addEventListener('input', function () {
+        var searchValue = this.value.trim().toLowerCase();
+        var discountDivs = document.querySelectorAll('.container > .border');
+
+        discountDivs.forEach(function (discountDiv) {
+            var productName = discountDiv.querySelector('.ms-3 > div:nth-child(1)').textContent.trim().toLowerCase();
+            if (productName.includes(searchValue)) {
+                discountDiv.style.display = 'block';
+            } else {
+                discountDiv.style.display = 'none';
+            }
+        });
+    });
+</script>
 
 
 
