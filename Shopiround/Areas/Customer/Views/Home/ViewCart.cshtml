@@ -1,4 +1,7 @@
 ﻿@model List<CartItem>
+@{
+    int totalPrice = 0;
+}
 <style>
     .productImage {
         height: 30vw;
@@ -17,6 +20,7 @@
     <div>
         @foreach (var cartItem in Model)
         {
+            totalPrice += (int)cartItem.Product.Price;
             <div class="d-flex mb-2 border border-1 p-2 rounded" style="background-color: #F1F5F9;">
                 <div class="me-2 rounded overflow-hidden">
                     <img class="productImage" src="@cartItem.Product.ImageURL" />
@@ -61,59 +65,31 @@ line-height: 24px;
 </div>
 <div style="margin-bottom: 60px;"></div>
 <div style="height: 65px;" class="ps-3 pe-3 d-flex justify-content-between align-items-center border border-2 position-fixed bottom-0 w-100 bg-white">
-    <div class="fw-bold fs-5">Total: <span id="totalPrice" style="color: #00796B">৳00.00</span></div>
+    <div>
+        <div class="fw-bold fs-5">Total Price: <span id="totalPrice" style="color: #00796B">৳@totalPrice.00</span></div>
+        <div class="fw-bold fs-5">Est. Distance: <span id="totalDistance" style="color: #00796B">...</span></div>
+    </div>
+    
     <a asp-area="Customer" asp-controller="Home" asp-action="ShowRoute" style="box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;" class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" id="checkoutBtn">Checkout</a>
 </div>
 
 
 <script>
-    var route = document.getElementById("route");
-    var totalPriceSpan = document.getElementById("totalPrice");
-    var map = L.map('map');
-    var totalPrice = 0;
-    function checkout() {
-        route.style.display = "inline-block";
-        map.invalidateSize(true);
-    }
-    function cross() {
-        route.style.display = "none";
-    }
-    var greenIcon = new L.Icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
+    console.log("Hey");
+    var totalDistanceSpan = document.getElementById("totalDistance");
     var userLat, userLng;
     let locations = new Array();
-    let sortedLocations = new Array();
     var cartItems = @Html.Raw(Json.Serialize(Model));
     var result;
-    for (idx in cartItems) {
-        totalPrice += cartItems[idx]["product"]["price"];
-    }
-    totalPriceSpan.innerHTML = "৳" + totalPrice + ".00";
     var routeLayer = null;
-
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 var lat = position.coords.latitude;
                 var lng = position.coords.longitude;
-
                 userLat = lat, userLng = lng;
-
                 let location = [lng, lat];
-
                 locations.push({ "location": location });
-                map.setView([lat, lng], 17);
-
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 50,
-                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                }).addTo(map);
                 for (idx in cartItems) {
                     totalPrice += cartItems[idx]["product"]["price"];
                     location = [
@@ -125,7 +101,6 @@ line-height: 24px;
                 var routingMatrix = [];
                 const MAX = 1e9;
                 const N = locations.length;
-
                 var memo = [];
                 var last = [];
                 for (var i = 0; i < N; ++i) {
@@ -136,7 +111,6 @@ line-height: 24px;
                         last[i][j] = -1;
                     }
                 }
-
                 function tsp(i, mask) {
                     if (mask == ((1 << i) | 1)) {
                         var _mask = mask & (~(1 << i))
@@ -189,74 +163,13 @@ line-height: 24px;
                                 lastIdx = i;
                             }
                         }
-                        var waypointsIdx = [];
-                        var mask = (1 << N) - 1;
-                        do {
-                            waypointsIdx.push(lastIdx);
-                            if (lastIdx != 0) {
-                                var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]]).addTo(map);
-                                var shopName = cartItems[lastIdx - 1]["product"]["shop"]["shopName"];
-                                new L.Marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], {
-                                    icon: new L.DivIcon({
-                                        className: 'my-div-icon',
-                                        html: `<span class="my-div-span bg-primary text-white fs-6 p-1 rounded">${shopName}</span>`
-                                    })
-                                }).addTo(map);
-                            }
-                            else {
-                                var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], { icon: greenIcon }).addTo(map);
-                                new L.Marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], {
-                                    icon: new L.DivIcon({
-                                        className: 'my-div-icon',
-                                        html: `<span class="my-div-span bg-primary text-white fs-6 p-1 rounded">Start</span>`
-                                    })
-                                }).addTo(map);
-                            }
-                            
-                            mask = mask & ~(1 << lastIdx);
-                            lastIdx = last[lastIdx][mask];
-
-
-
-                        } while (mask != 0)
-
-                        waypointsIdx.reverse();
-                        var waypoints = [];
-                        for (var i = 0; i < N; ++i) {
-                            waypoints += locations[i]["location"][1] + ',' + locations[i]["location"][0];
-                            if (i + 1 != N) waypoints += '|';
+                        var unit = "m";
+                        if (ans >= 1000) {
+                            ans /= 1000;
+                            unit = "km";
                         }
-                        fetch(`https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=drive&apiKey=65c669784b2d4fe897f94046acc1a94d`)
-                            .then(response => response.json())
-                            .then(result => {
-                                //
-                                const turnByTurnMarkerStyle = {
-                                    radius: 5,
-                                    fillColor: "#fff",
-                                    color: "#555",
-                                    weight: 1,
-                                    opacity: 1,
-                                    fillOpacity: 1
-                                }
-                                // Note! GeoJSON uses [longitude, latutude] format for coordinates
-                                L.geoJSON(result, {
-                                    style: (feature) => {
-                                        return {
-                                            color: "rgba(20, 137, 255, 0.7)",
-                                            weight: 5
-                                        };
-                                    }
-                                }).bindPopup((layer) => {
-                                    return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
-                                }).addTo(map);
-                                //
-                                route.style.display = "inline-block";
-        map.invalidateSize(true);
-                            })
-                            .catch(error => console.log('error', error));
+                        totalDistanceSpan.innerHTML = ans + unit;
                     });
-                    
-                //
             },
             (error) => {
             }

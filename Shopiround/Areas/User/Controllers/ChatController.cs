@@ -43,8 +43,14 @@ namespace Shopiround.Areas.User.Controllers
             {
                 return new RedirectToPageResult("/Identity/Account/Login");
             }
-            List<Message> messages = applicationDbContext.Message.OrderBy(m => m.SendTime).Where(m => m.ReceiverId == applicationUser.Id).Include(m => m.Sender).Include(m => m.Product).ToList();
-            return View(messages);
+            List<Message> allMessages = applicationDbContext.Message.Where(m => m.ReceiverId == applicationUser.Id).Include(m => m.Sender).Include(m => m.Product).ToList();
+            var latestMessages = applicationDbContext.Message
+                    .Where(m => m.ReceiverId == applicationUser.Id)
+                    .Include(m => m.Sender).Include(m => m.Product)
+                    .GroupBy(m => new { m.SenderId, m.ProductId })
+                    .Select(g => g.OrderByDescending(m => m.SendTime).First())
+                    .ToList();
+            return View(latestMessages);
         }
     }
 }
