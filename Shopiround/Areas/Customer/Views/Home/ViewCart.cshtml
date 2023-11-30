@@ -40,7 +40,7 @@
                         <div style="font-size: 16px;
                             line-height: 24px;
                             font-weight: 700;">
-                            <span id="price_@cartItem.Product.Id" style="color: #2A8703">৳@ind_price.00</span>
+                            <span id="price_@cartItem.Id" style="color: #2A8703">৳@ind_price.00</span>
                         </div>
                         <div style="font-size: 13px;
                             line-height: 13px;
@@ -54,12 +54,16 @@
                         <a class="btn btn-light rounded p-1 ps-2 pe-2 border" style="background-color: #E2E8F0; box-shadow: rgba(50, 50, 93, 0.25) 0px 1px 5px -1px, rgba(0, 0, 0, 0.3) 0px 0.5px 3px -1px;">Save for later</a>
                     </div>
                 </div>
-                <div class="position-relative ml-auto" style="width: 100px;">
-                    <div class="input-group">
-                        <input type="number" class="form-control" id="quantity_@cartItem.Product.Id" placeholder="Your Input" onchange="qunatityCheck(@cartItem.Product.Id, @cartItem.Product.Quantity, @cartItem.Product.Price)" style="width: calc(100% - 72px);" value="@cartItem.Quantity" />
-                        <div class="input-group-append" style="width: 72px;">
-                            <button class="btn btn-outline-secondary" type="button" onclick="decrementQuantity(@cartItem.Product.Id, @cartItem.Product.Quantity, @cartItem.Product.Price)">-</button>
-                            <button class="btn btn-outline-secondary" type="button" onclick="incrementQuantity(@cartItem.Product.Id, @cartItem.Product.Quantity, @cartItem.Product.Price)">+</button>
+                <div class="position-relative" style="width: 60px;">
+                    <div>
+                        <input id="quantity_@cartItem.Id" class="d-flex text-center form-control" type="number" style="height: 30px; width: 60px; font-size: 20px;" onchange="cngQ(@cartItem.Id)" value="@cartItem.Quantity" />
+                    </div>
+                    <div class="d-flex justify-content-between mt-1" style="width: 60px;">
+                        <div class="border border-3 me-1 rounded" onclick="decQ(@cartItem.Id)">
+                            <img src="/images/assets/minus.png" style="height: 23px;" />
+                        </div>
+                        <div class="border border-3 ms-1 rounded" onclick="incQ(@cartItem.Id)">
+                            <img src="/images/assets/plus.png" style="height: 23px;" />
                         </div>
                     </div>
                 </div>
@@ -75,127 +79,176 @@
         <div class="fw-bold fs-5">Total Price: <span id="totalPrice" style="color: #00796B">৳@totalPrice.00</span></div>
         <div class="fw-bold fs-5">Est. Distance: <span id="totalDistance" style="color: #00796B">...</span></div>
     </div>
-    
+
     <a asp-area="Customer" asp-controller="Home" asp-action="ShowRoute" style="box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;" class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" id="checkoutBtn">Checkout</a>
 </div>
 <script>
-    var productPrices = new Array();
+    // product quantity and price
+    var productQ = new Map();
+    var productP = new Map()
+    var quantityA = new Map();
 
-    var route = document.getElementById("route");
     var totalPriceSpan = document.getElementById("totalPrice");
     var totalPrice = 0;
-    function checkout() {
-        route.style.display = "inline-block";
-        map.invalidateSize(true);
-    }
-    function cross() {
 
+    function incQ(c_Id) {
+        totalPrice -= productQ.get(c_Id) * productP.get(c_Id);
 
-        var userLat, userLng;
-        let locations = new Array();
-        let sortedLocations = new Array();
-        var cartItems = @Html.Raw(Json.Serialize(Model));
-        console.log(cartItems);
-        var result;
-        for (idx in cartItems) {
-            //totalPrice += cartItems[idx]["product"]["price"];
-            productPrices.push(cartItems[idx]["quantity"])
-        }
+        var quantityOrdered = productQ.get(c_Id);
+        var quantityAvailable = quantityA.get(c_Id);
+        quantityOrdered = Math.min(quantityOrdered + 1, quantityAvailable);
+        productQ.set(c_Id, quantityOrdered);
+        document.getElementById("quantity_" + c_Id).value = quantityOrdered;
+        document.getElementById("price_" + c_Id).innerHTML = "৳" + productQ.get(c_Id) * productP.get(c_Id) + ".00";
+
+        totalPrice += productQ.get(c_Id) * productP.get(c_Id);
         totalPriceSpan.innerHTML = "৳" + totalPrice + ".00";
-        var routeLayer = null;
+    }
 
+    function decQ(c_Id) {
+        totalPrice -= productQ.get(c_Id) * productP.get(c_Id);
 
+        var quantityOrdered = productQ.get(c_Id);
+        var quantityAvailable = quantityA.get(c_Id);
+        quantityOrdered = Math.max(quantityOrdered - 1, 1);
+        productQ.set(c_Id, quantityOrdered);
+        document.getElementById("quantity_" + c_Id).value = quantityOrdered;
+        document.getElementById("price_" + c_Id).innerHTML = "৳" + productQ.get(c_Id) * productP.get(c_Id) + ".00";
 
+        totalPrice += productQ.get(c_Id) * productP.get(c_Id);
+        totalPriceSpan.innerHTML = "৳" + totalPrice + ".00";
+    }
 
+    function cngQ(c_Id) {
+        totalPrice -= productQ.get(c_Id) * productP.get(c_Id);
 
-        function updateQuantity(itemId) {
-            var quantity = document.getElementById('quantity_' + itemId).value;
+        var quantityOrdered = productQ.get(c_Id);
+        var quantityAvailable = quantityA.get(c_Id);
+        quantityOrdered = Math.min(document.getElementById("quantity_" + c_Id).value, quantityAvailable);
+        quantityOrdered = Math.max(quantityOrdered, 1);
+        productQ.set(c_Id, quantityOrdered);
+        document.getElementById("quantity_" + c_Id).value = quantityOrdered;
+        document.getElementById("price_" + c_Id).innerHTML = "৳" + productQ.get(c_Id) * productP.get(c_Id) + ".00";
 
-            console.log("Item ID: " + itemId + ", New Quantity: " + quantity);
-            $.ajax({
-                type: "POST",
-                url: "@Url.Action("UpdateCart")",
-                dataType: "json",
-                data: { ProductId: itemId, Quantity: quantity },
-                success: function (result) {
-                    console.log(result);
+        totalPrice += productQ.get(c_Id) * productP.get(c_Id);
+        totalPriceSpan.innerHTML = "৳" + totalPrice + ".00";
+    }
+    var cartItems = @Html.Raw(Json.Serialize(Model));
 
-                },
-                error: function (req, status, error) {
-                    console.log(status);
+    for (idx in cartItems) {
+        var c_Id = cartItems[idx]["id"];
+        var p_p = cartItems[idx]["product"]["price"];
+        var p_q = cartItems[idx]["quantity"];
+        var q_a = cartItems[idx]["product"]["quantity"];
+
+        productQ.set(c_Id, p_q);
+        productP.set(c_Id, p_p);
+        quantityA.set(c_Id, q_a);
+
+        totalPrice += productQ.get(c_Id) * productP.get(c_Id);
+    }
+    totalPriceSpan.innerHTML = "৳" + totalPrice + ".00";
+
+    // calculating total distance
+    var totalDistanceSpan = document.getElementById("totalDistance");
+    var userLat, userLng;
+    let locations = new Array();
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+                userLat = lat, userLng = lng;
+                let location = [lng, lat];
+                locations.push({ "location": location });
+                for (idx in cartItems) {
+                    totalPrice += cartItems[idx]["product"]["price"];
+                    location = [
+                        cartItems[idx]["product"]["shop"]["longitude"],
+                        cartItems[idx]["product"]["shop"]["latitude"]
+                    ]
+                    locations.push({ "location": location });
                 }
-            });
-        }
-
-        function setPrice(itemId, price) {
-            var priceSpan = document.getElementById('price_' + itemId);
-            priceSpan.innerHTML = "৳" + price + ".00";
-        }
-
-        function qunatityCheck(itemId, available, price) {
-            var quantity = document.getElementById('quantity_' + itemId);
-
-            if (quantity.value > available) {
-                quantity.value = available;
-
-                setPrice(itemId, quantity.value * price)
-            }
-            else if (quantity.value < 1) {
-                quantity.value = 1;
-                setPrice(itemId, quantity.value * price)
-            }
-
-            updateQuantity(itemId);
-        }
-
-        function incrementQuantity(itemId, available, price) {
-            var inputField = document.getElementById('quantity_' + itemId);
-            var currentValue = parseInt(inputField.value);
-            if (!isNaN(currentValue)) {
-                if (currentValue < available) {
-                    inputField.value = currentValue + 1;
-                    totalPrice += price;
-                    setPrice(itemId, inputField.value * price)
-                    updateQuantity(itemId);
+                var routingMatrix = [];
+                const MAX = 1e9;
+                const N = locations.length;
+                var memo = [];
+                var last = [];
+                for (var i = 0; i < N; ++i) {
+                    memo[i] = [];
+                    last[i] = [];
+                    for (var j = 0; j < (1 << N); ++j) {
+                        memo[i][j] = 0;
+                        last[i][j] = -1;
+                    }
                 }
-
-            } else {
-                inputField.value = 1; // Set default value if current value is NaN or empty
-                setPrice(itemId, inputField.value * price)
-                updateQuantity(itemId);
-            }
-        }
-
-        function decrementQuantity(itemId, available, price) {
-            var inputField = document.getElementById('quantity_' + itemId);
-            var currentValue = parseInt(inputField.value);
-            if (!isNaN(currentValue) && currentValue > 1) {
-                if (currentValue > 1) {
-                    inputField.value = currentValue - 1;
-                    totalPrice -= price;
-                    setPrice(itemId, inputField.value * price)
-
-                    updateQuantity(itemId);
+                function tsp(i, mask) {
+                    if (mask == ((1 << i) | 1)) {
+                        var _mask = mask & (~(1 << i))
+                        last[i][_mask] = 0;
+                        return routingMatrix[0][i];
+                    }
+                    if (memo[i][mask] != 0) {
+                        return memo[i][mask];
+                    }
+                    var res = MAX;
+                    for (var j = 0; j < N; ++j) {
+                        if ((mask & (1 << j)) && j != i && j != 0) {
+                            var _mask = mask & (~(1 << i))
+                            var temp = tsp(j, _mask) + routingMatrix[j][i];
+                            if (res > temp) {
+                                res = temp;
+                                last[i][_mask] = j;
+                            }
+                        }
+                    }
+                    return memo[i][mask] = res;
                 }
-
-            } else {
-                inputField.value = 1; // Set default value if current value is NaN, empty, or less than 1
-                setPrice(itemId, inputField.value * price)
-                updateQuantity(itemId);
+                const body = {
+                    "mode": "drive",
+                    "sources": locations,
+                    "targets": locations
+                };
+                fetch('https://api.geoapify.com/v1/routematrix?apiKey=65c669784b2d4fe897f94046acc1a94d', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        for (var i = 0; i < N; ++i) {
+                            routingMatrix[i] = [];
+                            for (var j = 0; j < N; ++j) {
+                                routingMatrix[i][j] = res["sources_to_targets"][i][j]["distance"];
+                            }
+                        }
+                        var ans = MAX;
+                        var lastIdx = -1;
+                        for (var i = 0; i < N; ++i) {
+                            var mask = (1 << N) - 1;
+                            var temp = tsp(i, mask) + routingMatrix[i][0];
+                            if (ans > temp) {
+                                ans = temp;
+                                lastIdx = i;
+                            }
+                        }
+                        //console.log(ans);
+                        var unit = "m";
+                        if (ans >= 1000) {
+                            ans /= 1000;
+                            unit = "km";
+                        }
+                        totalDistanceSpan.innerHTML = ans + unit;
+                    });
+            },
+            (error) => {
             }
-        }
-
-        var cartQuantityMap = {};
-
-        function updateCartQuantity(productId, quantity) {
-            cartQuantityMap[productId] = quantity;
-        }
-
-        function getPreviousCartQuantity(productId) {
-            return cartQuantityMap[productId] || 0;
-        }
-
-
-
+        );
+    }
+    else {
+        console.error("Geolocation is not supported by this browser.");
+    }
 </script>
 

@@ -362,7 +362,6 @@ namespace Shopiround.Areas.Customer.Controllers
                     context.SaveChanges();
                 }
             }
-            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id && c.Online == onlinex).ToList();
             foreach (CartItem cartItem in cartItems)
             {
                 PurchaseItem purchaseItem = new PurchaseItem
