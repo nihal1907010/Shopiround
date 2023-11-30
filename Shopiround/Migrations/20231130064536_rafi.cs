@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Shopiround.Migrations
 {
     /// <inheritdoc />
-    public partial class nihal : Migration
+    public partial class rafi : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -480,6 +480,27 @@ namespace Shopiround.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DeliveryInformation",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    cartItemId = table.Column<int>(type: "int", nullable: false),
+                    Longitude = table.Column<double>(type: "float", nullable: false),
+                    Latitude = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeliveryInformation", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DeliveryInformation_CartItems_cartItemId",
+                        column: x => x.cartItemId,
+                        principalTable: "CartItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LastMessages",
                 columns: table => new
                 {
@@ -553,6 +574,11 @@ namespace Shopiround.Migrations
                 name: "IX_CartItems_UserId",
                 table: "CartItems",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeliveryInformation_cartItemId",
+                table: "DeliveryInformation",
+                column: "cartItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LastMessages_MessageId",
@@ -650,7 +676,7 @@ namespace Shopiround.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CartItems");
+                name: "DeliveryInformation");
 
             migrationBuilder.DropTable(
                 name: "DiscountDates");
@@ -684,6 +710,9 @@ namespace Shopiround.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "CartItems");
 
             migrationBuilder.DropTable(
                 name: "Message");

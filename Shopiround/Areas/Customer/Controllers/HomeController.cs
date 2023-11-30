@@ -39,7 +39,7 @@ namespace Shopiround.Areas.Customer.Controllers
         
         public IActionResult Index()
         {
-            List<Product> products = context.Products.Include("Shop").ToList();
+            List<Product> products = GetAllProducts();
             string[] filePaths = Directory.GetFiles(Path.Combine(_webHostEnvironment.WebRootPath, "images", "backgrounds"));
             List<string> files = new List<string>();
             foreach (string filePath in filePaths)
@@ -61,6 +61,67 @@ namespace Shopiround.Areas.Customer.Controllers
             ViewBag.shop = shop;
             return View(products);
         }
+
+        public List<Product> GetAllProducts()
+        {
+            List<Product> openTodayProducts = new List<Product>();
+
+            string todayName = DateTime.Today.DayOfWeek.ToString();
+            int currentTime = DateTime.Now.Hour;
+
+            List<Shop> Shops = context.Shops.ToList();
+
+            foreach (var shop in Shops)
+            {
+                bool isOpenToday = false;
+
+                switch (todayName)
+                {
+                    case "Sunday":
+                        isOpenToday = shop.Sunday;
+                        break;
+                    case "Monday":
+                        isOpenToday = shop.Monday;
+                        break;
+                    case "Tuesday":
+                        isOpenToday = shop.Tuesday;
+                        break;
+                    case "Wednesday":
+                        isOpenToday = shop.Wednesday;
+                        break;
+                    case "Thursday":
+                        isOpenToday = shop.Thursday;
+                        break;
+                    case "Friday":
+                        isOpenToday = shop.Friday;
+                        break;
+                    case "Saturday":
+                        isOpenToday = shop.Saturday;
+                        break;
+                }
+
+
+                var b = TimeSpan.Parse(shop.OpeningTime);
+
+                Boolean openNow = currentTime >= int.Parse(shop.OpeningTime) && currentTime <= int.Parse(shop.ClosingTime);
+
+
+
+                if (isOpenToday && openNow)
+                {
+                    List<Product> productsForThisShop = context.Products
+                                .Where(p => p.Quantity > 0 && p.ShopId == shop.ShopId)
+                                .ToList();
+
+                    openTodayProducts.AddRange(productsForThisShop);
+                }
+            }
+                return openTodayProducts;
+        }
+
+
+
+
         [Authorize]
         public IActionResult UserProfile()
         {

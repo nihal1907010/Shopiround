@@ -1,21 +1,53 @@
 ﻿@model UserProfile
 
+<style>
+    #output {
+        height: 40vw;
+        width: 40vw;
+        border-radius: 50%;
+        border: 6px solid #757575;
+    }
+
+    .uploadContainer {
+        position: relative;
+        height: 40vw;
+        width: 40vw;
+    }
+
+    .editContainer {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        background-color: white;
+        border-radius: 50%;
+        height: 10vw;
+        width: 10vw;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 9px;
+    }
+</style>
+
 <div class="container">
     <form method="post" enctype="multipart/form-data">
         <input asp-for="ImageURL" hidden />
         @if (Model != null)
         {
-            <div class="d-flex justify-content-center">
-                <div class="w-50 card d-flex">
-                    <img id="output" src="@Model.ImageURL" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
-                    <div class="card-body">
-                        <div class="input-group mb-1 d-flex justify-content-center">
-                            <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden>
-                            <div class="btn btn-primary rounded w-100" onclick="upload()">Select Photo</div>
+           
+
+                <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden>
+                <div class="d-flex justify-content-center justify-content-center">
+                    <div class="uploadContainer">
+                        <div class="editContainer d-flex justify-content-center align-items-center">
+                            <div id="editIcon" onclick="upload()">
+                                <i class="bi bi-pencil-square fs-1"></i>
+                            </div>
+                        </div>
+                        <div class="previewContainer">
+                            <img id="output" src="~/images/shop/default_shop.png" class="" alt="...">
                         </div>
                     </div>
                 </div>
-            </div>
+
+            
             <hr />
             <h3>User Information</h3>
             <div class="form-floating mt-3 mb-3">
@@ -41,12 +73,16 @@
         else
         {
             <div class="d-flex justify-content-center">
-                <div class="w-50 card d-flex">
-                    <img id="output" src="~/images/shop/default_shop.png" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
-                    <div class="card-body">
-                        <div class="input-group mb-1 d-flex justify-content-center">
-                            <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden>
-                            <div class="btn btn-primary rounded w-100" onclick="upload()">Select Photo</div>
+                <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden>
+                <div class="d-flex justify-content-center justify-content-center">
+                    <div class="uploadContainer">
+                        <div class="editContainer d-flex justify-content-center align-items-center">
+                            <div id="editIcon" onclick="upload()">
+                                <i class="bi bi-pencil-square fs-1"></i>
+                            </div>
+                        </div>
+                        <div class="previewContainer">
+                            <img id="output" src="~/images/shop/default_shop.png" class="" alt="...">
                         </div>
                     </div>
                 </div>
