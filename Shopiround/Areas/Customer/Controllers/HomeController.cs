@@ -36,7 +36,6 @@ namespace Shopiround.Areas.Customer.Controllers
             this.context = context;
             _webHostEnvironment = webHostEnvironment;
         }
-        
         public IActionResult Index()
         {
             List<Product> products = context.Products.Include("Shop").ToList();
@@ -46,7 +45,6 @@ namespace Shopiround.Areas.Customer.Controllers
             {
                 files.Add(Path.GetRelativePath(_webHostEnvironment.WebRootPath, filePath));
             }
-
             // User and Shop information
             ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
             Shop? shop = null;
@@ -54,13 +52,13 @@ namespace Shopiround.Areas.Customer.Controllers
             {
                 shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
             }
-
-
             ViewBag.backgrounds = files;
             ViewBag.user = user;
             ViewBag.shop = shop;
             return View(products);
         }
+        
+
         [Authorize]
         public IActionResult UserProfile()
         {
@@ -69,21 +67,25 @@ namespace Shopiround.Areas.Customer.Controllers
             {
                 return new RedirectToPageResult("/Identity/Account/Login");
             }
-            UserProfile userProfile = context.UserProfiles.FirstOrDefault(u => u.userId == user.Id);
+            UserProfileVM userProfile = new UserProfileVM
+            {
+                UserId = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                MobileNo = user.MobileNo,
+                ImageURL = user.ImageURL,
+                Address = user.Address
+            };
 
             return View(userProfile);
         }
 
         [HttpPost]
-        public IActionResult UserProfile(UserProfile userProfile, IFormFile? file)
+        public IActionResult UserProfile(UserProfileVM userProfile, IFormFile? file)
         {
             ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
-            userProfile.userId = user.Id;
 
-            // Check if the user profile already exists in the database
-            UserProfile existingProfile = context.UserProfiles.FirstOrDefault(u => u.userId == userProfile.userId);
-
-            if (existingProfile != null)
+            if (user != null)
             {
                 // If the profile exists, update it
                 if (file != null)
@@ -95,37 +97,17 @@ namespace Shopiround.Areas.Customer.Controllers
                     {
                         file.CopyTo(fileStream);
                     }
-                    existingProfile.ImageURL = @"\images\User\" + fileName;
+                    user.ImageURL = @"\images\User\" + fileName;
                 }
                 // Update other properties if needed
-                existingProfile.Name = userProfile.Name;
-                existingProfile.Email = userProfile.Email;
-                existingProfile.MobileNo = userProfile.MobileNo;
-                existingProfile.Address = userProfile.Address;
+                user.Name = userProfile.Name;
+                //existingProfile.Email = userProfile.Email;
+                user.MobileNo = userProfile.MobileNo;
+                user.Address = userProfile.Address;
 
-                context.UserProfiles.Update(existingProfile);
+                context.ApplicationUsers.Update(user);
             }
-            else
-            {
-                // If the profile doesn't exist, add a new one
-                if (file != null)
-                {
-                    string wwwRootPath = _webHostEnvironment.WebRootPath;
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string productPath = Path.Combine(wwwRootPath, @"images\User");
-                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
-                    userProfile.ImageURL = @"\images\User\" + fileName;
-                }
-                else
-                {
-                    userProfile.ImageURL = @"\images\shop\default_shop.png";
-                }
-
-                context.UserProfiles.Add(userProfile);
-            }
+         
 
             context.SaveChanges();
 

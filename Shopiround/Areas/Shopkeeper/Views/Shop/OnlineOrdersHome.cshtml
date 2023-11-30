@@ -1,7 +1,7 @@
 ﻿@model List<OnlineOrderVM>
 <style>
     #card {
-        background-color: #E0F2F1;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
     }
 
     #productImage {
@@ -18,16 +18,16 @@
     @{
         foreach (var order in Model)
         {
-            <a asp-area="Shopkeeper" asp-controller="Shop" asp-action="OnlineOrder" asp-route-userId="@order.User.userId" class="row mt-1 pt-2 pb-2 border rounded" id="card">
+            <a asp-area="Shopkeeper" asp-controller="Shop" asp-action="OnlineOrder" asp-route-userId="@order.User.Id" class="row mt-1 pt-2 pb-2 border rounded" id="card">
                 <div class="col-2">
-                    <img id="productImage" src="@order.User.ImageURL" />
+                    <img class="border border-2" id="productImage" src="@order.User.ImageURL" />
                 </div>
-                <div class="col-7 d-flex flex-column justify-content-center">
+                <div class="col-6 d-flex flex-column justify-content-center">
                     <div class="row text">@order.User.Name</div>
                 </div>
-                <div class="col-3 d-flex flex-column justify-content-center">
-                    <div class="row">@order.TotalOrders</div>
-                    <div class="row">@order.TotalPrice</div>
+                <div class="col-4 d-flex flex-column justify-content-center">
+                    <div class="row">Total Orders: @order.TotalOrders</div>
+                    <div class="row">Total Price: @order.TotalPrice</div>
                 </div>
             </a>
         }

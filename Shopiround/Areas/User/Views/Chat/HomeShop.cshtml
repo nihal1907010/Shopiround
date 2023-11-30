@@ -1,15 +1,21 @@
 ﻿@model List<Message>
 <style>
     #card {
-        background-color: #E0F2F1;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
     }
+
     #productImage {
         height: 50px;
         width: 50px;
         border-radius: 50%;
     }
+
     .text {
         margin-left: 1px;
+    }
+
+    .np {
+        font-weight: 500;
     }
 </style>
 <div class="container">
@@ -21,7 +27,7 @@
             string timeOnly = dateTime.ToString("h:mm tt");
             <a asp-area="User" asp-controller="Chat" asp-action="Home" asp-route-ownerId="@message.SenderId" asp-route-productId="@message.ProductId" class="row mt-1 pt-2 pb-2 border rounded" id="card">
                 <div class="col-2">
-                    <img id="productImage" src="@message.Product.ImageURL" />
+                    <img class="border border-2" id="productImage" src="@message.Product.ImageURL" />
                 </div>
                 <div class="col-7 d-flex flex-column justify-content-center">
                     <div class="row text">@message.Product.Name</div>

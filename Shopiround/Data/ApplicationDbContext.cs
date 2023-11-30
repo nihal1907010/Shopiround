@@ -37,7 +37,6 @@ namespace Shopiround.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Message> Message { get; set; }
         public DbSet<LastMessage> LastMessages { get; set; }
-        public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<DeliveryInformation> DeliveryInformation { get; set; }
         
     }

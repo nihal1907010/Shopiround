@@ -3,11 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shopiround.Models
 {
-    public class UserProfile
+    public class UserProfileVM
     {
-        [Key]
-        public int Id { get; set; }
-        public string userId { get; set; }
+        public string UserId { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string? MobileNo { get; set; }

@@ -194,6 +194,7 @@ namespace Shopiround.Areas.Identity.Pages.Account
             }
         }
 
+
         private IUserEmailStore<IdentityUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)

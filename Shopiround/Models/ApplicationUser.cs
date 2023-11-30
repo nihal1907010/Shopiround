@@ -14,5 +14,8 @@ namespace Shopiround.Models
         public Shop Shop { get; set; }
         public List<CartItem> CartItems { get; set; }
         public List<SavedItem> SavedItems { get; set; }
+        public string? MobileNo { get; set; }
+        public string? Address { get; set; }    
+        public string? ImageURL { get; set; }
     }
 }

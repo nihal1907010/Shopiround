@@ -132,6 +132,10 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
             return View(shopProfile);
         }
+        public IActionResult ShowUserInformation()
+        {
+            return View();
+        }
 
         public IActionResult OnlineOrdersHome()
         {
@@ -142,7 +146,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                     group cart by cart.UserId into g
                     select new OnlineOrderVM
                     {
-                        User = context.UserProfiles.Where(u => u.userId == g.Key).First(),
+                        User = context.ApplicationUsers.Where(u => u.Id == g.Key).First(),
                         TotalOrders = g.Count(),
                         TotalPrice = (int)g.Sum(c => c.Product.Price)
                     }).ToList();

@@ -1,4 +1,4 @@
-﻿@model UserProfile
+﻿@model UserProfileVM
 
 <div class="container">
     <form method="post" enctype="multipart/form-data">
@@ -7,7 +7,13 @@
         {
             <div class="d-flex justify-content-center">
                 <div class="w-50 card d-flex">
-                    <img id="output" src="@Model.ImageURL" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+                    @if(Model.ImageURL != null)
+                    {
+                        <img id="output" src="@Model.ImageURL" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+                    }
+                    else {
+                        <img id="output" src="~/images/shop/default_shop.png" class="card-img-top h-75 w-75 mx-auto mt-3" alt="...">
+                    }
                     <div class="card-body">
                         <div class="input-group mb-1 d-flex justify-content-center">
                             <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden>
