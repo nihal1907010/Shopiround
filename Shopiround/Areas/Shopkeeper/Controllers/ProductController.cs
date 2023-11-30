@@ -10,6 +10,8 @@ using System.IO;
 using System.Linq;
 using Shopiround.Data;
 using Shopiround.Models.Statistics;
+using System.Threading;
+using Microsoft.EntityFrameworkCore;
 
 namespace Shopiround.Areas.Shopkeeper.Controllers
 {
@@ -31,7 +33,8 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
         public IActionResult Index()
         {
-            List<Product> products = unitOfWork.ProductRepository.GetAll().ToList();
+            //List<Product> products = unitOfWork.ProductRepository.GetAll().ToList();
+            List<Product> products = applicationDbContext.Products.Include("Shop").ToList();
             return View(products);
         }
 
@@ -212,7 +215,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateCartItem(int ProductId)
+        public ActionResult CreateCartItem(int ProductId, int Quantity)
         {
             Product product = unitOfWork.ProductRepository.Get(p => p.Id == ProductId, includeProperties: "Reviews,Shop");
             ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "CartItems,Shop");
@@ -222,7 +225,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                 Product = product,
                 UserId = user.Id,
                 User = user,
-                Quantity = 1,
+                Quantity = Quantity,
                 Online = false
             };
             unitOfWork.CartItemRepository.Add(cartItem);
@@ -230,6 +233,9 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
             return Json(new { added = true });
         }
+
+
+     
 
         [HttpPost]
         public ActionResult OnlineCartItem(int ProductId)
