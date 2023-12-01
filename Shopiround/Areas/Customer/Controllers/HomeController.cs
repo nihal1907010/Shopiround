@@ -39,6 +39,7 @@ namespace Shopiround.Areas.Customer.Controllers
         public IActionResult Index()
         {
             List<Product> products = GetAllProducts();
+
             string[] filePaths = Directory.GetFiles(Path.Combine(_webHostEnvironment.WebRootPath, "images", "backgrounds"));
             List<string> files = new List<string>();
             foreach (string filePath in filePaths)
