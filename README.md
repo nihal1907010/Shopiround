@@ -1,1 +1,1 @@
-Mobile website: http://shopiround-001-site1.btempurl.com/
+Mobile website: https://rafi250-001-site1.anytempurl.com/
