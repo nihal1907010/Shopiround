@@ -282,6 +282,7 @@
             data: { ProductId: productId, ReviewText: reviewText, Rating: yellow },
             success: function (result) {
                 console.log(result);
+                location.reload();
             },
             error: function (req, status, error) {
                 console.log(status);

@@ -307,18 +307,19 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         [HttpPost]
         public ActionResult CreateReview(int ProductId, string ReviewText, int Rating)
         {
+            ApplicationUser? user = applicationDbContext.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
             Product product = unitOfWork.ProductRepository.Get(p => p.Id == ProductId, includeProperties: "Reviews,Shop");
             Review review = new Review();
             review.ProductId = ProductId;
             review.Text = ReviewText;
-            review.Reviewer = "Nihal";
+            review.Reviewer = user.Name;
             review.SerialNo = 1;
             review.Rating = Rating;
 
             unitOfWork.ReviewRepository.Add(review);
             unitOfWork.Save();
             // User and Shop information
-            ApplicationUser? user = applicationDbContext.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            
             Shop? shop = null;
             if (user != null)
             {

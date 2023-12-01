@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Shopiround.Migrations
 {
     /// <inheritdoc />
-    public partial class rafi : Migration
+    public partial class nihal1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

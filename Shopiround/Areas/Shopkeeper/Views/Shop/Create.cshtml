@@ -22,6 +22,7 @@
         height: 10vw;
         width: 10vw;
         box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 9px;
+        z-index: 100;
     }
 </style>
 <form class="w-100 mx-auto" method="post" enctype="multipart/form-data">
@@ -34,8 +35,8 @@
     <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden>
     <div class="d-flex justify-content-center justify-content-center">
         <div class="uploadContainer">
-            <div class="editContainer d-flex justify-content-center align-items-center">
-                <div id="editIcon" onclick="upload()">
+            <div class="editContainer d-flex justify-content-center align-items-center" onclick="upload()">
+                <div id="editIcon">
                     <i class="bi bi-pencil-square fs-1"></i>
                 </div>
             </div>
