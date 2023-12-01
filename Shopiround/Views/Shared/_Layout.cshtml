@@ -104,9 +104,9 @@
                 }
             </div>
             <hr />
-            <div class="ps-2">
-                <a class="mt-3" asp-area="Customer" asp-controller="Home" asp-action="OnlineCart"><i class="bi bi-box-arrow-right"></i>Logout</a>
-            </div>
+            <form id="logoutForm" class="form-inline ps-2" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button class="mt-3" type="submit" style="all: unset;"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+            </form>
         </div>
     </div>
     <div class="container shadow box-shadow d-flex align-items-center" style="position: fixed; top: 0px; background-color: white; height: 65px; width: 100%; z-index: 100;">
