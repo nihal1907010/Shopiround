@@ -161,47 +161,87 @@
 </form>
 
 <script>
-    var products = @Html.Raw(Json.Serialize(Model));
-    var latitudeUser, longitudeUser;
-    var latitudeShop, longitudeShop;
-    var cnt = 0;
+    var lat, lng;
+    var map = L.map('map');
+    var marker;
+    var latitudeInput = @Model.shop.Latitude;
+    var longitudeInput = @Model.shop.Longitude;
+
+    const toWaypoint = [latitudeInput, longitudeInput];
+
+    marker = L.marker([latitudeInput, longitudeInput]).addTo(map);
+
+    var latitudeValue, longitudeValue;
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const myAPIKey = "a63091f5968a473c88c4c923004de755";
+
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                latitudeUser = position.coords.latitude;
-                longitudeUser = position.coords.longitude;
-                console.log(`Latitude: ${latitudeUser}, longitude: ${longitudeUser}`);
-                for (idx in products) {
+                lat = position.coords.latitude;
+                lng = position.coords.longitude;
+                console.log(`Latitude: ${lat}, longitude: ${lng}`);
 
-                    latitudeShop = products[idx]["shop"]["latitude"];
-                    longitudeShop = products[idx]["shop"]["longitude"];
-                    console.log(idx);
-                    fetch(`https://api.geoapify.com/v1/routing?waypoints=${latitudeShop},${longitudeShop}|${latitudeUser},${longitudeUser}&mode=drive&apiKey=a63091f5968a473c88c4c923004de755`)
-                        .then(response => response.json())
-                        .then(result => {
+                latitudeValue = lat;
+                longitudeValue = lng;
+                map.setView([lat, lng], 15);
 
-                            var distance = result["features"][0]["properties"]["distance"];
-                            var unit = "m";
-                            if (distance >= 1000) {
-                                distance /= 1000;
-                                unit = "km";
+                marker = L.marker([lat, lng]).addTo(map);
+
+                const fromWaypoint = [lat, lng];
+
+                fetch(`https://api.geoapify.com/v1/routing?waypoints=${fromWaypoint.join(',')}|${toWaypoint.join(',')}&mode=drive&apiKey=${myAPIKey}`).then(res => res.json()).then(result => {
+
+                    // Note! GeoJSON uses [longitude, latutude] format for coordinates
+                    L.geoJSON(result, {
+                        style: (feature) => {
+                            return {
+                                color: "rgba(20, 137, 255, 0.7)",
+                                weight: 5
+                            };
+                        }
+                    }).bindPopup((layer) => {
+                        return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
+                    }).addTo(map);
+
+                    // collect all transition positions
+                    const turnByTurns = [];
+                    result.features.forEach(feature => feature.properties.legs.forEach((leg, legIndex) => leg.steps.forEach(step => {
+                        const pointFeature = {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": feature.geometry.coordinates[legIndex][step.from_index]
+                            },
+                            "properties": {
+                                "instruction": step.instruction.text
                             }
-                            var distanceText = document.getElementById("distance" + cnt);
-                            distanceText.innerHTML = "(" + distance + unit + ")";
-                            console.log(distance);
-                            ++cnt;
-                        })
-                        .catch(error => console.log('error', error));
+                        }
+                        turnByTurns.push(pointFeature);
+                    })));
 
-                }
+                    L.geoJSON({
+                        type: "FeatureCollection",
+                        features: turnByTurns
+                    }, {
+                        pointToLayer: function (feature, latlng) {
+                            return L.circleMarker(latlng, turnByTurnMarkerStyle);
+                        }
+                    }).bindPopup((layer) => {
+                        return `${layer.feature.properties.instruction}`
+                    }).addTo(map);
 
-
+                }, error => console.log(err));
             },
             (error) => {
-                console.error("Error getting user location:", error);
+                //console.error("Error getting user location:", error);
             }
         );
     } else {
-        console.error("Geolocation is not supported by this browser.");
+        //console.error("Geolocation is not supported by this browser.");
     }
 </script>

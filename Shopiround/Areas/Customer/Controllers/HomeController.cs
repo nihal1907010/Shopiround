@@ -26,9 +26,9 @@ namespace Shopiround.Areas.Customer.Controllers
         public readonly IWebHostEnvironment _webHostEnvironment;
         public ApplicationDbContext context;
 
-        public HomeController(ILogger<HomeController> logger, 
-                                IUnitOfWork unitOfWork, 
-                                ApplicationDbContext context, 
+        public HomeController(ILogger<HomeController> logger,
+                                IUnitOfWork unitOfWork,
+                                ApplicationDbContext context,
                                 IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
@@ -45,6 +45,7 @@ namespace Shopiround.Areas.Customer.Controllers
             {
                 files.Add(Path.GetRelativePath(_webHostEnvironment.WebRootPath, filePath));
             }
+            ViewBag.backgrounds = files;
             // User and Shop information
             ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
             Shop? shop = null;
@@ -52,7 +53,6 @@ namespace Shopiround.Areas.Customer.Controllers
             {
                 shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
             }
-            ViewBag.backgrounds = files;
             ViewBag.user = user;
             ViewBag.shop = shop;
             return View(products);
@@ -112,7 +112,16 @@ namespace Shopiround.Areas.Customer.Controllers
                     openTodayProducts.AddRange(productsForThisShop);
                 }
             }
-                return openTodayProducts;
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shopx = null;
+            if (user != null)
+            {
+                shopx = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shopx;
+            return openTodayProducts;
         }
 
 
@@ -135,7 +144,14 @@ namespace Shopiround.Areas.Customer.Controllers
                 ImageURL = user.ImageURL,
                 Address = user.Address
             };
-
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(userProfile);
         }
 
@@ -166,10 +182,17 @@ namespace Shopiround.Areas.Customer.Controllers
 
                 context.ApplicationUsers.Update(user);
             }
-         
+
 
             context.SaveChanges();
-
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return RedirectToAction("Index");
         }
 
@@ -185,51 +208,44 @@ namespace Shopiround.Areas.Customer.Controllers
 
                 KeywordsCount keywordsCount = context.KeywordsCounts.FirstOrDefault(a => a.Keyword == txt);
 
-                    if(keywordsCount != null)
-                    {
+                if (keywordsCount != null)
+                {
 
                     keywordsCount.Count++;
                     context.KeywordsCounts.Update(keywordsCount);
-                        
-                    }
-                    else
+
+                }
+                else
+                {
+                    KeywordsCount keywordsCount1 = new KeywordsCount()
                     {
-                        KeywordsCount keywordsCount1 = new KeywordsCount()
-                        {
-                            Keyword = txt,
-                            Count = 1
-                        };
+                        Keyword = txt,
+                        Count = 1
+                    };
                     context.KeywordsCounts.Add(keywordsCount1);
-                    }
-                    context.SaveChanges();
+                }
+                context.SaveChanges();
 
 
                 List<Product> products = context.Products.Include("Shop").Include("Reviews").Include("Questions").Where(j => j.Name.ToLower().Replace(" ", "").Contains(searchTerm))
                     .ToList();
                 return View("Search", products);
             }
-
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View("Search");
-        }
-
-
-        public IActionResult Privacy()
-        {
-            int Id = 1;
-            if (Id != null)
-            {
-                Product product = unitOfWork.ProductRepository.Get(p => p.Id == Id, includeProperties: "Shop,Reviews");
-                return View(product);
-            }
-            else
-            {
-                return NotFound();
-            }
         }
         [Authorize]
         public IActionResult ViewCart(Boolean online = false)
         {
-            
+
             ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
             if (user == null)
             {
@@ -237,6 +253,15 @@ namespace Shopiround.Areas.Customer.Controllers
             }
             List<CartItem> cartItems = context.CartItems.Where(c => c.Online == online).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
             ViewBag.online = online;
+
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(cartItems);
         }
         [Authorize]
@@ -248,11 +273,32 @@ namespace Shopiround.Areas.Customer.Controllers
                 return new RedirectToPageResult("/Identity/Account/Login");
             }
             List<CartItem> cartItems = context.CartItems.Where(c => c.Online && c.OrderPlaced == false).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == applicationUser.Id).ToList();
+
+
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(cartItems);
         }
         public IActionResult PlaceOrder()
         {
             LocationVM locationVM = new LocationVM();
+
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(locationVM);
         }
         [HttpPost]
@@ -265,7 +311,7 @@ namespace Shopiround.Areas.Customer.Controllers
             }
             List<CartItem> cartItems = context.CartItems.Where(c => c.Online && c.OrderPlaced == false).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == applicationUser.Id).ToList();
             List<DeliveryInformation> deliveryInformation = new List<DeliveryInformation>();
-            foreach(CartItem cartItem in cartItems)
+            foreach (CartItem cartItem in cartItems)
             {
                 deliveryInformation.Add(new DeliveryInformation
                 {
@@ -278,6 +324,15 @@ namespace Shopiround.Areas.Customer.Controllers
             context.CartItems.UpdateRange(cartItems);
             context.DeliveryInformation.AddRange(deliveryInformation);
             context.SaveChanges();
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return RedirectToAction("Index");
         }
         [Authorize]
@@ -289,6 +344,15 @@ namespace Shopiround.Areas.Customer.Controllers
                 return new RedirectToPageResult("/Identity/Account/Login");
             }
             List<CartItem> cartItems = context.CartItems.Where(c => c.Online).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == applicationUser.Id && c.OrderPlaced).ToList();
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(cartItems);
         }
 
@@ -307,10 +371,17 @@ namespace Shopiround.Areas.Customer.Controllers
 
             if (cartItemToUpdate != null)
             {
-                cartItemToUpdate.Quantity = Quantity; 
+                cartItemToUpdate.Quantity = Quantity;
                 context.SaveChanges();
             }
-
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return Json(new { added = true });
         }
 
@@ -324,6 +395,14 @@ namespace Shopiround.Areas.Customer.Controllers
                 return new RedirectToPageResult("/Identity/Account/Login");
             }
             List<PurchaseItem> purchaseItems = context.PurchaseItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(purchaseItems);
         }
 
@@ -335,6 +414,14 @@ namespace Shopiround.Areas.Customer.Controllers
                 return new RedirectToPageResult("/Identity/Account/Login");
             }
             List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(cartItems);
         }
         public IActionResult ViewSaved()
@@ -350,6 +437,15 @@ namespace Shopiround.Areas.Customer.Controllers
                 Include(item => item.Product).
                 ThenInclude(product => product.Shop).
                 Where(item => item.UserId == applicationUser.Id).ToList();
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(savedItems);
         }
         [HttpGet]
@@ -360,21 +456,47 @@ namespace Shopiround.Areas.Customer.Controllers
 
 
             ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
-            
+
             unitOfWork.CartItemRepository.Remove(cartItem);
             unitOfWork.Save();
             List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View("ViewCart", cartItems);
         }
 
         public IActionResult NearYou()
         {
             List<Product> products = context.Products.Include("Shop").Include("Reviews").Include("Questions").ToList();
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(products);
         }
         public IActionResult OrderOnline()
         {
             List<Product> products = context.Products.Include("Shop").Include("Reviews").Include("Questions").Where(p => p.Shop.AcceptOnlineOrders == true).ToList();
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(products);
         }
         [Authorize]
@@ -418,6 +540,14 @@ namespace Shopiround.Areas.Customer.Controllers
             }
             context.CartItems.RemoveRange(cartItems);
             context.SaveChanges();
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return RedirectToAction("Index");
         }
 

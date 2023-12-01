@@ -57,7 +57,13 @@
         <img src="/images/assets/plus.png" style="height: 40px;" />
     </div>
 </div>
-
+<div class="d-flex justify-content-around m-3">
+    @if (Model.Shop.AcceptOnlineOrders)
+    {
+        <div onclick="addToOnlineCart()" id="addToOnlineCartBtn" class="btn btn-primary" style="font-size: 18px; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">Order Online</div>
+    }
+    <div onclick="addToCart()" class="btn btn-primary addToCartBtn" style="font-size: 18px; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">Add to Cart</div>
+</div>
 <div class="row p-1">
     <i class="bi bi-shop"> @Model.Shop.Address</i>
 </div>
@@ -133,16 +139,16 @@
     }
 
 </div>
-@*     </div> *@
+</div>
 <div style="margin-bottom: 70px;"></div>
 <div style="height: 70px;" class="ps-3 pe-3 d-flex justify-content-between align-items-center border border-2 position-fixed bottom-0 w-100 bg-white">
-    <a asp-area="User" asp-controller="Chat" asp-action="Home" asp-route-ownerId="@Model.Shop.ApplicationUserId" asp-route-productId="@Model.Id">Message</a>
+    <a asp-area="User" asp-controller="Chat" asp-action="Home" asp-route-ownerId="@Model.Shop.ApplicationUserId" asp-route-productId="@Model.Id"><i style="font-size: 30px;" class="bi bi-chat-left-dots"></i></a>
     <div id="totalPrice" class="fw-bold fs-5">BDT @Model.Price.00</div>
-    <div class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" onclick="addToCart()" id="addToCartBtn">Add to cart</div>
-    @if (Model.Shop.AcceptOnlineOrders)
+    <div class="fs-5 btn btn-primary rounded-pill ps-3 pe-3 addToCartBtn" onclick="addToCart()">Add to cart</div>
+@*     @if (Model.Shop.AcceptOnlineOrders)
     {
         <div class="fs-5 btn btn-primary rounded-pill ps-3 pe-3" onclick="addToOnlineCart()" id="addToOnlineCartBtn">Online cart</div>
-    }
+    } *@
 </div>
 
 
@@ -154,8 +160,10 @@
 
     if (x == "True") {
         quantityDiv.value = @CartCount;
-        var addToCartBtn = document.getElementById("addToCartBtn");
-        addToCartBtn.innerHTML = "Update Cart";
+        var addToCartBtn = document.getElementsByClassName("addToCartBtn");
+        for (let i = 0; i < addToCartBtn.length; ++i) {
+            addToCartBtn[i].innerHTML = "Update Cart";
+        }
     }
 
 
@@ -290,7 +298,10 @@
             data: { ProductId: productId, Quantity: quantity },
             success: function (result) {
                 console.log(result);
-                disbaleCartBtn();
+                var addToCartBtn = document.getElementsByClassName("addToCartBtn");
+                for (let i = 0; i < addToCartBtn.length; ++i) {
+                    addToCartBtn[i].innerHTML = "Cart Updated";
+                }
             },
             error: function (req, status, error) {
                 console.log(status);
@@ -314,6 +325,7 @@
             success: function (result) {
                 console.log(result);
                 addToOnlineCartBtn.innerHTML = "Product added";
+                disbaleCartBtn();
             },
             error: function (req, status, error) {
                 console.log(status);

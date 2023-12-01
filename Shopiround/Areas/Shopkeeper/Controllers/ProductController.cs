@@ -34,13 +34,30 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
         public IActionResult Index()
         {
-            //List<Product> products = unitOfWork.ProductRepository.GetAll().ToList();
             List<Product> products = applicationDbContext.Products.Include("Shop").ToList();
+            // User and Shop information
+            ApplicationUser? user = applicationDbContext.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(products);
         }
 
         public IActionResult Create()
         {
+            // User and Shop information
+            ApplicationUser? user = applicationDbContext.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View();
         }
         [HttpGet]
@@ -63,7 +80,9 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                     DiscountParcentage = product.DiscountPercentage
                 });
             }
-
+            // User and Shop information
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(discountVMs);
         }
 
@@ -72,7 +91,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         {
             DateTime today = DateTime.Now;
             DateTime futureDate = today.AddDays(discountVM.TotalDays);
-            
+
 
             DiscountDate discountDate = new DiscountDate()
             {
@@ -100,6 +119,9 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                     DiscountParcentage = product.DiscountPercentage
                 });
             }
+            // User and Shop information
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(discountVMs);
         }
 
@@ -126,6 +148,14 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             unitOfWork.ProductRepository.Add(product);
             unitOfWork.Save();
 
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
 
             return RedirectToAction("Index");
         }
@@ -144,7 +174,8 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                 {
                     AlreadyInCart = true;
                     cartCount = cart.Quantity;
-                } else
+                }
+                else
                 {
                     AlreadyInCart = false;
                     cartCount = 1;
@@ -152,12 +183,12 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
                 ViewBag.CartCount = cartCount;
                 ViewBag.AlreadyInCart = AlreadyInCart;
-               
+
 
                 if (product != null)
                 {
                     ProductCount productCount = applicationDbContext.ProductCounts.FirstOrDefault(a => a.ProductId == Id);
-                    if(productCount != null)
+                    if (productCount != null)
                     {
                         productCount.Count++;
                         applicationDbContext.ProductCounts.Update(productCount);
@@ -172,7 +203,14 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                         applicationDbContext.ProductCounts.Add(productCount1);
                     }
                     applicationDbContext.SaveChanges();
-
+                    // User and Shop information
+                    Shop? shop = null;
+                    if (user != null)
+                    {
+                        shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+                    }
+                    ViewBag.user = user;
+                    ViewBag.shop = shop;
                     return View(product);
                 }
                 else
@@ -191,6 +229,9 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "CartItems,Shop");
             Shop shop = user.Shop;
             List<Product> products = unitOfWork.ProductRepository.GetAllCondition(p => p.ShopId == shop.ShopId).ToList();
+            // User and Shop information
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(products);
         }
 
@@ -245,7 +286,16 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                     .GetAll()
                     .Where(product => searchWords.Any(word => product.Name.ToLower().Contains(word)))
                     .ToList();
-               // List<Product> searchedProducts = unitOfWork.ProductRepository.GetAll().Where(j => j.Name.ToLower().Contains(name.ToLower())).ToList();
+                // List<Product> searchedProducts = unitOfWork.ProductRepository.GetAll().Where(j => j.Name.ToLower().Contains(name.ToLower())).ToList();
+                // User and Shop information
+                ApplicationUser? user = applicationDbContext.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+                Shop? shop = null;
+                if (user != null)
+                {
+                    shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+                }
+                ViewBag.user = user;
+                ViewBag.shop = shop;
                 return View(matchingProducts);
             }
             else
@@ -267,8 +317,16 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
             unitOfWork.ReviewRepository.Add(review);
             unitOfWork.Save();
-
-            return Json(new { ReviewText });    
+            // User and Shop information
+            ApplicationUser? user = applicationDbContext.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
+            return Json(new { ReviewText });
         }
 
         [HttpPost]
@@ -278,7 +336,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
 
             var cart = applicationDbContext.CartItems.Where(a => a.UserId == user.Id && a.ProductId == product.Id).FirstOrDefault();
-            unitOfWork.CartItemRepository.Remove(cart);
+            if (cart != null) unitOfWork.CartItemRepository.Remove(cart);
 
             CartItem cartItem = new CartItem
             {
@@ -291,12 +349,19 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             };
             unitOfWork.CartItemRepository.Add(cartItem);
             unitOfWork.Save();
-
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return Json(new { added = true });
         }
 
 
-     
+
 
         [HttpPost]
         public ActionResult OnlineCartItem(int ProductId)
@@ -314,7 +379,14 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             };
             unitOfWork.CartItemRepository.Add(cartItem);
             unitOfWork.Save();
-
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return Json(new { added = true });
         }
 
@@ -325,7 +397,15 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             var discountedProducts = applicationDbContext.Products
             .Where(p => applicationDbContext.DiscountDates.Any(d => d.productId == p.Id && d.discountEndDate > DateTime.Now))
             .ToList();
-
+            // User and Shop information
+            ApplicationUser? user = applicationDbContext.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(discountedProducts);
         }
 
@@ -334,7 +414,15 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             var discountedProducts = applicationDbContext.Products
            .Where(p => applicationDbContext.DiscountDates.Any(d => d.productId == p.Id && d.TodayDiscount))
            .ToList();
-
+            // User and Shop information
+            ApplicationUser? user = applicationDbContext.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(discountedProducts);
         }
 

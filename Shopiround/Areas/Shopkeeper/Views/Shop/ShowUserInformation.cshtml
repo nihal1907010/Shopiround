@@ -1,1 +1,230 @@
-﻿
+﻿@model UserProfileVM
+
+<style>
+    #output {
+        height: 40vw;
+        width: 40vw;
+        border-radius: 50%;
+        border: 6px solid #757575;
+    }
+
+    .uploadContainer {
+        position: relative;
+        height: 40vw;
+        width: 40vw;
+    }
+
+    .editContainer {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        background-color: white;
+        border-radius: 50%;
+        height: 10vw;
+        width: 10vw;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 9px;
+    }
+</style>
+
+<div class="container">
+    <form method="post" enctype="multipart/form-data">
+        <input asp-for="ImageURL" hidden />
+        @if (Model != null)
+        {
+            <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden disabled>
+            <div class="d-flex justify-content-center justify-content-center">
+                <div class="uploadContainer">
+@*                     <div class="editContainer d-flex justify-content-center align-items-center">
+                        <div id="editIcon" onclick="upload()">
+                            <i class="bi bi-pencil-square fs-1"></i>
+                        </div>
+                    </div> *@
+                    <div class="previewContainer">
+                        <img id="output" src="~/images/shop/default_shop.png" class="" alt="...">
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <h3>User Information</h3>
+            <div class="form-floating mt-3 mb-3">
+                <input type="text" class="form-control" asp-for="Name" type="text" id="nameInput" placeholder="name@example.com" value="@Model.Name" disabled>
+                <label for="floatingInput">Name</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" asp-for="Email" type="text" id="emailInput" placeholder="name@example.com" value="@Model.Email" disabled>
+                <label for="floatingInput">Email</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" asp-for="MobileNo" type="text" id="mobileInput" placeholder="name@example.com" value="@Model.MobileNo" disabled>
+                <label for="floatingInput">Mobile Number</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" asp-for="Address" type="text" id="addressInput" placeholder="name@example.com" value="@Model.Address" disabled>
+                <label for="floatingInput">Address</label>
+            </div>
+            <hr />
+            <h3>User Location</h3>
+            <div id="map" style="height: 200px;"></div>
+            <div class="row fw-bold mt-3" id="submitButton" style="display: none;">
+                <a asp-area="Shopkeeper" asp-controller="Shop" asp-action="DoneOnlineShopping" asp-route-userId="@Model.UserId" class="btn btn-primary">Ship Orders</a>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex justify-content-center">
+                <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden disabled>
+                <div class="d-flex justify-content-center justify-content-center">
+                    <div class="uploadContainer">
+                        @* <div class="editContainer d-flex justify-content-center align-items-center">
+                            <div id="editIcon" onclick="upload()">
+                                <i class="bi bi-pencil-square fs-1"></i>
+                            </div>
+                        </div> *@
+                        <div class="previewContainer">
+                            <img id="output" src="~/images/shop/default_shop.png" class="" alt="...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <h3>User Information</h3>
+            <div class="form-floating mt-3 mb-3">
+                <input type="text" class="form-control" asp-for="Name" type="text" id="nameInput" placeholder="name@example.com" value="" disabled>
+                <label for="floatingInput">Name</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" asp-for="Email" type="text" id="emailInput" placeholder="name@example.com" value="" disabled>
+                <label for="floatingInput">Email</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" asp-for="MobileNo" type="text" id="mobileInput" placeholder="name@example.com" value="" disabled>
+                <label for="floatingInput">Mobile Number</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" asp-for="Address" type="text" id="addressInput" placeholder="name@example.com" value="" disabled>
+                <label for="floatingInput">Address</label>
+            </div>
+        }
+
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('input[type="text"], input[type="email"], input[type="tel"]').on('input', function () {
+            // Show the button when any input field is changed
+            $('#submitButton').show();
+        });
+
+        // If there's already content in the inputs (e.g., when editing), show the button
+        $('input[type="text"], input[type="email"], input[type="tel"]').each(function () {
+            if ($(this).val() !== "") {
+                $('#submitButton').show();
+                return false; // Break the loop once any field has a value
+            }
+        });
+    });
+
+    var loadFile = function (event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('output');
+            output.src = reader.result;
+
+            // Show the button when an image is selected
+            $('#submitButton').show();
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    };
+
+    var imageUploadButton = document.getElementById("imageInput");
+    function upload() {
+        imageUploadButton.click();
+    }
+
+    var lat, lng;
+    var map = L.map('map');
+    var marker;
+    var latitudeInput = @ViewBag.deliveryInfo.Latitude;
+    var longitudeInput = @ViewBag.deliveryInfo.Longitude;
+
+    const toWaypoint = [latitudeInput, longitudeInput];
+
+    marker = L.marker([latitudeInput, longitudeInput]).addTo(map);
+
+    var latitudeValue, longitudeValue;
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const myAPIKey = "a63091f5968a473c88c4c923004de755";
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                lat = position.coords.latitude;
+                lng = position.coords.longitude;
+                console.log(`Latitude: ${lat}, longitude: ${lng}`);
+
+                latitudeValue = lat;
+                longitudeValue = lng;
+                map.setView([lat, lng], 15);
+
+                marker = L.marker([lat, lng]).addTo(map);
+
+                const fromWaypoint = [lat, lng];
+
+                fetch(`https://api.geoapify.com/v1/routing?waypoints=${fromWaypoint.join(',')}|${toWaypoint.join(',')}&mode=drive&apiKey=${myAPIKey}`).then(res => res.json()).then(result => {
+
+                    // Note! GeoJSON uses [longitude, latutude] format for coordinates
+                    L.geoJSON(result, {
+                        style: (feature) => {
+                            return {
+                                color: "rgba(20, 137, 255, 0.7)",
+                                weight: 5
+                            };
+                        }
+                    }).bindPopup((layer) => {
+                        return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
+                    }).addTo(map);
+
+                    // collect all transition positions
+                    const turnByTurns = [];
+                    result.features.forEach(feature => feature.properties.legs.forEach((leg, legIndex) => leg.steps.forEach(step => {
+                        const pointFeature = {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": feature.geometry.coordinates[legIndex][step.from_index]
+                            },
+                            "properties": {
+                                "instruction": step.instruction.text
+                            }
+                        }
+                        turnByTurns.push(pointFeature);
+                    })));
+
+                    L.geoJSON({
+                        type: "FeatureCollection",
+                        features: turnByTurns
+                    }, {
+                        pointToLayer: function (feature, latlng) {
+                            return L.circleMarker(latlng, turnByTurnMarkerStyle);
+                        }
+                    }).bindPopup((layer) => {
+                        return `${layer.feature.properties.instruction}`
+                    }).addTo(map);
+
+                }, error => console.log(err));
+            },
+            (error) => {
+                //console.error("Error getting user location:", error);
+            }
+        );
+    } else {
+        //console.error("Geolocation is not supported by this browser.");
+    }
+</script>
+
+
