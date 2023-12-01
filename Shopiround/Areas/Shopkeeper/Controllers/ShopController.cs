@@ -41,7 +41,15 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
             ViewData["ProductCount"] = topProductCounts;
             ViewData["KeywordCount"] = MostSearchedKeyword;
-
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View();
         }
 
@@ -53,7 +61,15 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             .ToList();
 
             ViewData["ProductCount"] = topProductCounts;
-
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View();
         }
 
@@ -65,7 +81,15 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             .ToList();
 
             ViewData["ProductCount"] = topProductCounts;
-
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View();
         }
         public IActionResult ShowAllKeywords()
@@ -75,7 +99,15 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             .ToList();
 
             ViewData["KeywordCount"] = MostSearchedKeyword;
-
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View();
         }
         [Authorize]
@@ -90,6 +122,15 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             {
                 OwnerName = applicationUser.Name
             };
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(viewModel);
         }
         [HttpPost]
@@ -115,6 +156,10 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             applicationUser.Shop = shop;
             _unitOfWork.ApplicationUserRepository.Update(applicationUser);
             _unitOfWork.Save();
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return RedirectToAction("Index");
         }
 
@@ -129,12 +174,36 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                 shop = shop,
                 products = products
             };
-
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(shopProfile);
         }
-        public IActionResult ShowUserInformation()
+        public IActionResult ShowUserInformation(string userId)
         {
-            return View();
+            ApplicationUser user = _unitOfWork.ApplicationUserRepository.Get(u => u.Id == userId);
+            ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop");
+            UserProfileVM userProfile = new UserProfileVM
+            {
+                UserId = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                MobileNo = user.MobileNo,
+                ImageURL = user.ImageURL,
+                Address = user.Address
+            };
+            DeliveryInformation delivery = context.DeliveryInformation.Include(d => d.CartItem).Where(d => d.CartItem.UserId == user.Id).FirstOrDefault();
+            ViewBag.deliveryInfo = delivery;
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == applicationUser.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
+            return View(userProfile);
         }
 
         public IActionResult OnlineOrdersHome()
@@ -151,6 +220,15 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                         TotalPrice = (int)g.Sum(c => c.Product.Price)
                     }).ToList();
             onlineOrders.Reverse();
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(onlineOrders);
         }
         [Authorize]
@@ -173,6 +251,14 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             }
             context.CartItems.RemoveRange(cartItems);
             context.SaveChanges();
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return RedirectToAction("Index");
         }
 
@@ -180,6 +266,15 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         {
             List<CartItem> cartItems = context.CartItems.Where(c => c.Online).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == userId).ToList();
             ViewBag.userId = userId;
+            // User and Shop information
+            ApplicationUser? user = context.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
             return View(cartItems);
         }
 

@@ -10,9 +10,6 @@
     }
 </style>
 <div id="route" class="position-absolute start-0 top-0 w-100 h-100 pt-5">
-    <div onclick="cross()" class="d-flex justify-content-end">
-        <i class="bi bi-x-square-fill"></i>
-    </div>
     <div id="map"></div>
 </div>
 </div>
@@ -27,9 +24,14 @@
         route.style.display = "inline-block";
         map.invalidateSize(true);
     }
-    function cross() {
-        route.style.display = "none";
-    }
+    
+    var userLat, userLng;
+    let locations = new Array();
+    let sortedLocations = new Array();
+    var cartItems = @Html.Raw(Json.Serialize(Model));
+    var result;
+    var routeLayer = null;
+
     var greenIcon = new L.Icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -38,12 +40,156 @@
         popupAnchor: [1, -34],
         shadowSize: [41, 41]
     });
-    var userLat, userLng;
-    let locations = new Array();
-    let sortedLocations = new Array();
-    var cartItems = @Html.Raw(Json.Serialize(Model));
-    var result;
-    var routeLayer = null;
+    var greyIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+
+    let markerList = new Array();
+    let locInc = new Array();
+    let finalLocations = new Array();
+    let idxMap = new Array();
+
+
+
+    function showRoute() {
+        var routingMatrix = [];
+        const MAX = 1e9;
+        const N = locations.length;
+        //console.log(N);
+
+        var memo = [];
+        var last = [];
+        for (var i = 0; i < N; ++i) {
+            memo[i] = [];
+            last[i] = [];
+            for (var j = 0; j < (1 << N); ++j) {
+                memo[i][j] = 0;
+                last[i][j] = -1;
+            }
+        }
+
+        function tsp(i, mask) {
+            if (mask == ((1 << i) | 1)) {
+                var _mask = mask & (~(1 << i))
+                last[i][_mask] = 0;
+                return routingMatrix[0][i];
+            }
+            if (memo[i][mask] != 0) {
+                return memo[i][mask];
+            }
+            var res = MAX;
+            for (var j = 0; j < N; ++j) {
+                if ((mask & (1 << j)) && j != i && j != 0) {
+                    var _mask = mask & (~(1 << i))
+                    var temp = tsp(j, _mask) + routingMatrix[j][i];
+                    if (res > temp) {
+                        res = temp;
+                        last[i][_mask] = j;
+                    }
+                }
+            }
+            return memo[i][mask] = res;
+        }
+        //console.log(locations);
+        const body = {
+            "mode": "drive",
+            "sources": locations,
+            "targets": locations
+        };
+        fetch('https://api.geoapify.com/v1/routematrix?apiKey=65c669784b2d4fe897f94046acc1a94d', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        })
+            .then(res => res.json())
+            .then(res => {
+                console.log(res);
+                for (var i = 0; i < N; ++i) {
+                    routingMatrix[i] = [];
+                    for (var j = 0; j < N; ++j) {
+                        routingMatrix[i][j] = res["sources_to_targets"][i][j]["distance"];
+                    }
+                }
+                var ans = MAX;
+                var lastIdx = -1;
+                for (var i = 0; i < N; ++i) {
+                    var mask = (1 << N) - 1;
+                    var temp = tsp(i, mask) + routingMatrix[i][0];
+                    if (ans > temp) {
+                        ans = temp;
+                        lastIdx = i;
+                    }
+                }
+                var waypointsIdx = [];
+                var mask = (1 << N) - 1;
+                var cnt = 1;
+                console.log(idxMap);
+                do {
+                    waypointsIdx.push(lastIdx);
+                    //console.log(idxMap[lastIdx]);
+                    if (lastIdx != 0) {
+                        //var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], { icon: greyIcon }).addTo(map);
+                        var shopName = "(" + cnt + ")" + cartItems[lastIdx - 1]["product"]["shop"]["shopName"];
+                        ++cnt;
+                        markerList[idxMap[lastIdx]].bindTooltip(shopName, { permanent: true }).openTooltip();
+                    }
+                    else {
+                        //var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], { icon: greenIcon }).addTo(map);
+                        //marker.bindTooltip("You", { permanent: true }).openTooltip();
+                        markerList[idxMap[lastIdx]].bindTooltip("You", { permanent: true }).openTooltip();
+                    }
+                    mask = mask & ~(1 << lastIdx);
+                    lastIdx = last[lastIdx][mask];
+
+
+
+                } while (mask != 0)
+
+                waypointsIdx.reverse();
+                var waypoints = [];
+                for (var i = 0; i < N; ++i) {
+                    waypoints += locations[i]["location"][1] + ',' + locations[i]["location"][0];
+                    if (i + 1 != N) waypoints += '|';
+                }
+                fetch(`https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=drive&apiKey=65c669784b2d4fe897f94046acc1a94d`)
+                    .then(response => response.json())
+                    .then(result => {
+                        //
+                        const turnByTurnMarkerStyle = {
+                            radius: 5,
+                            fillColor: "#fff",
+                            color: "#555",
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 1
+                        }
+                        // Note! GeoJSON uses [longitude, latutude] format for coordinates
+                        if (routeLayer != null) map.removeLayer(routeLayer);
+                        routeLayer = L.geoJSON(result, {
+                            style: (feature) => {
+                                return {
+                                    color: "rgba(20, 137, 255, 0.7)",
+                                    weight: 5
+                                };
+                            }
+                        }).bindPopup((layer) => {
+                            return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
+                        });
+                        routeLayer.addTo(map);
+                        //
+                        route.style.display = "inline-block";
+                        map.invalidateSize(true);
+                    })
+                    .catch(error => console.log('error', error));
+            });
+    }
 
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
@@ -52,10 +198,9 @@
                 var lng = position.coords.longitude;
 
                 userLat = lat, userLng = lng;
-
                 let location = [lng, lat];
 
-                locations.push({ "location": location });
+                locations.push({ "location": location }); locInc.push(1); finalLocations.push({ "location": location });
                 map.setView([lat, lng], 17);
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -67,143 +212,42 @@
                         cartItems[idx]["product"]["shop"]["longitude"],
                         cartItems[idx]["product"]["shop"]["latitude"]
                     ]
-                    locations.push({ "location": location });
+                    locations.push({ "location": location }); locInc.push(1);
+                    finalLocations.push({ "location": location });
                 }
-                var routingMatrix = [];
-                const MAX = 1e9;
-                const N = locations.length;
-
-                var memo = [];
-                var last = [];
-                for (var i = 0; i < N; ++i) {
-                    memo[i] = [];
-                    last[i] = [];
-                    for (var j = 0; j < (1 << N); ++j) {
-                        memo[i][j] = 0;
-                        last[i][j] = -1;
-                    }
+                for (idx in finalLocations) {
+                    idxMap.push(idx);
+                    let marker = L.marker([finalLocations[idx]["location"][1], finalLocations[idx]["location"][0]], { icon: greenIcon });
+                    if (idx != 0) marker.on('click', createMarkerClickHandler(marker, idx));
+                    markerList.push(marker);
+                    markerList[idx].addTo(map);
                 }
-
-                function tsp(i, mask) {
-                    if (mask == ((1 << i) | 1)) {
-                        var _mask = mask & (~(1 << i))
-                        last[i][_mask] = 0;
-                        return routingMatrix[0][i];
-                    }
-                    if (memo[i][mask] != 0) {
-                        return memo[i][mask];
-                    }
-                    var res = MAX;
-                    for (var j = 0; j < N; ++j) {
-                        if ((mask & (1 << j)) && j != i && j != 0) {
-                            var _mask = mask & (~(1 << i))
-                            var temp = tsp(j, _mask) + routingMatrix[j][i];
-                            if (res > temp) {
-                                res = temp;
-                                last[i][_mask] = j;
+                function createMarkerClickHandler(marker, idx) {
+                    return function () {
+                        if (marker.options.icon === greenIcon) {
+                            marker.setIcon(greyIcon);
+                            locInc[idx] = 0;
+                        } else {
+                            marker.setIcon(greenIcon);
+                            locInc[idx] = 1;
+                        }
+                        //console.log('Marker clicked at index:', idx);
+                        //console.log(locInc);
+                        locations = [];
+                        idxMap = [];
+                        for (i in locInc) {
+                            if (locInc[i] == 1) {
+                                locations.push(finalLocations[i]);
+                                idxMap.push(i);
                             }
                         }
-                    }
-                    return memo[i][mask] = res;
+                        //console.log(locations);
+                        showRoute();
+                        
+                    };
+                    
                 }
-                const body = {
-                    "mode": "drive",
-                    "sources": locations,
-                    "targets": locations
-                };
-                fetch('https://api.geoapify.com/v1/routematrix?apiKey=65c669784b2d4fe897f94046acc1a94d', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(body)
-                })
-                    .then(res => res.json())
-                    .then(res => {
-                        for (var i = 0; i < N; ++i) {
-                            routingMatrix[i] = [];
-                            for (var j = 0; j < N; ++j) {
-                                routingMatrix[i][j] = res["sources_to_targets"][i][j]["distance"];
-                            }
-                        }
-                        var ans = MAX;
-                        var lastIdx = -1;
-                        for (var i = 0; i < N; ++i) {
-                            var mask = (1 << N) - 1;
-                            var temp = tsp(i, mask) + routingMatrix[i][0];
-                            if (ans > temp) {
-                                ans = temp;
-                                lastIdx = i;
-                            }
-                        }
-                        var waypointsIdx = [];
-                        var mask = (1 << N) - 1;
-                        do {
-                            waypointsIdx.push(lastIdx);
-                            if (lastIdx != 0) {
-                                var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]]).addTo(map);
-                                var shopName = cartItems[lastIdx - 1]["product"]["shop"]["shopName"];
-                                new L.Marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], {
-                                    icon: new L.DivIcon({
-                                        className: 'my-div-icon',
-                                        html: `<span class="my-div-span bg-primary text-white fs-6 p-1 rounded">${shopName}</span>`
-                                    })
-                                }).addTo(map);
-                            }
-                            else {
-                                var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], { icon: greenIcon }).addTo(map);
-                                new L.Marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], {
-                                    icon: new L.DivIcon({
-                                        className: 'my-div-icon',
-                                        html: `<span class="my-div-span bg-primary text-white fs-6 p-1 rounded">Start</span>`
-                                    })
-                                }).addTo(map);
-                            }
-
-                            mask = mask & ~(1 << lastIdx);
-                            lastIdx = last[lastIdx][mask];
-
-
-
-                        } while (mask != 0)
-
-                        waypointsIdx.reverse();
-                        var waypoints = [];
-                        for (var i = 0; i < N; ++i) {
-                            waypoints += locations[i]["location"][1] + ',' + locations[i]["location"][0];
-                            if (i + 1 != N) waypoints += '|';
-                        }
-                        fetch(`https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=drive&apiKey=65c669784b2d4fe897f94046acc1a94d`)
-                            .then(response => response.json())
-                            .then(result => {
-                                //
-                                const turnByTurnMarkerStyle = {
-                                    radius: 5,
-                                    fillColor: "#fff",
-                                    color: "#555",
-                                    weight: 1,
-                                    opacity: 1,
-                                    fillOpacity: 1
-                                }
-                                // Note! GeoJSON uses [longitude, latutude] format for coordinates
-                                L.geoJSON(result, {
-                                    style: (feature) => {
-                                        return {
-                                            color: "rgba(20, 137, 255, 0.7)",
-                                            weight: 5
-                                        };
-                                    }
-                                }).bindPopup((layer) => {
-                                    return `${layer.feature.properties.distance} ${layer.feature.properties.distance_units}, ${layer.feature.properties.time}`
-                                }).addTo(map);
-                                //
-                                route.style.display = "inline-block";
-                                map.invalidateSize(true);
-                            })
-                            .catch(error => console.log('error', error));
-                    });
-
-                //
+                showRoute();
             },
             (error) => {
             }
