@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<Product>
 @{
-    int DistanceRange = 5000;
+    int DistanceRange = 50000000;
 }
 <style>
     .productImage {
@@ -92,7 +92,7 @@
                                 distance = distanceMeter / 1000;
                                 unit = "km";
                             }
-                            if (distanceMeter <= DistanceRange) {
+                            if (distanceMeter <= @DistanceRange) {
                                 pushProduct(cnt, distance, unit);
                             }
                             ++cnt;
@@ -142,6 +142,9 @@
         var imageContainer = document.createElement("div");
         imageContainer.setAttribute("class", "border border-2 rounded-3 p-1");
 
+        var productLink = document.createElement("a");
+        productLink.setAttribute("href", `/Shopkeeper/Product/Show/${products[idx]["id"]}`);
+
         var image = document.createElement("img");
         image.setAttribute("class", "productImage");
         image.setAttribute("src", products[idx]["imageURL"]);
@@ -167,11 +170,7 @@
         infoContainer.appendChild(price);
         infoContainer.appendChild(shop);
 
-        var productLink = document.createElement("a");
-        productLink.setAttribute("asp-area", "Shopkeeper");
-        productLink.setAttribute("asp-controller", "Product");
-        productLink.setAttribute("asp-action", "Show");
-        productLink.setAttribute("asp-route-id", products[idx]["id"]);
+
 
         productLink.appendChild(imageContainer);
         productLink.appendChild(infoContainer);

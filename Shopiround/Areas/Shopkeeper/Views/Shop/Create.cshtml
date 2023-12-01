@@ -160,7 +160,10 @@
         </div>
     </div>
 
-    <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+    <div class="d-flex justify-content-end mt-3">
+        <button id="submit" type="submit" class="btn btn-primary me-2">Save Changes</button>
+        <a asp-area="Shopkeeper" asp-controller="Product" asp-action="Index" class="btn btn-light">Cancel</a>
+    </div>
 </form>
 
 <script>

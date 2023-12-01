@@ -12,6 +12,7 @@ using Shopiround.Data;
 using Shopiround.Models.Statistics;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 
 namespace Shopiround.Areas.Shopkeeper.Controllers
 {
@@ -191,6 +192,45 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             Shop shop = user.Shop;
             List<Product> products = unitOfWork.ProductRepository.GetAllCondition(p => p.ShopId == shop.ShopId).ToList();
             return View(products);
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            Product product = applicationDbContext.Products.Where(a=> a.Id == id).FirstOrDefault();
+            return View(product);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Product product, IFormFile? file)
+        {
+            Product _product = applicationDbContext.Products.Where(a=> a.Id == product.Id).FirstOrDefault();
+
+            if (file != null && product != null)
+            {
+                string wwwRootPath = webHostEnvironment.WebRootPath;
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                string productPath = Path.Combine(wwwRootPath, @"images\product");
+                using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                };
+                _product.ImageURL = @"\images\product\" + fileName;
+
+                _product.Name = product.Name;
+                _product.Description = product.Description;
+                _product.Price = product.Price;
+                _product.DiscountPercentage = product.DiscountPercentage;
+                _product.DiscountAmount = product.DiscountAmount;
+                _product.Category = product.Category;
+
+
+                applicationDbContext.Products.Update(_product);
+                applicationDbContext.SaveChanges();
+            }
+
+
+            return RedirectToAction("Index");
         }
 
 

@@ -1,0 +1,101 @@
+﻿@model Product
+
+
+<style>
+    #output {
+        height: 40vw;
+        width: 40vw;
+        border-radius: 50%;
+        border: 6px solid #757575;
+    }
+
+    .uploadContainer {
+        position: relative;
+        height: 40vw;
+        width: 40vw;
+    }
+
+    .editContainer {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        background-color: white;
+        border-radius: 50%;
+        height: 10vw;
+        width: 10vw;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 9px;
+    }
+</style>
+
+<div class="container mt-2 p-4 border border-2">
+    <form method="post" enctype="multipart/form-data">
+        <input asp-for="ImageURL" hidden />
+        <input id="imageInput" type="file" name="file" class="form-control" onchange="loadFile(event)" hidden>
+        <div class="d-flex justify-content-center justify-content-center">
+            <div class="uploadContainer">
+                <div class="editContainer d-flex justify-content-center align-items-center">
+                    <div id="editIcon" onclick="upload()">
+                        <i class="bi bi-pencil-square fs-1"></i>
+                    </div>
+                </div>
+                <div class="previewContainer">
+                    <img id="output" src="@Model.ImageURL" class="" alt="...">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-floating mt-3 mb-3">
+            <input class="form-control" asp-for="Name" placeholder="Product Name" value="@Model.Name">
+            <label asp-for="Name">Product Name</label>
+        </div>
+        <div class="form-floating">
+            <textarea class="form-control" asp-for="Description" placeholder="Leave a comment here" style=" height: 150px;">@Model.Description</textarea>
+            <label asp-for="Description">Description</label>
+        </div>
+        <hr />
+        <div class="form-floating mb-3">
+            <input class="form-control" asp-for="Price" placeholder="Price" value="@Model.Price">
+            <label asp-for="Price">Price</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input class="form-control" asp-for="DiscountPercentage" placeholder="Discount Percentage" value="@Model.DiscountPercentage">
+            <label asp-for="DiscountPercentage">Discount Percentage</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input class="form-control" asp-for="DiscountAmount" placeholder="Discount Amount" value="@Model.DiscountAmount">
+            <label asp-for="DiscountAmount">Discount Amount</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input class="form-control" asp-for="Category" placeholder="Category" value="@Model.Category">
+            <label asp-for="Category">Category</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input class="form-control" asp-for="Quantity" placeholder="Quantity Available" value="@Model.Quantity">
+            <label asp-for="Quantity">Quantity Available</label>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+            <button id="submit" type="submit" class="btn btn-primary me-2">Save Changes</button>
+            <a asp-area="Shopkeeper" asp-controller="Product" asp-action="Index" class="btn btn-light">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    var imageUploadButton = document.getElementById("imageInput");
+    function upload() {
+        imageUploadButton.click();
+    }
+    var loadFile = function (event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('output');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    };
+</script>
+
+
+

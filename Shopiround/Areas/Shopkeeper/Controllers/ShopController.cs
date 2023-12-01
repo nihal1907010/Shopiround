@@ -118,19 +118,37 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult Profile()
+        public IActionResult Profile(int? id)
         {
-            ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop");
-            Shop shop = applicationUser.Shop;
-            List<Product> products = context.Products.Where(p => p.ShopId == shop.ShopId).ToList();
 
-            ShopProfile shopProfile = new ShopProfile
-            { 
-                shop = shop,
-                products = products
-            };
+            if(id == null)
+            {
+                ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop");
+                Shop shop = applicationUser.Shop;
+                List<Product> products = context.Products.Where(p => p.ShopId == shop.ShopId).ToList();
 
-            return View(shopProfile);
+                ShopProfile shopProfile = new ShopProfile
+                {
+                    shop = shop,
+                    products = products
+                };
+
+                return View(shopProfile);
+            }
+            else
+            {
+                Shop shop = context.Shops.Where(a=> a.ShopId == id).FirstOrDefault();
+                List<Product> products = context.Products.Where(p => p.ShopId == shop.ShopId).ToList();
+
+                ShopProfile shopProfile = new ShopProfile
+                {
+                    shop = shop,
+                    products = products
+                };
+
+                return View(shopProfile);
+            }
+           
         }
         public IActionResult ShowUserInformation()
         {
@@ -181,6 +199,12 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             List<CartItem> cartItems = context.CartItems.Where(c => c.Online).Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == userId).ToList();
             ViewBag.userId = userId;
             return View(cartItems);
+        }
+
+        public IActionResult ShopNearby()
+        {
+            List<Shop> shops = context.Shops.ToList();
+            return View(shops);
         }
 
     }

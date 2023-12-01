@@ -1,5 +1,4 @@
 ﻿@model List<Product>
-<a asp-controller="Product" asp-action="AddDiscount"><i class="bi bi-plus-circle"> </i></a>
 <table class="table">
     <thead>
         <tr>
@@ -19,7 +18,7 @@
                     <td>@product.Category</td>
                     <td>@product.Price</td>
                     <td>
-                        <a asp-controller="Product" asp-action="Show" asp-route-id="@product.Id" class="btn btn-danger mx-2">
+                        <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id"> <i class="bi bi-pencil-square me-2"></i> 
                         </a>
                     </td>
                 </tr>
