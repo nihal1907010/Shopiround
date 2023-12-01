@@ -472,6 +472,38 @@ namespace Shopiround.Areas.Customer.Controllers
             return View("ViewCart", cartItems);
         }
 
+        [HttpGet]
+        public IActionResult SaveCartItem(int id)
+        {
+            CartItem item = context.CartItems.Find(id);
+            CartItem cartItem = unitOfWork.CartItemRepository.Get(c => c.Id == id);
+
+            SavedItem savedItem = new SavedItem
+            {
+                UserId = cartItem.UserId,
+                ProductId = cartItem.ProductId
+            };
+
+            context.SavedItems.Add(savedItem);
+            context.SaveChanges();
+
+
+            ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name, includeProperties: "Shop,CartItems");
+
+            unitOfWork.CartItemRepository.Remove(cartItem);
+            unitOfWork.Save();
+            List<CartItem> cartItems = context.CartItems.Include(c => c.Product).ThenInclude(s => s.Shop).Where(c => c.UserId == user.Id).ToList();
+            // User and Shop information
+            Shop? shop = null;
+            if (user != null)
+            {
+                shop = context.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
+            }
+            ViewBag.user = user;
+            ViewBag.shop = shop;
+            return View("ViewCart", cartItems);
+        }
+
         public IActionResult NearYou()
         {
             List<Product> products = context.Products.Include("Shop").Include("Reviews").Include("Questions").ToList();

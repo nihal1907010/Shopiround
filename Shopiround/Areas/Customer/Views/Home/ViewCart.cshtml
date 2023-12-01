@@ -51,7 +51,7 @@
                     </div>
                     <div class="d-flex mt-3 position-absolute bottom-0">
                         <a asp-area="Customer" asp-controller="Home" asp-action="DeleteCartItem" asp-route-id="@cartItem.Id" class="btn btn-light rounded p-1 ps-2 pe-2 border me-2" style="background-color: #E2E8F0; box-shadow: rgba(50, 50, 93, 0.25) 0px 1px 5px -1px, rgba(0, 0, 0, 0.3) 0px 0.5px 3px -1px;">Delete</a>
-                        <a class="btn btn-light rounded p-1 ps-2 pe-2 border" style="background-color: #E2E8F0; box-shadow: rgba(50, 50, 93, 0.25) 0px 1px 5px -1px, rgba(0, 0, 0, 0.3) 0px 0.5px 3px -1px;">Save for later</a>
+                        <a asp-area="Customer" asp-controller="Home" asp-action="SaveCartItem" asp-route-id="@cartItem.Id" class="btn btn-light rounded p-1 ps-2 pe-2 border" style="background-color: #E2E8F0; box-shadow: rgba(50, 50, 93, 0.25) 0px 1px 5px -1px, rgba(0, 0, 0, 0.3) 0px 0.5px 3px -1px;">Save for later</a>
                     </div>
                 </div>
                 <div class="position-relative" style="width: 60px;">
