@@ -37,7 +37,7 @@
         border-radius: 50%;
     }
 </style>
-<div class="mt-2" style="font-size: 1.4rem; float: right; font-weight: 600;"><img src="~/images/assets/shop.png" style="height: 30px" />Related items</div>
+<div class="mt-2" style="font-size: 1.4rem; float: right; font-weight: 600;"><img src="~/images/assets/shop.png" style="height: 30px" />Daily Deals</div>
 <div class="clearfix"></div>
 <div id="productsContainer"></div>
     </div>
@@ -45,6 +45,7 @@
 
 <script>
     var products = @Html.Raw(Json.Serialize(Model));
+    console.log(products);
     var productsContainer = document.getElementById("productsContainer");
     productsContainer.setAttribute("class", "row mt-2");
     var latitudeUser, longitudeUser;

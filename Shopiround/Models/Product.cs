@@ -13,7 +13,7 @@ namespace Shopiround.Models
         [Key]
         public int Id { get; set; }
         public String Name { get; set; }
-        public String Description { get; set; }
+        public String? Description { get; set; }
         public int Quantity { get; set; }
         public float Price { get; set; }
         public String Category { get; set; }

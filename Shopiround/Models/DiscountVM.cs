@@ -13,8 +13,8 @@ namespace Shopiround.Models
         public string Name { get; set; }
         public String ImageURL { get; set; }
         public float Price { get; set; }
-        public float DiscountAmount { get; set; }
-        public float DiscountParcentage { get; set; }
+        public float DiscountAmount { get; set; } = 0;
+        public float DiscountParcentage { get; set; } = 0;
         
         public int TotalDays { get; set; }
         

@@ -13,12 +13,6 @@
     <None Remove="Areas\Admin\**" />
   </ItemGroup>
 
- 
-
-  <ItemGroup>
-    <Folder Include="wwwroot\images\product\" />
-  </ItemGroup>
-
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>

@@ -36,9 +36,15 @@ namespace Shopiround.Areas.Customer.Controllers
             this.context = context;
             _webHostEnvironment = webHostEnvironment;
         }
+        public IActionResult ShopNearby()
+        {
+            List<Shop> shops = context.Shops.ToList();
+            return View(shops);
+        }
         public IActionResult Index()
         {
-            List<Product> products = GetAllProducts();
+            List<Product> products = context.Products.Include(p => p.Shop).ToList();
+                //GetAllProducts();
 
             string[] filePaths = Directory.GetFiles(Path.Combine(_webHostEnvironment.WebRootPath, "images", "backgrounds"));
             List<string> files = new List<string>();

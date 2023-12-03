@@ -31,7 +31,8 @@ namespace Shopiround.Areas.User.Controllers
                 SenderId = applicationUser.Id,
                 ReceiverId = ownerId,
                 Product = applicationDbContext.Products.Where(p => p.Id == productId).Include("Shop").FirstOrDefault(),
-                OldMessages = applicationDbContext.Message.Where(m => m.SenderId == applicationUser.Id || m.ReceiverId == ownerId).ToList()
+                /*OldMessages = applicationDbContext.Message.Where(m => m.SenderId == applicationUser.Id || m.ReceiverId == ownerId).ToList()*/
+                OldMessages = applicationDbContext.Message.Where(m => (m.SenderId == applicationUser.Id && m.ReceiverId == ownerId) || (m.SenderId == ownerId && m.ReceiverId == applicationUser.Id)).ToList()
             };
             return View(messageVM);
         }

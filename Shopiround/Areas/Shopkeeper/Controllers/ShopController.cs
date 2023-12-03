@@ -77,8 +77,15 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         {
             var topProductCounts = context.ProductCounts
             .OrderByDescending(pc => pc.Count)
-            .Include("Product")
+            .Include(pc => pc.Product).ThenInclude(p => p.Shop)
             .ToList();
+
+            List<Product> products = new List<Product>();
+
+            foreach(var pc in topProductCounts)
+            {
+                products.Add(pc.Product);
+            }
 
             ViewData["ProductCount"] = topProductCounts;
             // User and Shop information
@@ -90,7 +97,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             }
             ViewBag.user = user;
             ViewBag.shop = shop;
-            return View();
+            return View(products);
         }
         public IActionResult ShowAllKeywords()
         {
@@ -309,13 +316,6 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                 return View(shopProfile);
             }
            
-        }
-
-
-        public IActionResult ShopNearby()
-        {
-            List<Shop> shops = context.Shops.ToList();
-            return View(shops);
         }
 
     }

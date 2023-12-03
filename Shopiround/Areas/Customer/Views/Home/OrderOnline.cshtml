@@ -47,6 +47,111 @@
     var latitudeUser, longitudeUser;
     var latitudeShop, longitudeShop;
     var cnt = 0;
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                latitudeUser = position.coords.latitude;
+                longitudeUser = position.coords.longitude;
+                // Create an array to store sorted products with distance data
+                var productsWithDistance = [];
+
+                for (idx in products) {
+                    latitudeShop = products[idx]["shop"]["latitude"];
+                    longitudeShop = products[idx]["shop"]["longitude"];
+                    fetch(`https://api.geoapify.com/v1/routing?waypoints=${latitudeShop},${longitudeShop}|${latitudeUser},${longitudeUser}&mode=drive&apiKey=a63091f5968a473c88c4c923004de755`)
+                        .then(response => response.json())
+                        .then(result => {
+                            var distance = result["features"][0]["properties"]["distance"];
+
+                            // Add product along with its distance to the array
+                            productsWithDistance.push({
+                                product: products[cnt++],
+                                distance: distance,
+                            });
+
+                            // Check if all products have been processed
+                            if (productsWithDistance.length === products.length) {
+
+                                // Sort the products by distance
+                                productsWithDistance.sort((a, b) => a.distance - b.distance);
+
+                                // Display the sorted products
+                                displayProducts(productsWithDistance);
+                            }
+                        })
+                        .catch(error => console.log('error', error));
+                }
+            },
+            (error) => {
+                console.error("Error getting user location:", error);
+            }
+        );
+    } else {
+        console.error("Geolocation is not supported by this browser.");
+    }
+
+    function displayProducts(sortedProducts) {
+        sortedProducts.forEach(item => {
+            var productContainer = document.createElement("div");
+            productContainer.setAttribute("class", "col-6 mt-2");
+
+            var productLink = document.createElement("a");
+            productLink.setAttribute("href", `/Shopkeeper/Product/Show/${item.product.id}`);
+            //productLink.setAttribute("style", "color: blue;");
+
+            var imageContainer = document.createElement("div");
+            imageContainer.setAttribute("class", "border border-2 rounded-3 p-1");
+
+            var image = document.createElement("img");
+            image.setAttribute("class", "productImage");
+            image.setAttribute("src", item.product.imageURL);
+
+            imageContainer.appendChild(image);
+
+            var infoContainer = document.createElement("div");
+            infoContainer.setAttribute("class", "p-1");
+
+            var name = document.createElement("div");
+            name.setAttribute("class", "productName mt-1");
+            name.innerText = item.product.name;
+
+            var price = document.createElement("div");
+            price.setAttribute("class", "productPrice mt-1");
+            price.innerText = "BDT " + item.product.price + ".00";
+
+            var shop = document.createElement("div");
+            shop.setAttribute("class", "shopInfo mt-1");
+            var dist = item.distance;
+            var unit = "m";
+            if (dist > 1000) {
+                dist /= 1000;
+                unit = "km";
+            }
+            shop.innerText = `${item.product.shop.shopName} (${dist}${unit})`;
+
+            infoContainer.appendChild(name);
+            infoContainer.appendChild(price);
+            infoContainer.appendChild(shop);
+
+            productLink.appendChild(imageContainer);
+            productLink.appendChild(infoContainer);
+
+            productContainer.appendChild(productLink);
+
+            productsContainer.appendChild(productContainer);
+        });
+    }
+</script>
+
+@* <script>
+    var products = @Html.Raw(Json.Serialize(Model));
+    console.log(products);
+    var productsContainer = document.getElementById("productsContainer");
+    productsContainer.setAttribute("class", "row mt-2");
+    var latitudeUser, longitudeUser;
+    var latitudeShop, longitudeShop;
+    var cnt = 0;
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -126,5 +231,5 @@
 
         productsContainer.appendChild(productContainer);
     }
-</script>
+</script> *@
 

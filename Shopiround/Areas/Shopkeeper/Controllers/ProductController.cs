@@ -34,7 +34,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
 
         public IActionResult Index()
         {
-            List<Product> products = applicationDbContext.Products.Include("Shop").ToList();
+            
             // User and Shop information
             ApplicationUser? user = applicationDbContext.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
             Shop? shop = null;
@@ -42,6 +42,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             {
                 shop = applicationDbContext.Shops.Where(x => x.ApplicationUserId == user.Id).FirstOrDefault();
             }
+            List<Product> products = applicationDbContext.Products.Include("Shop").Where(p => p.Shop == shop).ToList();
             ViewBag.user = user;
             ViewBag.shop = shop;
             return View(products);
@@ -92,6 +93,11 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             DateTime today = DateTime.Now;
             DateTime futureDate = today.AddDays(discountVM.TotalDays);
 
+            Product productx = applicationDbContext.Products.Where(p => p.Id == discountVM.ID).FirstOrDefault();
+            productx.DiscountAmount = discountVM.DiscountAmount;
+            productx.DiscountPercentage = discountVM.DiscountParcentage;
+
+            applicationDbContext.Products.Update(productx);
 
             DiscountDate discountDate = new DiscountDate()
             {
@@ -114,6 +120,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
                 {
                     ID = product.Id,
                     Name = product.Name,
+                    ImageURL = product.ImageURL,
                     Price = product.Price,
                     DiscountAmount = product.DiscountAmount,
                     DiscountParcentage = product.DiscountPercentage
@@ -128,6 +135,14 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         [HttpPost]
         public IActionResult Create(Product product, IFormFile? file)
         {
+            if (product.DiscountAmount == null)
+            {
+                product.DiscountAmount = 0;
+            }
+            if (product.DiscountPercentage == null)
+            {
+                product.DiscountAmount = 0;
+            }
             if (file != null)
             {
                 string wwwRootPath = webHostEnvironment.WebRootPath;
@@ -165,11 +180,19 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
             if (Id != null)
             {
                 Product product = unitOfWork.ProductRepository.Get(p => p.Id == Id, includeProperties: "Shop,Reviews");
+
+                DiscountDate discountDate = applicationDbContext.DiscountDates.Where(d => d.productId == product.Id).FirstOrDefault();
+
+
                 ApplicationUser user = unitOfWork.ApplicationUserRepository.Get(u => u.UserName == User.Identity.Name);
                 Boolean AlreadyInCart = false;
                 int cartCount = 0;
-
-                var cart = applicationDbContext.CartItems.Where(a => a.UserId == user.Id && a.ProductId == product.Id).FirstOrDefault();
+                CartItem cart = null;
+                if (user != null)
+                {
+                    cart = applicationDbContext.CartItems.Where(a => a.UserId == user.Id && a.ProductId == product.Id).FirstOrDefault();
+                }
+                
                 if (cart != null)
                 {
                     AlreadyInCart = true;
@@ -413,7 +436,7 @@ namespace Shopiround.Areas.Shopkeeper.Controllers
         public ActionResult DailyDeals()
         {
             var discountedProducts = applicationDbContext.Products
-           .Where(p => applicationDbContext.DiscountDates.Any(d => d.productId == p.Id && d.TodayDiscount))
+           .Where(p => applicationDbContext.DiscountDates.Any(d => d.productId == p.Id && d.TodayDiscount)).Include(p => p.Shop)
            .ToList();
             // User and Shop information
             ApplicationUser? user = applicationDbContext.ApplicationUsers.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
