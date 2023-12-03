@@ -110,7 +110,7 @@
         })
             .then(res => res.json())
             .then(res => {
-                console.log(res);
+                //console.log(res);
                 for (var i = 0; i < N; ++i) {
                     routingMatrix[i] = [];
                     for (var j = 0; j < N; ++j) {
@@ -130,14 +130,15 @@
                 var waypointsIdx = [];
                 var mask = (1 << N) - 1;
                 var cnt = 1;
-                console.log(idxMap);
                 do {
                     waypointsIdx.push(lastIdx);
                     //console.log(idxMap[lastIdx]);
                     if (lastIdx != 0) {
                         //var marker = L.marker([locations[lastIdx]["location"][1], locations[lastIdx]["location"][0]], { icon: greyIcon }).addTo(map);
-                        var shopName = "(" + cnt + ")" + cartItems[lastIdx - 1]["product"]["shop"]["shopName"];
+                        //var shopName = "(" + cnt + ")" + cartItems[lastIdx - 1]["product"]["shop"]["shopName"];
+                        var shopName = "(" + cnt + ")" + cartItems[idxMap[lastIdx - 1]]["product"]["shop"]["shopName"];
                         ++cnt;
+                        console.log("Hey: " + lastIdx + " " + idxMap[lastIdx - 1]);
                         markerList[idxMap[lastIdx]].bindTooltip(shopName, { permanent: true }).openTooltip();
                     }
                     else {
@@ -147,11 +148,21 @@
                     }
                     mask = mask & ~(1 << lastIdx);
                     lastIdx = last[lastIdx][mask];
-
-
-
                 } while (mask != 0)
-
+                console.log(waypointsIdx);
+                console.log(idxMap);
+                console.log(cartItems);
+                function inc(i) {
+                    for (j in idxMap) {
+                        if (i == idxMap[j]) return true;
+                    }
+                    return false;
+                }
+                for (i in markerList) {
+                    if (inc(i) == true) {
+                        //markerList[idxMap[lastIdx]].bindTooltip("You", { permanent: true }).openTooltip();
+                    }
+                }
                 waypointsIdx.reverse();
                 var waypoints = [];
                 for (var i = 0; i < N; ++i) {
@@ -227,6 +238,7 @@
                         if (marker.options.icon === greenIcon) {
                             marker.setIcon(greyIcon);
                             locInc[idx] = 0;
+                            marker.unbindTooltip();
                         } else {
                             marker.setIcon(greenIcon);
                             locInc[idx] = 1;
