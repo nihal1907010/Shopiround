@@ -1,4 +1,5 @@
-Mobile website: https://rafi250-001-site1.anytempurl.com/
+Mobile website: https://shopiround100-001-site1.btempurl.com/
+Link to Android repo: https://github.com/nihal1907010/Shopiround_Android
 
 # Installation
 
