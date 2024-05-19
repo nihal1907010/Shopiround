@@ -18,7 +18,7 @@ We can download or take the apk file of the project to our andoird device and in
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/ca33a4d9-b829-4272-933e-795c798b6608"  width="250px">
 
 
-## Search for product and add them to cart
+## Search for products and add them to cart
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/65f6b9c1-92d0-4a02-b4b5-7b62b4a66ab7"  width="250px">
 
 
@@ -48,8 +48,6 @@ We can download or take the apk file of the project to our andoird device and in
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/1ce02567-acb6-4d29-82ac-084b970ff5db"  width="250px">
 
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/5e0873a0-f19b-45db-b8ce-4411b7b6d79e"  width="250px">
-
-
 
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/9a5066a4-696b-4fad-a331-9c66bc6d448e"  width="250px">
 
