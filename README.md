@@ -34,7 +34,7 @@ We can download or take the apk file of the project to our andoird device and in
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/580f2669-8d1e-422d-8abb-006d69965967"  width="400px">
 
 
-## Checkout to see map location of the shop of those products
+
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/73c40ca0-ac4a-4bb6-89fb-abe0f2f3ab4f"  width="400px">
 
 
@@ -44,7 +44,7 @@ We can download or take the apk file of the project to our andoird device and in
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/987c409f-907b-44ae-980e-03b80b6fd97f"  width="400px">
 
 
-
+## Checkout to see map location of the shop of those products
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/1ce02567-acb6-4d29-82ac-084b970ff5db"  width="400px">
 
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/5e0873a0-f19b-45db-b8ce-4411b7b6d79e"  width="400px">
