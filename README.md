@@ -45,5 +45,19 @@ We can download or take the apk file of the project to our andoird device and in
 
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/378adf98-c4ca-420b-9505-bccdddec0844"  width="400px">
 
-<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/a64d9dc1-a270-486c-a185-ff793bed0eaf"  width="400px">
+<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/1ce02567-acb6-4d29-82ac-084b970ff5db"  width="400px">
+
+<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/5e0873a0-f19b-45db-b8ce-4411b7b6d79e"  width="400px">
+
+<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/e03709b5-2a41-402b-b1fd-00dbd8652fec"  width="400px">
+
+<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/9a5066a4-696b-4fad-a331-9c66bc6d448e"  width="400px">
+
+<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/60d5dcd2-2408-4fc5-a100-afa0f6084be8"  width="400px">
+
+<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/1142dbec-43e7-4dbe-aca7-6b943b67854d"  width="400px">
+
+<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/19558b11-e24c-4338-8ea8-bf87a03cdf40"  width="400px">
+
+
 
