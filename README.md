@@ -69,6 +69,8 @@ After visiting a shop, user can click on any of the shop location and it will re
 
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/5e0873a0-f19b-45db-b8ce-4411b7b6d79e"  width="250px">
 
+# Purchase History
+
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/9a5066a4-696b-4fad-a331-9c66bc6d448e"  width="250px">
 
 
