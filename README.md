@@ -16,7 +16,11 @@ It shows random products.
 
 
 ## Login Registration
-User has to login to use the application
+User has to login to use the application.
+
+
+
+
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/3189f94e-a61e-44cd-bfdc-a464a5a1ae0e"  width="250px">
 
 
@@ -25,7 +29,11 @@ User has to login to use the application
 
 
 ## Search for products and add them to cart
-After successfull login, user can search for product, and add them to cart
+After successfull login, user can search for product, and add them to cart.
+
+
+
+
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/65f6b9c1-92d0-4a02-b4b5-7b62b4a66ab7"  width="250px">
 
 
@@ -54,6 +62,9 @@ After successfull login, user can search for product, and add them to cart
 ## Checkout to see map location of the shop of those products
 After adding all the wanted products to cart, user can check out, which will show him the map location of the shops with optimal route from user to those shops.
 After visiting a shop, user can click on any of the shop location and it will remove the route to that shop. It means user has done shoping to that shop and the application will show new route to the rest of the shops.
+
+
+
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/9091a2b9-48f5-433d-b070-dd399da25abd"  width="250px">
 
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/5e0873a0-f19b-45db-b8ce-4411b7b6d79e"  width="250px">
