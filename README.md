@@ -29,7 +29,7 @@ User has to login to use the application.
 
 
 ## Search for products and add them to cart
-After successfull login, user can search for product, and add them to cart.
+After successfull login, user can search for any product. The application will show the searched product from multiple shops in an order of minimum distance from user to shop. After selecting product from prefarable shop, user will add them to cart.
 
 
 
