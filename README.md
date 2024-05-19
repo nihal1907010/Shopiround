@@ -7,15 +7,15 @@ We can download or take the apk file of the project to our andoird device and in
 # User manual
 
 ## Home page
-<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/1568fe98-0609-468d-9f3a-ec2fb092f6ef"  width="400px">
+<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/1568fe98-0609-468d-9f3a-ec2fb092f6ef"  width="200px">
 
 
 ## Login Registration
-<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/3189f94e-a61e-44cd-bfdc-a464a5a1ae0e"  width="400px">
+<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/3189f94e-a61e-44cd-bfdc-a464a5a1ae0e"  width="200px">
 
 
 
-<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/ca33a4d9-b829-4272-933e-795c798b6608"  width="400px">
+<img src="https://github.com/nihal1907010/Shopiround/assets/85826615/ca33a4d9-b829-4272-933e-795c798b6608"  width="200px">
 
 
 ## Search for product and add them to cart
