@@ -98,8 +98,9 @@ Record of all the product user selected in the application.
 ## License
 
 ## Contact
-For questions or inquiries, plese contace 
-**Email:**[Akik Ashraf Rafi](mdashrafrafi260@gmail.com), and [Md. Mubtashim Abrar Nihal](nihal14900@gmail.com)
+For questions or inquiries, plese contact
+
+**Email:**[mdashrafrafi260@gmail.com](mdashrafrafi260@gmail.com), and [nihal14900@gmail.com](nihal14900@gmail.com)
 
 
 
