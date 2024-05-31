@@ -1,15 +1,17 @@
+## ShopiRound An mobile application to find product in nearby shops
+This repository contains an application that is design to facilitate 
 Mobile website: https://shopiround100-001-site1.btempurl.com/
 
 Link to Android repo: https://github.com/nihal1907010/Shopiround_Android
 
 # Installation
 
-We can download or take the apk file of the project to our andoird device and install it like any other android application.
+We can download or take the application file of the project to our andoird device and install it like any other android application.
 
 # User manual
 
 ## Home page
-It shows random products.
+It shows random products,
 
 
 
