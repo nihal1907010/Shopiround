@@ -1,16 +1,16 @@
-## ShopiRound: An Android application to find products nearby
+# ShopiRound: An Android application to find products nearby
 
 Mobile website: https://shopiround100-001-site1.btempurl.com/
 
 Link to Android repo: https://github.com/nihal1907010/Shopiround_Android
 
-# Usage of the application
+## Usage of the application
 - ShopiRound allows users to quickly search for specific products in nearby retail shops
 - ShopiRound provides users with detailed maps and route guidance, directing them to the selected shop with step-by-step navigation, ensuring a hassle-free shopping experience.
 - ShopiRound facilitates real-time chat between users and shopkeepers, enabling users to inquire about products, negotiate prices, and confirm availability directly.
 - For shopkeepers, ShopiRound serves as a valuable marketing tool by increasing the visibility of their shop and products to local consumers, potentially boosting sales and customer engagement.
 
-# Requirment
+## Requirment
 User has to have an andorid device or an android emulator with GPS support.
 
 # Installation
@@ -22,9 +22,9 @@ or
 
 You can directly find the executable file(app) in the apk folder. Download and Install it directly to your android mobile phone.
 
-# User manual
+## User manual
 
-## Home page
+### Home page
 It shows random products with their shop dictance from user.
 
 
