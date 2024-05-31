@@ -1,17 +1,30 @@
-## ShopiRound An mobile application to find product in nearby shops
-This repository contains an application that is design to facilitate 
+## ShopiRound: An Android application to find products nearby
+
 Mobile website: https://shopiround100-001-site1.btempurl.com/
 
 Link to Android repo: https://github.com/nihal1907010/Shopiround_Android
 
-# Installation
+# Usage of the application
+- ShopiRound allows users to quickly search for specific products in nearby retail shops
+- ShopiRound provides users with detailed maps and route guidance, directing them to the selected shop with step-by-step navigation, ensuring a hassle-free shopping experience.
+- ShopiRound facilitates real-time chat between users and shopkeepers, enabling users to inquire about products, negotiate prices, and confirm availability directly.
+- For shopkeepers, ShopiRound serves as a valuable marketing tool by increasing the visibility of their shop and products to local consumers, potentially boosting sales and customer engagement.
 
-We can download or take the application file of the project to our andoird device and install it like any other android application.
+# Requirment
+User has to have an andorid device to an android emulator with GPS support.
+
+# Installation
+1. Clone the repository.
+2. Open the respective Android projects in Android Studio.
+3. Build and run the app on your device or emulator.
+
+or
+You can directly find the executable file(app) in the apk folder. Download and Install it directly to your android mobile phone.
 
 # User manual
 
 ## Home page
-It shows random products,
+It shows random products with their shop dictance from user.
 
 
 
@@ -33,7 +46,7 @@ User has to login to use the application.
 
 
 ## Search for products and add them to cart
-After successfull login, user can search for any product. The application will show the searched product from multiple shops in an order of minimum distance from user to shop. After selecting product from prefarable shop, user will add them to cart.
+After successfull login, user can search for any product. The application will show the searched product from multiple shops in an order of minimum distance from user to shop. After selecting product with quantity from prefarable shop, user will add them to cart.
 
 
 
@@ -74,6 +87,7 @@ After visiting a shop, user can click on any of the shop location and it will re
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/5e0873a0-f19b-45db-b8ce-4411b7b6d79e"  width="250px">
 
 # Purchase History
+Record of all the product user selected in the application.
 
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/9a5066a4-696b-4fad-a331-9c66bc6d448e"  width="250px">
 
