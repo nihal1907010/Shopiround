@@ -11,7 +11,7 @@ Link to Android repo: https://github.com/nihal1907010/Shopiround_Android
 - For shopkeepers, ShopiRound serves as a valuable marketing tool by increasing the visibility of their shop and products to local consumers, potentially boosting sales and customer engagement.
 
 # Requirment
-User has to have an andorid device to an android emulator with GPS support.
+User has to have an andorid device or an android emulator with GPS support.
 
 # Installation
 1. Clone the repository.
