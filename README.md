@@ -19,6 +19,7 @@ User has to have an andorid device or an android emulator with GPS support.
 3. Build and run the app on your device or emulator.
 
 or
+
 You can directly find the executable file(app) in the apk folder. Download and Install it directly to your android mobile phone.
 
 # User manual
