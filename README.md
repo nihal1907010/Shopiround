@@ -98,9 +98,9 @@ Record of all the product user selected in the application.
 ## License
 
 ## Contact
-For questions or inquiries, plese contact
+For questions or inquiries, please contact
 
-**Email: ** mdashrafrafi260@gmail.com or nihal14900@gmail.com
+Email: mdashrafrafi260@gmail.com or nihal14900@gmail.com
 
 
 
