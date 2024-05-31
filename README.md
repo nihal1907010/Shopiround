@@ -100,7 +100,7 @@ Record of all the product user selected in the application.
 ## Contact
 For questions or inquiries, plese contact
 
-**Email:**[mdashrafrafi260@gmail.com](mdashrafrafi260@gmail.com), and [nihal14900@gmail.com](nihal14900@gmail.com)
+**Email: ** mdashrafrafi260@gmail.com or nihal14900@gmail.com
 
 
 
