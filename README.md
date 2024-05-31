@@ -13,7 +13,7 @@ Link to Android repo: https://github.com/nihal1907010/Shopiround_Android
 ## Requirment
 User has to have an andorid device or an android emulator with GPS support.
 
-# Installation
+## Installation
 1. Clone the repository.
 2. Open the respective Android projects in Android Studio.
 3. Build and run the app on your device or emulator.
@@ -33,7 +33,7 @@ It shows random products with their shop dictance from user.
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/1568fe98-0609-468d-9f3a-ec2fb092f6ef"  width="250px">
 
 
-## Login Registration
+### Login Registration
 User has to login to use the application.
 
 
@@ -46,7 +46,7 @@ User has to login to use the application.
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/ca33a4d9-b829-4272-933e-795c798b6608"  width="250px">
 
 
-## Search for products and add them to cart
+### Search for products and add them to cart
 After successfull login, user can search for any product. The application will show the searched product from multiple shops in an order of minimum distance from user to shop. After selecting product with quantity from prefarable shop, user will add them to cart.
 
 
@@ -77,7 +77,7 @@ After successfull login, user can search for any product. The application will s
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/987c409f-907b-44ae-980e-03b80b6fd97f"  width="250px">
 
 
-## Checkout to see map location of the shop of those products
+### Checkout to see map location of the shop of those products
 After adding all the wanted products to cart, user can check out, which will show him the map location of the shops with optimal route from user to those shops.
 After visiting a shop, user can click on any of the shop location and it will remove the route to that shop. It means user has done shoping to that shop and the application will show new route to the rest of the shops.
 
@@ -87,15 +87,18 @@ After visiting a shop, user can click on any of the shop location and it will re
 
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/5e0873a0-f19b-45db-b8ce-4411b7b6d79e"  width="250px">
 
-# Purchase History
+### Purchase History
 Record of all the product user selected in the application.
 
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/9a5066a4-696b-4fad-a331-9c66bc6d448e"  width="250px">
 
 
-
 <img src="https://github.com/nihal1907010/Shopiround/assets/85826615/1142dbec-43e7-4dbe-aca7-6b943b67854d"  width="250px">
 
+## License
+
+## Contact
+For questions or inquiries, plese contace [Akik Ashraf Rafi], and 
 
 
 
